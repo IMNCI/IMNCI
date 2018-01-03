@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="org.ministryofhealth.newimci.MainActivity">
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/key_elements_scroll"
+        android:paddingBottom="48dp">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="16dp">
+            <!--<TextView-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:text="@string/key_elements"-->
+                <!--android:textSize="18sp"-->
+                <!--android:textAllCaps="true"-->
+                <!--android:textColor="@color/colorBlack"-->
+                <!--android:textStyle="bold"/>-->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="By using the IMCI chart booklet and implementing on the guidelines the health workers will be able to implement
+on the key elements of IMCI:"
+                android:textColor="@color/colorBlack"
+                android:layout_marginBottom="8dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/assessment"
+                android:textColor="@color/colorBlack"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:layout_marginBottom="8dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="The assess column in the chart booklet describes how to take history and do a physical exam.\nAssess for common illnesses in children by asking questions about common conditions, examining the
+child and checking for other routine services such as immunization and nutrition"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/classification"
+                android:textColor="@color/colorBlack"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:layout_marginBottom="8dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Health workers will be able to classify childrens’ illnesses using the colour- coded triage system. The classifications
+contained in the booklet are based on whether the diagnosed illness are:"/>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp">
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="@dimen/color_width"
+                    android:layout_height="@dimen/color_height"
+                    android:background="@color/colorPink"
+                    android:id="@+id/pinkBack"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_toRightOf="@id/pinkBack"
+                    android:layout_marginLeft="4dp"
+                    android:text="Severe Classification needing admission or pre-referral treatment and referral"/>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp">
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="@dimen/color_width"
+                    android:layout_height="@dimen/color_height"
+                    android:background="@color/colorYellow"
+                    android:id="@+id/yellowBack"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_toRightOf="@id/yellowBack"
+                    android:layout_marginLeft="4dp"
+                    android:text="A classification needing specific medical treatment and advice"/>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp">
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="@dimen/color_width"
+                    android:layout_height="@dimen/color_height"
+                    android:background="@color/colorGreen"
+                    android:id="@+id/greenBack"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_toRightOf="@id/greenBack"
+                    android:layout_marginLeft="4dp"
+                    android:text="Not serious and in most cases no drugs are needed. Simple advice on home management given"/>
+            </RelativeLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/identify_treatment"
+                android:textColor="@color/colorBlack"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:layout_marginBottom="8dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="The identify treatment column helps the health workers to quickly and accurately identify treatments for the
+classifications selected. If a child has more than one classification, the health worker must look at more than one
+table to find the appropriate treatments."/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/treat"
+                android:textColor="@color/colorBlack"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:layout_marginBottom="8dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="The treat column shows how to administer the treatment identified for the classifications. Treat means giving
+treatment in the facility, prescribing drugs or other treatments to be given at home and also teaching the caregiver
+how to administer treatment at home."/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/counsel"
+                android:textColor="@color/colorBlack"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:layout_marginBottom="8dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="fill_horizontal"
+                android:text="If follow up care is indicated, teach the mother when to return to the clinic. Also teach the mother how to recognize
+signs indicating that the child should be brought back to the facility immediately."/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/follow_up"
+                android:textColor="@color/colorBlack"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:layout_marginBottom="8dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="fill_horizontal"
+                android:text="Some children need to be seen more than once for a current episode of illness. Identify such children and when
+they are brought back offer appropriate follow up care as indicated in the IMCI guidelines and also reassess the
+child for any new problems."/>
+
+        </LinearLayout>
+    </android.support.v4.widget.NestedScrollView>
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/proceed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        app:srcCompat="@drawable/ic_checked"
+        android:layout_gravity="bottom|right"
+        app:layout_anchor="@id/key_elements_scroll"
+        app:layout_anchorGravity="bottom|right|end"
+        />
+</android.support.design.widget.CoordinatorLayout>

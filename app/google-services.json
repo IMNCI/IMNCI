@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "109213056048",
+    "firebase_url": "https://new-imci-app.firebaseio.com",
+    "project_id": "new-imci-app",
+    "storage_bucket": "new-imci-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:109213056048:android:b02a677fb9796ae2",
+        "android_client_info": {
+          "package_name": "org.ministryofhealth.newimci"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "109213056048-nbhg8a9ajb812e4qob9ec2l7h859mu2u.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "org.ministryofhealth.newimci",
+            "certificate_hash": "5b9fe54cb253629a005bd6a73da97417a20477a7"
+          }
+        },
+        {
+          "client_id": "109213056048-chehsqo4643g73puihs7u37u1m8lq3gm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC0zshG1m7iRPaQgK2d2j-V3eC3FQDAK6Y"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "109213056048-chehsqo4643g73puihs7u37u1m8lq3gm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

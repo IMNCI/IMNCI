@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="org.ministryofhealth.newimci.AboutActivity">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="16dp">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Background"
+                android:textAppearance="@style/titleText"/>
+
+            <TextView
+                android:layout_marginBottom="8dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/background"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="What is IMCI?"
+                android:textAppearance="@style/titleText"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="The Integrated Management of Childhood Illness (IMCI) case management approach offers simple and effective
+methods to comprehensively prevent and manage the leading causes of serious illness and mortality in children
+below five years. With IMCI, sick children are not only treated for the signs and symptoms they present with in a
+health facility, but are also assessed for the other disease conditions they may be suffering from.\n\nIMCI is based on the following principles:"/>
+
+            <org.ministryofhealth.newimci.helper.BulletTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Children and infants are then assessed for main symptoms. For the older children, the symptoms
+included cough or difficulty breathing, diarrhoea, fever, HIV, ear infections, anaemia, measles and
+malnutrition."/>
+
+            <org.ministryofhealth.newimci.helper.BulletTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="A combination of individual signs then lead to the child’s classification within one or more symptom
+groups."/>
+
+            <org.ministryofhealth.newimci.helper.BulletTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Essential drugs are then used to treat the children. Lastly, counseling of caregivers regarding home
+care, appropriate feeding and fluids and when to return to facility- immediately or for follow up, is done."/>
+
+            <org.ministryofhealth.newimci.helper.BulletTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="All sick children aged upto to five years of age are examined for general danger signs and all young
+infants are examined for signs of very severe disease. These signs indicate the need for immediate
+referral or admission to hospital."/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="IMCI has 6 major steps:"
+                />
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:src="@drawable/imci_steps"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Where can IMCI be applied?"
+                android:textAppearance="@style/titleText"/>
+
+            <TextView
+                android:layout_marginBottom="8dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="The IMCI approach is designed for use in clinical settings at all levels of health care in Kenya where children
+under five years are managed. These are: dispensaries, health centres, sub-county, county, national and refferal
+hospitals, referral hospitals including faith based and private health facilities."/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/titleText"
+                android:text="What is the IMCI Chart booklet?"/>
+
+            <TextView
+                android:layout_marginBottom="8dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Kenya’s IMCI guidelines are packaged in this chart booklet. The chart booklet provides a simplified step-by -step
+guide to a health care worker on case management of children below 5 years of age visiting health facilities. The
+chart booklet summarizes and describes the 5-step IMCI process illustrated above."/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Who can apply the IMCI approach?"
+                android:textAppearance="@style/titleText"/>
+
+            <TextView
+                android:layout_marginBottom="8dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="The IMCI process can be applied by any health worker working in settings where children below five
+years are managed. These should include: doctors, clinical officers and nurses."/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="What should you do when you receive the IMCI chart booklet at your facility?"
+                android:textAppearance="@style/titleText"/>
+
+            <TextView
+                android:layout_marginBottom="8dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="The Ministry of Health has distributed the IMCI chart booklet to all health facilities in Kenya. Upon receiving
+a copy at your facility, all health workers should familiarize themselves with the guidelines and begin
+immediate implementation/use.\nNB: the hard copy of the chart booklet should remain at the health
+facility at all times."/>
+        </LinearLayout>
+    </ScrollView>
+</android.support.design.widget.CoordinatorLayout>

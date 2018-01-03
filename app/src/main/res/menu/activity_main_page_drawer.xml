@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_dashboard"
+            android:icon="@drawable/ic_dashboard"
+            android:title="Dashboard" />
+
+        <item
+            android:id="@+id/nav_elements"
+            android:icon="@drawable/ic_atomic"
+            android:title="Elements" />
+
+        <item
+            android:id="@+id/nav_about"
+            android:icon="@drawable/ic_info"
+            android:title="@string/about_imci" />
+
+        <item
+            android:id="@+id/nav_gallery"
+            android:icon="@drawable/ic_picture"
+            android:title="Gallery" />
+
+        <item
+            android:id="@+id/nav_glossary"
+            android:icon="@drawable/ic_big_dictionary"
+            android:title="Glossary"/>
+
+        <item
+            android:id="@+id/nav_settings"
+            android:icon="@drawable/ic_settings"
+            android:title="Settings" />
+
+        <item
+            android:id="@+id/nav_profile"
+            android:icon="@drawable/ic_user"
+            android:title="My Profile" />
+
+        <item
+            android:id="@+id/nav_updates"
+            android:icon="@drawable/ic_world_grid"
+            android:title="Check for Updates" />
+
+        <item
+            android:id="@+id/nav_share"
+            android:icon="@drawable/ic_megaphone"
+            android:title="Tell a Friend" />
+
+        <item
+            android:id="@+id/nav_review"
+            android:icon="@drawable/ic_consulting_message"
+            android:title="@string/submit_review" />
+
+    </group>
+
+</menu>

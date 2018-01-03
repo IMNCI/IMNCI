@@ -1,0 +1,126 @@
+<resources>
+    <string name="app_name">IMNCI 2017 Edition</string>
+    <string name="setting_up">Setting Up. Please wait...</string>
+    <string name="key_elements">Key Elements of IMCI</string>
+    <string name="assessment">Assessment</string>
+    <string name="classification">Classification</string>
+    <string name="identify_treatment">Identify Treatment</string>
+    <string name="treat">Treat</string>
+    <string name="counsel">Counsel</string>
+    <string name="follow_up">Follow Up</string>
+    <string name="info">Info</string>
+    <string name="background"><![CDATA[In Kenya, 52 out of every 1000 children born do not live to be five years of age (KDHS 2014). 70% of all deaths in children can be attributed to easily preventable and treatable diseases namely: Acute respiratory infections (mostly pneumonia), Diarrhoea, Measles, Malaria, Malnutrition & Anaemia and HIV. Often, children succumb to a combination of these conditions - with children presenting in health facilities with the combined signs and symptoms of more than one of these diseases. Evidence from various assessments has shown that many of these children are not comprehensively assessed, treated and given the appropriate advice. Recognizing the need to improve on the care of these children, WHO and UNICEF developed the Integrated Management of Childhood illness (IMCI) strategy which emphasizes on integrated case management of most common childhood diseases.Kenya in the year 2000 adopted the IMCI strategy which forms a critical part of the Kenya Essential Package for Health (KEPH).]]></string>
+    <string name="title_activity_main_page">MainPageActivity</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_settings">Settings</string>
+
+    <!-- Strings related to Settings -->
+
+    <!-- Example General settings -->
+    <string name="pref_header_general">General</string>
+
+    <string name="pref_title_social_recommendations">Enable social recommendations</string>
+    <string name="pref_description_social_recommendations">Recommendations for people to contact
+        based on your message history
+    </string>
+
+    <string name="pref_title_display_name">Display name</string>
+    <string name="pref_default_display_name">IMCI APP</string>
+
+    <string name="pref_default_display_email">youremail@provider.com</string>
+    <string name="pref_title_display_email">Display Email</string>
+
+    <string name="pref_title_enable_online_update">Online Updates</string>
+    <string name="pref_description_online_update">Receive application content updates from the internet as soon as they are made</string>
+
+    <string name="pref_title_elements_page">Show elements page on start up</string>
+
+    <string name="pref_title_add_friends_to_messages">Add friends to messages</string>
+    <string-array name="pref_example_list_titles">
+        <item>Always</item>
+        <item>When possible</item>
+        <item>Never</item>
+    </string-array>
+    <string-array name="pref_example_list_values">
+        <item>1</item>
+        <item>0</item>
+        <item>-1</item>
+    </string-array>
+
+    <!-- Example settings for Data & Sync -->
+    <string name="pref_header_data_sync">Data &amp; sync</string>
+
+    <string name="pref_title_sync_frequency">Sync frequency</string>
+    <string-array name="pref_sync_frequency_titles">
+        <item>15 minutes</item>
+        <item>30 minutes</item>
+        <item>1 hour</item>
+        <item>3 hours</item>
+        <item>6 hours</item>
+        <item>Never</item>
+    </string-array>
+    <string-array name="pref_sync_frequency_values">
+        <item>15</item>
+        <item>30</item>
+        <item>60</item>
+        <item>180</item>
+        <item>360</item>
+        <item>-1</item>
+    </string-array>
+
+    <string-array name="menu_colors">
+        <item>#ff4444</item>
+        <item>#99cc00</item>
+        <item>#AA66CC</item>
+        <item>#ffbb33</item>
+        <item>#33b5e5</item>
+        <item>#009688</item>
+    </string-array>
+
+    <string-array name="multi_select_list_preference_default_value" />
+
+    <string name="pref_title_system_sync_settings">System sync settings</string>
+
+    <!-- Example settings for Notifications -->
+    <string name="pref_header_notifications">Notifications</string>
+
+    <string name="pref_title_new_message_notifications">New message notifications</string>
+
+    <string name="pref_title_ringtone">Ringtone</string>
+    <string name="pref_ringtone_silent">Silent</string>
+
+    <string name="pref_title_vibrate">Vibrate</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Content comes soon</string>
+    <string name="about_imci">Info</string>
+    <string name="type_of_visit">Type of Visit</string>
+    <string name="age_of_child">Age of Child</string>
+    <string name="initial_visit_tag">initial_visit</string>
+    <string name="follow_up_care_tag">follow_up_care</string>
+    <string name="up_to_2_months_tag">up_to_2_months</string>
+    <string name="twomonthstag">2_months_up_to_5_yrs</string>
+    <string name="submit_review">Submit Review</string>
+    <string name="hint_name">Your Name</string>
+    <string name="hint_email">Your Email</string>
+    <string name="not_required">Not required</string>
+    <string name="title_activity_ailment_follow_up_care">AilmentFollowUpCareActivity</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+    <string name="title_activity_assessment_detail_acitvity">AssessmentDetailAcitvity</string>
+    <string name="title_activity_assessment_details">AssessmentDetailsActivity</string>
+    <string name="title_activity_treat">TreatActivity</string>
+    <string name="setup_confirmation">We would like you to provide us with some information about yourself. Please fill in the form below</string>
+    <string name="proceed">Proceed</string>
+    <string name="skip">Skip For Now</string>
+    <string name="gender">Gender</string>
+    <string name="imci_trained">Are you IMCI trained?</string>
+    <string name="submit">Submit</string>
+    <string name="title_activity_main2">GalleryActivity</string>
+    <string name="title_activity_gallery">GalleryActivity</string>
+    <string name="title_activity_sample">SampleActivity</string>
+
+</resources>
