@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="issues_array">
+        <item>Select an Option</item>
         <item>Performance</item>
         <item>Content</item>
         <item>Other</item>
@@ -23,11 +24,6 @@
         <item>Nurse</item>
         <item>Nutritionist</item>
         <item>Other</item>
-    </string-array>
-
-    <string-array name="sector">
-        <item>Public</item>
-        <item>Private</item>
     </string-array>
 
 </resources>

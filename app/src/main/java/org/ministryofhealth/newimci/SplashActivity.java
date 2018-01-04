@@ -1,5 +1,6 @@
 package org.ministryofhealth.newimci;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
@@ -48,6 +49,9 @@ import org.ministryofhealth.newimci.server.Service.TreatAilmentTreatmentService;
 import org.ministryofhealth.newimci.server.Service.TreatTitlesService;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import retrofit2.Call;
@@ -70,6 +74,16 @@ public class SplashActivity extends AppCompatActivity {
         List<Ailment> ailmentList = db.getAilments();
         if (ailmentList.size() == 0){
             try {
+                Date currentTime = Calendar.getInstance().getTime();
+
+                SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                String formattedDate = df.format(currentTime);
+
+                Context context = SplashActivity.this;
+                SharedPreferences pref = context.getSharedPreferences(getString(R.string.updates), Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = pref.edit();
+                editor.putString(getString(R.string.last_update), formattedDate);
+                editor.commit();
                 setupdata();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -346,5 +360,7 @@ public class SplashActivity extends AppCompatActivity {
                 Log.e("GalleryItem", t.getMessage());
             }
         });
+
+
     }
 }

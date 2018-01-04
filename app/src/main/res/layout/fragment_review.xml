@@ -11,7 +11,6 @@
         android:orientation="vertical"
         android:padding="16dp">
     <android.support.design.widget.TextInputLayout
-        android:id="@+id/input_layout_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp">
@@ -21,17 +20,11 @@
             android:id="@+id/input_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/hint_name" />
-        <!--<TextView-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:text="@string/not_required"-->
-            <!--android:textSize="8sp"/>-->
+            android:hint="@string/hint_name"/>
 
     </android.support.design.widget.TextInputLayout>
 
     <android.support.design.widget.TextInputLayout
-        android:id="@+id/input_layout_email"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="24dp">
@@ -43,32 +36,7 @@
             android:layout_height="wrap_content"
             android:hint="@string/hint_email" />
 
-        <!--<TextView-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:text="@string/not_required"-->
-            <!--android:textSize="8sp"/>-->
-
     </android.support.design.widget.TextInputLayout>
-
-    <!--<TextView-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="Please rate the app with the star below"-->
-        <!--android:textAlignment="center"-->
-        <!--android:textSize="16sp" />-->
-    <!--<RelativeLayout-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_marginBottom="16dp">-->
-        <!--<RatingBar-->
-            <!--android:id="@+id/submission_rating"-->
-            <!--android:layout_centerInParent="true"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:stepSize="1"-->
-            <!--android:numStars="5"/>-->
-    <!--</RelativeLayout>-->
 
     <TextView
         android:layout_width="match_parent"

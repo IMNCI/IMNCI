@@ -69,8 +69,8 @@ public class AilmentsGridAdapter extends BaseAdapter {
             LayoutInflater inflater = ((Activity) context).getLayoutInflater();
             row = inflater.inflate(resource, parent, false);
             holder = new ViewHolder();
-            holder.rowLayout = (RelativeLayout) row.findViewById(R.id.grid_item_layout);
-            holder.ailmentText = (TextView) row.findViewById(R.id.ailment_text);
+//            holder.rowLayout = (RelativeLayout) row.findViewById(R.id.grid_item_layout);
+//            holder.ailmentText = (TextView) row.findViewById(R.id.ailment_text);
             row.setTag(holder);
         }else{
             holder = (ViewHolder) row.getTag();

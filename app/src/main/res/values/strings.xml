@@ -16,17 +16,10 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Settings</string>
-    <string name="title_activity_settings">Settings</string>
 
     <!-- Strings related to Settings -->
 
     <!-- Example General settings -->
-    <string name="pref_header_general">General</string>
-
-    <string name="pref_title_social_recommendations">Enable social recommendations</string>
-    <string name="pref_description_social_recommendations">Recommendations for people to contact
-        based on your message history
-    </string>
 
     <string name="pref_title_display_name">Display name</string>
     <string name="pref_default_display_name">IMCI APP</string>
@@ -39,38 +32,7 @@
 
     <string name="pref_title_elements_page">Show elements page on start up</string>
 
-    <string name="pref_title_add_friends_to_messages">Add friends to messages</string>
-    <string-array name="pref_example_list_titles">
-        <item>Always</item>
-        <item>When possible</item>
-        <item>Never</item>
-    </string-array>
-    <string-array name="pref_example_list_values">
-        <item>1</item>
-        <item>0</item>
-        <item>-1</item>
-    </string-array>
-
     <!-- Example settings for Data & Sync -->
-    <string name="pref_header_data_sync">Data &amp; sync</string>
-
-    <string name="pref_title_sync_frequency">Sync frequency</string>
-    <string-array name="pref_sync_frequency_titles">
-        <item>15 minutes</item>
-        <item>30 minutes</item>
-        <item>1 hour</item>
-        <item>3 hours</item>
-        <item>6 hours</item>
-        <item>Never</item>
-    </string-array>
-    <string-array name="pref_sync_frequency_values">
-        <item>15</item>
-        <item>30</item>
-        <item>60</item>
-        <item>180</item>
-        <item>360</item>
-        <item>-1</item>
-    </string-array>
 
     <string-array name="menu_colors">
         <item>#ff4444</item>
@@ -81,19 +43,7 @@
         <item>#009688</item>
     </string-array>
 
-    <string-array name="multi_select_list_preference_default_value" />
-
-    <string name="pref_title_system_sync_settings">System sync settings</string>
-
     <!-- Example settings for Notifications -->
-    <string name="pref_header_notifications">Notifications</string>
-
-    <string name="pref_title_new_message_notifications">New message notifications</string>
-
-    <string name="pref_title_ringtone">Ringtone</string>
-    <string name="pref_ringtone_silent">Silent</string>
-
-    <string name="pref_title_vibrate">Vibrate</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Content comes soon</string>
@@ -103,24 +53,21 @@
     <string name="initial_visit_tag">initial_visit</string>
     <string name="follow_up_care_tag">follow_up_care</string>
     <string name="up_to_2_months_tag">up_to_2_months</string>
-    <string name="twomonthstag">2_months_up_to_5_yrs</string>
-    <string name="submit_review">Submit Review</string>
+    <string name="submit_review">Report Issue</string>
     <string name="hint_name">Your Name</string>
     <string name="hint_email">Your Email</string>
-    <string name="not_required">Not required</string>
     <string name="title_activity_ailment_follow_up_care">AilmentFollowUpCareActivity</string>
     <string name="section_format">Hello World from section: %1$d</string>
-    <string name="title_activity_assessment_detail_acitvity">AssessmentDetailAcitvity</string>
     <string name="title_activity_assessment_details">AssessmentDetailsActivity</string>
     <string name="title_activity_treat">TreatActivity</string>
     <string name="setup_confirmation">We would like you to provide us with some information about yourself. Please fill in the form below</string>
-    <string name="proceed">Proceed</string>
-    <string name="skip">Skip For Now</string>
     <string name="gender">Gender</string>
-    <string name="imci_trained">Are you IMCI trained?</string>
-    <string name="submit">Submit</string>
-    <string name="title_activity_main2">GalleryActivity</string>
     <string name="title_activity_gallery">GalleryActivity</string>
     <string name="title_activity_sample">SampleActivity</string>
+    <string name="updates">updates</string>
+    <string name="last_update">Last Update</string>
+    <string name="error_name">Name is required</string>
+    <string name="error_email">Please enter a valid email address</string>
+    <string name="error_comment">Please enter your issue</string>
 
 </resources>

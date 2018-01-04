@@ -25,12 +25,21 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.firebase.jobdispatcher.Constraint;
+import com.firebase.jobdispatcher.FirebaseJobDispatcher;
+import com.firebase.jobdispatcher.GooglePlayDriver;
+import com.firebase.jobdispatcher.Job;
+import com.firebase.jobdispatcher.Lifetime;
+import com.firebase.jobdispatcher.RetryStrategy;
+import com.firebase.jobdispatcher.Trigger;
+
 import org.ministryofhealth.newimci.fragment.ContentUpdate;
 import org.ministryofhealth.newimci.fragment.DashboardFragment;
 import org.ministryofhealth.newimci.fragment.GlossaryFragment;
 import org.ministryofhealth.newimci.fragment.ImageGalleryFragment;
 import org.ministryofhealth.newimci.fragment.ReviewFragment;
 import org.ministryofhealth.newimci.fragment.SettingsFragment;
+import org.ministryofhealth.newimci.service.UpdateService;
 
 import java.lang.reflect.Field;
 import java.text.NumberFormat;
@@ -53,6 +62,7 @@ public class MainPageActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        scheduleJob(this);
 //        Build.BRAND
 //        Build.DEVICE
 //        Build.MODEL
@@ -96,6 +106,44 @@ public class MainPageActivity extends AppCompatActivity
 
 //        txtDisplayName.setText(name);
         txtDisplayEmail.setText("Version " + version);
+    }
+
+    public static void scheduleJob(Context context){
+        FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(context));
+        Job job = createJob(dispatcher);
+        dispatcher.mustSchedule(job);
+    }
+
+    private static Job createJob(FirebaseJobDispatcher dispatcher) {
+        Job job = dispatcher.newJobBuilder()
+                .setLifetime(Lifetime.FOREVER)
+                .setService(UpdateService.class)
+                .setTag("ContentUpdate")
+                .setReplaceCurrent(false)
+                .setRecurring(true)
+                .setTrigger(Trigger.executionWindow(30, 60))
+                .setRetryStrategy(RetryStrategy.DEFAULT_LINEAR)
+                .setConstraints(Constraint.ON_ANY_NETWORK)
+                .build();
+
+        return job;
+    }
+
+    public static Job updateJob(FirebaseJobDispatcher dispatcher){
+        Job newJob = dispatcher.newJobBuilder()
+                .setReplaceCurrent(true)
+                .setService(UpdateService.class)
+                .setTag("ContentUpdate")
+                .setTrigger(Trigger.executionWindow(30, 60))
+                .build();
+
+        return newJob;
+    }
+
+    public void cancelJob(Context context){
+        FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(context));
+        dispatcher.cancelAll();
+        dispatcher.cancel("ContentUpdate");
     }
 
     @Override

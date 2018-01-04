@@ -14,7 +14,11 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled false
+//            ndk {
+//                abiFilters "armeabi-v7a", "armeabi" // includes ARM SO files only, so no x86 SO file
+//            }
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -33,9 +37,11 @@ dependencies {
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'com.android.support:support-v4:26.1.0'
     compile 'com.android.support:support-vector-drawable:26.1.0'
+    compile 'com.basgeekball:awesome-validation:2.0'
     compile 'com.squareup.okhttp3:logging-interceptor:3.0.1'
     compile 'com.squareup.retrofit2:converter-gson:2.0.2'
     compile 'com.google.firebase:firebase-messaging:10.2.1'
+    compile 'com.firebase:firebase-jobdispatcher:0.8.5'
     compile 'org.sufficientlysecure:html-textview:3.5'
     compile 'com.karumi:dexter:4.1.0'
     compile 'com.github.bumptech.glide:glide:3.7.0'

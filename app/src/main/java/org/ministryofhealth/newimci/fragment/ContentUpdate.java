@@ -1,14 +1,25 @@
 package org.ministryofhealth.newimci.fragment;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import org.ministryofhealth.newimci.R;
+import org.ministryofhealth.newimci.helper.RetrofitHelper;
+import org.ministryofhealth.newimci.server.Service.UpdateContentService;
+import org.ministryofhealth.newimci.server.model.Response;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Retrofit;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -64,8 +75,43 @@ public class ContentUpdate extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.fragment_content_update, container, false);
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_content_update, container, false);
+        Retrofit retrofit = RetrofitHelper.getInstance().createHelper();
+        SharedPreferences pref = getActivity().getSharedPreferences(getString(R.string.updates), Context.MODE_PRIVATE);
+        String last_update = pref.getString(getString(R.string.last_update), "None");
+        UpdateContentService updateService = retrofit.create(UpdateContentService.class);
+
+        Call<Response> responseCall = updateService.getUpdateStatus(last_update);
+
+        final LinearLayout loadingLayout = (LinearLayout) rootView.findViewById(R.id.checking_update_loading_layout);
+        final RelativeLayout noUpdatesLayout = (RelativeLayout) rootView.findViewById(R.id.no_updates_available);
+        final LinearLayout updates_available = (LinearLayout) rootView.findViewById(R.id.updates_available);
+
+        loadingLayout.setVisibility(View.VISIBLE);
+        noUpdatesLayout.setVisibility(View.GONE);
+        updates_available.setVisibility(View.GONE);
+
+        responseCall.enqueue(new Callback<Response>() {
+            @Override
+            public void onResponse(Call<Response> call, retrofit2.Response<Response> response) {
+                loadingLayout.setVisibility(View.GONE);
+                boolean status = response.body().isStatus();
+                if (status){
+                    updates_available.setVisibility(View.VISIBLE);
+                    noUpdatesLayout.setVisibility(View.GONE);
+                }else{
+                    updates_available.setVisibility(View.GONE);
+                    noUpdatesLayout.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Response> call, Throwable t) {
+                Toast.makeText(getContext(), "There was an error", Toast.LENGTH_SHORT).show();
+            }
+        });
+        return rootView;
     }
 
     // TODO: Rename method, update argument and hook method into UI event

@@ -7,27 +7,28 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.RatingBar;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
+
+import com.basgeekball.awesomevalidation.AwesomeValidation;
+import com.basgeekball.awesomevalidation.ValidationStyle;
+import com.basgeekball.awesomevalidation.utility.RegexTemplate;
 
 import org.ministryofhealth.newimci.R;
 import org.ministryofhealth.newimci.helper.RetrofitHelper;
 import org.ministryofhealth.newimci.model.Review;
 import org.ministryofhealth.newimci.server.Service.ReviewService;
-import org.w3c.dom.Text;
 
 import java.io.IOException;
 
@@ -53,6 +54,7 @@ public class ReviewFragment extends Fragment {
     SharedPreferences preference;
     String name, email;
     Spinner issueSpinner;
+    AwesomeValidation mAwesomeValidation;
 
     EditText txtName, txtEmail, etxComment;
     Button submitBtn;
@@ -115,67 +117,86 @@ public class ReviewFragment extends Fragment {
 
         issueSpinner.setAdapter(adapter);
 
+        mAwesomeValidation = new AwesomeValidation(ValidationStyle.BASIC);
+
+        mAwesomeValidation.addValidation(txtName, RegexTemplate.NOT_EMPTY, getContext().getString(R.string.error_name));
+        mAwesomeValidation.addValidation(txtEmail, Patterns.EMAIL_ADDRESS, getContext().getString(R.string.error_email));
+        mAwesomeValidation.addValidation(etxComment, RegexTemplate.NOT_EMPTY, getContext().getString(R.string.error_comment));
+
         resetUI();
         submitBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final ProgressDialog dialog = new ProgressDialog(getContext());
-                dialog.setMessage("Submitting Review");
-                dialog.show();
-                Review review = new Review();
+                String issue = issueSpinner.getSelectedItem().toString();
+                String name = txtName.getText().toString();
+                if (mAwesomeValidation.validate() && (!issue.equals("Select an Option"))) {
+                    final ProgressDialog dialog = new ProgressDialog(getContext());
+                    dialog.setMessage("Submitting Review");
+                    dialog.show();
+                    Review review = new Review();
 
-                review.setName(txtName.getText().toString());
-                review.setEmail(txtEmail.getText().toString());
-                review.setComment(etxComment.getText().toString());
-                review.setIssue(issueSpinner.getSelectedItem().toString());
-                review.setRating(0);
+                    review.setName(name);
+                    review.setEmail(txtEmail.getText().toString());
+                    review.setComment(etxComment.getText().toString());
 
-                Retrofit retrofit = RetrofitHelper.getInstance().createHelper();
+                    if (issue.equals("Select an Option")) {
+                        review.setIssue(issue);
+                    }
 
-                ReviewService client = retrofit.create(ReviewService.class);
+                    review.setRating(0);
 
-                Call<Review> call = client.create(review);
+                    Retrofit retrofit = RetrofitHelper.getInstance().createHelper();
 
-                call.enqueue(new Callback<Review>() {
-                    @Override
-                    public void onResponse(Call<Review> call, Response<Review> response) {
-                        dialog.dismiss();
-                        if (response.code() >199 && response.code() < 210) {
-                            Snackbar mySnackbar = Snackbar.make(view.findViewById(R.id.reviewCoordinatorLayout),
-                                    "Your review was submitted successfully", Snackbar.LENGTH_SHORT);
-                            mySnackbar.show();
-                            resetUI();
-                        }else{
-                            try {
-                                AlertDialog.Builder builder;
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                                    builder = new AlertDialog.Builder(getContext(), android.R.style.Theme_Material_Dialog_Alert);
-                                } else {
-                                    builder = new AlertDialog.Builder(getContext());
+                    ReviewService client = retrofit.create(ReviewService.class);
+
+                    Call<Review> call = client.create(review);
+
+                    call.enqueue(new Callback<Review>() {
+                        @Override
+                        public void onResponse(Call<Review> call, Response<Review> response) {
+                            dialog.dismiss();
+                            if (response.code() > 199 && response.code() < 210) {
+                                Toast.makeText(getContext(), "Your issue was reported successfully", Toast.LENGTH_SHORT).show();
+                                Fragment fragment = new DashboardFragment();
+                                android.support.v4.app.FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                                android.support.v4.app.FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                                fragmentTransaction.replace(R.id.content_frame, fragment);
+                                fragmentTransaction.addToBackStack(null);
+                                fragmentTransaction.commit();
+
+                            } else {
+                                try {
+                                    AlertDialog.Builder builder;
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                                        builder = new AlertDialog.Builder(getContext(), android.R.style.Theme_Material_Dialog_Alert);
+                                    } else {
+                                        builder = new AlertDialog.Builder(getContext());
+                                    }
+                                    builder.setTitle("Error")
+                                            .setMessage("Could not submit your review. Please try again some other time")
+                                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                }
+                                            })
+                                            .show();
+                                    Log.e("Review Error", response.errorBody().string());
+                                    System.out.println("Review Error" + response.errorBody().string());
+                                    Toast.makeText(getContext(), response.errorBody().string(), Toast.LENGTH_SHORT).show();
+                                } catch (IOException e) {
+                                    e.printStackTrace();
                                 }
-                                builder.setTitle("Error")
-                                        .setMessage("Could not submit your review. Please try again some other time")
-                                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                // continue with delete
-                                            }
-                                        })
-                                        .show();
-                                Log.e("Review Error", response.errorBody().string());
-                                System.out.println("Review Error" + response.errorBody().string());
-                                Toast.makeText(getContext(), response.errorBody().string(), Toast.LENGTH_SHORT).show();
-                            } catch (IOException e) {
-                                e.printStackTrace();
                             }
                         }
-                    }
 
-                    @Override
-                    public void onFailure(Call<Review> call, Throwable t) {
-                        dialog.dismiss();
-                        Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
+                        @Override
+                        public void onFailure(Call<Review> call, Throwable t) {
+                            dialog.dismiss();
+                            Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }else{
+                    Toast.makeText(getContext(), "Please fill in all the fields on this form", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
