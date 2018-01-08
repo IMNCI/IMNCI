@@ -66,41 +66,46 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-        SharedPreferences preference = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-        Boolean page = preference.getBoolean("elements_page", true);
-        Boolean setup_page = preference.getBoolean("setup_page", true);
-        db = new DatabaseHandler(this);
+        try {
+
+            SharedPreferences preference = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+            Boolean page = preference.getBoolean("elements_page", true);
+            Boolean setup_page = preference.getBoolean("setup_page", true);
+            db = new DatabaseHandler(this);
 //        db.initDB();
-        List<Ailment> ailmentList = db.getAilments();
-        if (ailmentList.size() == 0){
-            try {
-                Date currentTime = Calendar.getInstance().getTime();
+            List<Ailment> ailmentList = db.getAilments();
+            if (ailmentList.size() == 0) {
+                try {
+                    Date currentTime = Calendar.getInstance().getTime();
 
-                SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                String formattedDate = df.format(currentTime);
+                    SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    String formattedDate = df.format(currentTime);
 
-                Context context = SplashActivity.this;
-                SharedPreferences pref = context.getSharedPreferences(getString(R.string.updates), Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = pref.edit();
-                editor.putString(getString(R.string.last_update), formattedDate);
-                editor.commit();
-                setupdata();
-            } catch (Exception e) {
-                e.printStackTrace();
-                Toast.makeText(this, e.getMessage().toString(), Toast.LENGTH_SHORT).show();
+                    Context context = SplashActivity.this;
+                    SharedPreferences pref = context.getSharedPreferences(getString(R.string.updates), Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = pref.edit();
+                    editor.putString(getString(R.string.last_update), formattedDate);
+                    editor.commit();
+                    setupdata();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Toast.makeText(this, e.getMessage().toString(), Toast.LENGTH_SHORT).show();
+                }
             }
-        }
 
-//        if(!setup_page) {
-            if (page) {
-                startActivity(new Intent(SplashActivity.this, MainActivity.class));
+            if (!setup_page) {
+                if (page) {
+                    startActivity(new Intent(SplashActivity.this, MainActivity.class));
+                } else {
+                    startActivity(new Intent(SplashActivity.this, MainPageActivity.class));
+                }
             } else {
-                startActivity(new Intent(SplashActivity.this, MainPageActivity.class));
+                startActivity(new Intent(SplashActivity.this, SetupActivity.class));
             }
-//        }else{
-//            startActivity(new Intent(SplashActivity.this, SetupActivity.class));
-//        }
-        finish();
+            finish();
+        }catch (Exception ex){
+            Toast.makeText(this, ex.getMessage(), Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void setupdata() throws Exception {

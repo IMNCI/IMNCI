@@ -1332,6 +1332,18 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return ailments;
     }
 
+    public GalleryAilment getGalleryAilment(int id){
+        GalleryAilment ailment = new GalleryAilment();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TABLE_GALLERY_AILMENT, null, KEY_ID + "=?", new String[]{String.valueOf(id)}, null, null, null);
+        if (cursor.moveToFirst()){
+            ailment.setId(cursor.getInt(cursor.getColumnIndex(KEY_ID)));
+            ailment.setAilment(cursor.getString(cursor.getColumnIndex(KEY_AILMENT)));
+        }
+
+        return ailment;
+    }
+
     public List<GalleryItem> getGalleryItems(){
         SQLiteDatabase db = this.getReadableDatabase();
         List<GalleryItem> items = new ArrayList<>();
@@ -1354,12 +1366,22 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         List<GalleryItem> items = new ArrayList<>();
 
-        String SQL = "SELECT gi." + KEY_ID + ", gi." + KEY_ITEM + " FROM " + TABLE_GALLERY_ITEM + " gi" +
-                " JOIN " + TABLE_GALLERY + " g ON g." + KEY_GALLERY_ITEM_ID + " = gi." + KEY_ID +
-                " JOIN " + TABLE_GALLERY_AILMENT + " a ON a." + KEY_ID + " = g." + KEY_GALLERY_AILMENT_ID + " AND a.id = ?" +
-                " GROUP BY gi."+KEY_ID;
+        Cursor cursor;
 
-        Cursor cursor = db.rawQuery(SQL, new String[]{String.valueOf(ailment_id)});
+        if(ailment_id != 0) {
+
+            String SQL = "SELECT gi." + KEY_ID + ", gi." + KEY_ITEM + " FROM " + TABLE_GALLERY_ITEM + " gi" +
+                    " JOIN " + TABLE_GALLERY + " g ON g." + KEY_GALLERY_ITEM_ID + " = gi." + KEY_ID +
+                    " JOIN " + TABLE_GALLERY_AILMENT + " a ON a." + KEY_ID + " = g." + KEY_GALLERY_AILMENT_ID + " AND a.id = ?" +
+                    " GROUP BY gi." + KEY_ID;
+            cursor = db.rawQuery(SQL, new String[]{String.valueOf(ailment_id)});
+        }else{
+            String SQL = "SELECT gi." + KEY_ID + ", gi." + KEY_ITEM + " FROM " + TABLE_GALLERY_ITEM + " gi" +
+                    " JOIN " + TABLE_GALLERY + " g ON g." + KEY_GALLERY_ITEM_ID + " = gi." + KEY_ID +
+                    " JOIN " + TABLE_GALLERY_AILMENT + " a ON a." + KEY_ID + " = g." + KEY_GALLERY_AILMENT_ID +
+                    " GROUP BY gi." + KEY_ID;
+            cursor = db.rawQuery(SQL, null);
+        }
 
         if (cursor.moveToFirst()){
             do {
@@ -1378,10 +1400,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         List<Gallery> galleryList = new ArrayList<>();
 
-//        String sql = "SELECT * FROM "+TABLE_GALLERY+" WHERE " + KEY_GALLERY_AILMENT_ID + "=? AND " + KEY_GALLERY_ITEM_ID + "=?";
+        Cursor cursor;
+        if (ailment_id != 0) {
+            cursor = db.query(TABLE_GALLERY, null, KEY_GALLERY_AILMENT_ID + "=? AND " + KEY_GALLERY_ITEM_ID + "=?", new String[]{String.valueOf(ailment_id), String.valueOf(item_id)}, null, null, null);
+        }else{
+            cursor = db.query(TABLE_GALLERY, null, KEY_GALLERY_ITEM_ID + "=?", new String[]{String.valueOf(item_id)}, null, null, null);
+        }
 
-        Cursor cursor = db.query(TABLE_GALLERY, null, KEY_GALLERY_AILMENT_ID + "=? AND " + KEY_GALLERY_ITEM_ID + "=?", new String[]{String.valueOf(ailment_id), String.valueOf(item_id)}, null, null, null);
-//        Cursor cursor = db.rawQuery(sql, new String[]{String.valueOf(ailment_id), String.valueOf(item_id)});
         if (cursor.moveToFirst()){
             do {
                 Gallery gallery = new Gallery();

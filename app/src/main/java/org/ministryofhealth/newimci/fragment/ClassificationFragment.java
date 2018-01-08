@@ -116,6 +116,11 @@ public class ClassificationFragment extends Fragment implements ExpandableListVi
         }
 
         expandableListView.setOnGroupExpandListener(this);
+        if (parentsList.size() == 0){
+            rootView = inflater.inflate(R.layout.empty_layout, container, false);
+
+
+        }
         return rootView;
     }
 

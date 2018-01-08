@@ -71,31 +71,25 @@ public class ChildCheckDialogFragment extends DialogFragment {
             type_of_visit.setVisibility(View.GONE);
         }
 
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            return new android.support.v7.app.AlertDialog.Builder(getActivity())
-                    .setTitle(title)
-                    .setView(view)
-                    .setPositiveButton("Proceed", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            int selectedVisitID = type_of_visit_group.getCheckedRadioButtonId();
-                            int selectedAge = age_of_child_group.getCheckedRadioButtonId();
+        return new android.support.v7.app.AlertDialog.Builder(getActivity())
+                .setTitle(title)
+                .setView(view)
+                .setPositiveButton("Proceed", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        int selectedVisitID = type_of_visit_group.getCheckedRadioButtonId();
+                        int selectedAge = age_of_child_group.getCheckedRadioButtonId();
 
-                            if (selectedVisitID != 0 && selectedAge != 0){
-                                RadioButton visitRadio = (RadioButton) view.findViewById(selectedVisitID);
-                                RadioButton ageRadio = (RadioButton) view.findViewById(selectedAge);
+                        if (selectedVisitID != 0 && selectedAge != 0){
+                            RadioButton visitRadio = (RadioButton) view.findViewById(selectedVisitID);
+                            RadioButton ageRadio = (RadioButton) view.findViewById(selectedAge);
 
-                                doPositiveClick(visitRadio.getTag().toString(), ageRadio.getId(), slug);
-                            }
+                            doPositiveClick(visitRadio.getTag().toString(), ageRadio.getId(), slug);
                         }
-                    })
-                    .create();
+                    }
+                })
+                .create();
 
-//        Dialog dialog = new Dialog(getActivity());
-//        dialog.setContentView(R.layout.child_check_alert_view);
-//        dialog.setTitle(title);
-//        dialog
-//        return dialog;
     }
 
     public void doPositiveClick(String visit_tag, int age_tag, String slug){

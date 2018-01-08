@@ -385,7 +385,7 @@ public class TreatActivity extends AppCompatActivity {
 
             if (listHeader.size() == 2){
                 expandableListView.expandGroup(0);
-//                expandableListView.expandGroup(1);
+                expandableListView.expandGroup(1);
             }else if (listHeader.size() == 1){
                 expandableListView.expandGroup(0);
             }

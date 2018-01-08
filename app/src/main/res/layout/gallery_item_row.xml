@@ -6,14 +6,15 @@
     <LinearLayout
         android:id="@+id/clicker"
         android:layout_width="match_parent"
-        android:layout_height="180dp"
+        android:layout_height="140dp"
         android:maxHeight="180dp"
         android:clickable="true"
+        android:focusable="true"
         android:foreground="?selectableItemBackground"
         android:orientation="vertical">
         <ImageView
             android:layout_width="match_parent"
-            android:layout_height="140dp"
+            android:layout_height="100dp"
             android:id="@+id/item_icon"
             app:srcCompat="@drawable/ic_video_player"
             android:tint="#BDBDBD"

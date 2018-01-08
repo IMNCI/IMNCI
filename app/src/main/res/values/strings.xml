@@ -60,7 +60,7 @@
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="title_activity_assessment_details">AssessmentDetailsActivity</string>
     <string name="title_activity_treat">TreatActivity</string>
-    <string name="setup_confirmation">We would like you to provide us with some information about yourself. Please fill in the form below</string>
+    <string name="setup_confirmation">We would like you to provide us with some personal information for app improvement. Please fill in the form below</string>
     <string name="gender">Gender</string>
     <string name="title_activity_gallery">GalleryActivity</string>
     <string name="title_activity_sample">SampleActivity</string>
@@ -69,5 +69,8 @@
     <string name="error_name">Name is required</string>
     <string name="error_email">Please enter a valid email address</string>
     <string name="error_comment">Please enter your issue</string>
+    <string name="skip_for_now"><u>Skip for Now</u></string>
+    <string name="submit">Submit</string>
+    <string name="error_phone">Enter a valid phone number</string>
 
 </resources>

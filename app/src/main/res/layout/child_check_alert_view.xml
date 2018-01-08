@@ -26,6 +26,7 @@
                 android:layout_marginBottom="4dp"
                 android:tag="@string/initial_visit_tag"
                 android:checked="true"
+                android:id="@+id/initial_visit"
                 android:text="Initial Visit"/>
             <RadioButton
                 android:layout_width="match_parent"

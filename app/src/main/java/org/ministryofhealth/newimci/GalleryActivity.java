@@ -2,9 +2,6 @@ package org.ministryofhealth.newimci;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -17,7 +14,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -31,12 +27,8 @@ import android.content.res.Resources.Theme;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.ministryofhealth.newimci.adapter.AilmentsGridAdapter;
 import org.ministryofhealth.newimci.database.DatabaseHandler;
-import org.ministryofhealth.newimci.model.Ailment;
-import org.ministryofhealth.newimci.model.Gallery;
 import org.ministryofhealth.newimci.model.GalleryAilment;
-import org.ministryofhealth.newimci.model.GalleryItem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,8 +42,11 @@ public class GalleryActivity extends AppCompatActivity {
         setContentView(R.layout.activity_gallery);
 
         db = new DatabaseHandler(this);
-
         ailments = db.getGalleryAilments();
+        GalleryAilment allItem = new GalleryAilment();
+        allItem.setId(0);
+        allItem.setAilment("All");
+        ailments.add(0, allItem);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -122,33 +117,6 @@ public class GalleryActivity extends AppCompatActivity {
             this.ailments = ailments;
         }
 
-//        public MyAdapter(Context context, String[] objects) {
-//            super(context, android.R.layout.simple_list_item_1, objects);
-//            mDropDownHelper = new ThemedSpinnerAdapter.Helper(context);
-//        }
-
-//        @Override
-//        public int getPosition(@Nullable String item) {
-//            return super.getPosition(item);
-//        }
-
-//        @Override
-//        public View getDropDownView(int position, View convertView, ViewGroup parent) {
-//            View view;
-//
-//            if (convertView == null) {
-//                // Inflate the drop down using the helper's LayoutInflater
-//                LayoutInflater inflater = mDropDownHelper.getDropDownViewInflater();
-//                view = inflater.inflate(android.R.layout.simple_list_item_1, parent, false);
-//            } else {
-//                view = convertView;
-//            }
-//
-//            TextView textView = (TextView) view.findViewById(android.R.id.text1);
-//            textView.setText(getItem(position));
-//
-//            return view;
-//        }
 
         @Override
         public Theme getDropDownViewTheme() {
@@ -254,38 +222,6 @@ public class GalleryActivity extends AppCompatActivity {
         }
 
         List<org.ministryofhealth.newimci.model.GalleryItem> prepareGalleryItems(int ailment_id){
-//            List<GalleryItem> items = new ArrayList<>();
-//            GalleryItem item = new GalleryItem();
-//
-//            item.setTitle("Tools");
-//            item.setImageResource(R.drawable.ic_hammer);
-//            item.setSlug("tools");
-//
-//            items.add(item);
-//
-//            item = new GalleryItem();
-//
-//            item.setTitle("Images");
-//            item.setImageResource(R.drawable.ic_picture);
-//            item.setSlug("images");
-//
-//            items.add(item);
-//
-//            item = new GalleryItem();
-//
-//            item.setTitle("Documents");
-//            item.setImageResource(R.drawable.ic_file);
-//            item.setSlug("documents");
-//
-//            items.add(item);
-//
-//            item = new GalleryItem();
-//
-//            item.setTitle("Videos");
-//            item.setImageResource(R.drawable.ic_video_player);
-//            item.setSlug("videos");
-//
-//            items.add(item);
 
             List<org.ministryofhealth.newimci.model.GalleryItem> items = db.getGalleryItems(ailment_id);
 
@@ -335,7 +271,7 @@ public class GalleryActivity extends AppCompatActivity {
 
                 switch (item.getItem()){
                     case "Job Aid":
-                        imageResource = R.drawable.ic_hammer;
+                        imageResource = R.drawable.ic_picture;
                         break;
                     case "Illustrations":
                         imageResource = R.drawable.ic_video_player;

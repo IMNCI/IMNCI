@@ -75,7 +75,7 @@ ClassificationFragment.OnFragmentInteractionListener{
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
-        getSupportActionBar().setTitle(category.getCategory() + " " + assessment.getTitle());
+        getSupportActionBar().setTitle(assessment.getTitle());
         getSupportActionBar().setSubtitle(age_group);
     }
     @Override

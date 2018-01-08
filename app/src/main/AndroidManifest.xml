@@ -102,10 +102,6 @@
             android:name=".GalleryActivity"
             android:label="@string/title_activity_gallery"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".SampleActivity"
-            android:label="@string/title_activity_sample"
-            android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".GalleryItemsActivity" />
         <activity android:name=".ViewGalleryItemActivity"></activity>
     </application>

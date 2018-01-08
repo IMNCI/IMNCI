@@ -30,6 +30,7 @@ import android.widget.Toast;
 import org.ministryofhealth.newimci.config.Constants;
 import org.ministryofhealth.newimci.database.DatabaseHandler;
 import org.ministryofhealth.newimci.model.Gallery;
+import org.ministryofhealth.newimci.model.GalleryAilment;
 import org.ministryofhealth.newimci.server.Service.FileDownloadClient;
 import org.ministryofhealth.newimci.util.DividerItemDecoration;
 
@@ -155,20 +156,16 @@ public class GalleryItemsActivity extends AppCompatActivity {
                     default:
                         icon = R.drawable.ic_jpg;
                 }
+                GalleryAilment ailment = db.getGalleryAilment(gallery.getGallery_ailments_id());
                 holder.iconImageView.setImageResource(icon);
                 holder.txtFileName.setText(gallery.getTitle());
+                holder.txtAilment.setText(ailment.getAilment());
+
                 String size = getFileSize(Integer.parseInt(gallery.getSize()));
                 holder.txtFileSize.setText(size);
                 holder.layout.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onClick(View view) {
-//                        if (gallery.getType().equals("Image")){
-//                            Intent intent = new Intent(GalleryItemsActivity.this, ViewGalleryItemActivity.class);
-//                            intent.putExtra("gallery_id", gallery.getId());
-//                            startActivity(intent);
-//                        }else{
-                            downloadFile(gallery);
-//                        }
+                    public void onClick(View view) {downloadFile(gallery);
                     }
                 });
 
@@ -185,7 +182,7 @@ public class GalleryItemsActivity extends AppCompatActivity {
         class GalleryViewHolder extends RecyclerView.ViewHolder {
 
             ImageView iconImageView;
-            TextView txtFileName, txtFileSize, txtFileTime;
+            TextView txtFileName, txtFileSize, txtFileTime, txtAilment;
             LinearLayout layout;
 
             public GalleryViewHolder(View itemView) {
@@ -194,6 +191,7 @@ public class GalleryItemsActivity extends AppCompatActivity {
                 iconImageView = (ImageView) itemView.findViewById(R.id.gallery_icon);
                 txtFileName = (TextView) itemView.findViewById(R.id.title);
                 txtFileSize = (TextView) itemView.findViewById(R.id.size);
+                txtAilment = (TextView) itemView.findViewById(R.id.ailment);
                 layout = (LinearLayout) itemView.findViewById(R.id.gallery_item_layout);
             }
         }
@@ -202,11 +200,9 @@ public class GalleryItemsActivity extends AppCompatActivity {
     public void downloadFile(Gallery gallery){
         String file_name = gallery.getLink().replace("gallery/", "");
 
-//        String filePath = Environment.getExternalStorageDirectory().toString() + file_name;
         File file = new File(getExternalFilesDir(null) + File.separator + file_name);
 
         if (file.exists()) {
-//            Uri path = Uri.fromFile(file);
             Uri path = FileProvider.getUriForFile(this, "org.ministryofhealth.newimci.fileprovider", file);
             Intent intent = new Intent(Intent.ACTION_VIEW);
             intent.setFlags(FLAG_GRANT_READ_URI_PERMISSION | FLAG_GRANT_WRITE_URI_PERMISSION);

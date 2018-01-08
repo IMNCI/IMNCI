@@ -19,8 +19,9 @@
                 android:layout_height="wrap_content"
                 android:text="@string/setup_confirmation"
                 android:layout_marginBottom="@dimen/margin_layout_bottom"
-                android:textColor="@color/colorBlack"
-                android:textSize="16sp"/>
+                android:textColor="@color/nice_blue"
+                android:textSize="18sp"
+                android:textStyle="bold" />
 
             <TableLayout
                 android:layout_width="match_parent"
@@ -40,6 +41,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="2"
+                        android:id="@+id/emailAddress"
                         android:inputType="textEmailAddress"/>
                 </TableRow>
                 <TableRow
@@ -57,6 +59,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="2"
+                        android:id="@+id/phonenumber"
                         android:inputType="phone"/>
                 </TableRow>
                 <TableRow
@@ -70,6 +73,7 @@
                         android:gravity="center_vertical"
                         style="@style/formTitleText" />
                     <RadioGroup
+                        android:id="@+id/gender"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
@@ -85,7 +89,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="Female"/>
+                            android:text="Female"
+                            android:tag="female"/>
                     </RadioGroup>
                 </TableRow>
 
@@ -106,7 +111,7 @@
                         android:layout_height="wrap_content"
                         android:paddingTop="16dp"
                         android:paddingBottom="16dp"
-                        android:layout_weight="2"></Spinner>
+                        android:layout_weight="2"/>
                 </TableRow>
 
                 <TableRow
@@ -123,7 +128,7 @@
                         android:id="@+id/county_spinner"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="2"></Spinner>
+                        android:layout_weight="2"/>
                 </TableRow>
 
                 <TableRow
@@ -140,7 +145,7 @@
                         android:id="@+id/profession_spinner"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="2"></Spinner>
+                        android:layout_weight="2"/>
                 </TableRow>
 
                 <TableRow
@@ -160,7 +165,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:paddingTop="16dp"
-                        android:paddingBottom="16dp"></Spinner>
+                        android:paddingBottom="16dp"/>
                 </TableRow>
 
                 <TableRow
@@ -178,6 +183,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="2"
                         android:weightSum="2"
+                        android:id="@+id/sector"
                         android:orientation="horizontal">
                     <RadioButton
                         android:layout_width="match_parent"
@@ -193,6 +199,22 @@
                     </RadioGroup>
                 </TableRow>
             </TableLayout>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/submit"
+                android:text="@string/submit"
+                android:background="@color/colorPrimary"
+                android:textColor="@color/colorWhite"/>
+            <TextView
+                android:layout_marginTop="16dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/skip_now"
+                android:textAlignment="center"
+                android:text="@string/skip_for_now"
+                android:textColor="@color/nice_blue" />
         </LinearLayout>
     </ScrollView>
 </android.support.constraint.ConstraintLayout>

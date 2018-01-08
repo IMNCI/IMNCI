@@ -1,25 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="issues_array">
-        <item>Select an Option</item>
+        <item>Select an Issue</item>
         <item>Performance</item>
         <item>Content</item>
         <item>Other</item>
     </string-array>
 
     <string-array name="age_bracket">
+        <item>Select your Age</item>
         <item>Youth (15-24 Years)</item>
         <item>Adult (25-64 Years)</item>
         <item>Senior (65 Years and Over)</item>
     </string-array>
 
     <string-array name="profession">
+        <item>Select your Profession</item>
         <item>Care Provider(Health Care Worker)</item>
         <item>Interested Party</item>
         <item>Student</item>
     </string-array>
 
     <string-array name="cadre">
+        <item>Select your Cadre</item>
         <item>Doctor</item>
         <item>Nurse</item>
         <item>Nutritionist</item>

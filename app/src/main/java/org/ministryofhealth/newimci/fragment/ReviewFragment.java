@@ -129,7 +129,7 @@ public class ReviewFragment extends Fragment {
             public void onClick(View v) {
                 String issue = issueSpinner.getSelectedItem().toString();
                 String name = txtName.getText().toString();
-                if (mAwesomeValidation.validate() && (!issue.equals("Select an Option"))) {
+                if (mAwesomeValidation.validate() && (!issue.equals("Select an Issue"))) {
                     final ProgressDialog dialog = new ProgressDialog(getContext());
                     dialog.setMessage("Submitting Review");
                     dialog.show();
@@ -138,10 +138,7 @@ public class ReviewFragment extends Fragment {
                     review.setName(name);
                     review.setEmail(txtEmail.getText().toString());
                     review.setComment(etxComment.getText().toString());
-
-                    if (issue.equals("Select an Option")) {
-                        review.setIssue(issue);
-                    }
+                    review.setIssue(issue);
 
                     review.setRating(0);
 
@@ -156,7 +153,7 @@ public class ReviewFragment extends Fragment {
                         public void onResponse(Call<Review> call, Response<Review> response) {
                             dialog.dismiss();
                             if (response.code() > 199 && response.code() < 210) {
-                                Toast.makeText(getContext(), "Your issue was reported successfully", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getContext(), "Your issue was reported successfully and will be sorted out soon", Toast.LENGTH_SHORT).show();
                                 Fragment fragment = new DashboardFragment();
                                 android.support.v4.app.FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
                                 android.support.v4.app.FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
