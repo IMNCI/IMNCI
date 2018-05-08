@@ -6,6 +6,7 @@ package org.ministryofhealth.newimci.model;
 
 public class UserProfile {
     private String email, phone, gender, age_group, county, profession, cadre, sector, phone_id;
+    private int id;
 
     public String getEmail() {
         return email;
@@ -77,5 +78,13 @@ public class UserProfile {
 
     public void setPhone_id(String phone_id) {
         this.phone_id = phone_id;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }

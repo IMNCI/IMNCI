@@ -21,6 +21,7 @@ import android.widget.Toast;
 //import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
 import com.github.chrisbanes.photoview.PhotoView;
 
 import org.ministryofhealth.newimci.R;
@@ -122,10 +123,9 @@ public class SlideshowDialogFragment extends DialogFragment {
             byte[] decodedString = Base64.decode(thumbnail, Base64.DEFAULT);
 //            Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
 
-            Glide.with(getActivity()).load(decodedString)
-                    .asBitmap()
+            Glide.with(getActivity()).asBitmap().load(decodedString)
+                    .apply(RequestOptions.diskCacheStrategyOf(DiskCacheStrategy.AUTOMATIC))
                     .thumbnail(0.5f)
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(imageViewPreview);
             container.addView(view);
             return view;

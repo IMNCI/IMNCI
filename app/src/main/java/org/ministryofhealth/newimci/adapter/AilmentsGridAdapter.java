@@ -79,7 +79,7 @@ public class AilmentsGridAdapter extends BaseAdapter {
         String color = colors[new Random().nextInt(colors.length)];
 
         holder.rowLayout.setBackgroundColor(Color.parseColor(color));
-        holder.ailmentText.setText(ailment.getAilment().toString());
+        holder.ailmentText.setText(ailment.getAilment());
 
         DatabaseHandler db = new DatabaseHandler(context);
         final AgeGroup ageGroup = db.getAgeGroup(ailment.getAge_group_id());

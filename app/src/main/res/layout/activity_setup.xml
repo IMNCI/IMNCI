@@ -15,17 +15,19 @@
             android:padding="16dp">
 
             <TextView
+                android:id="@+id/information"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/setup_confirmation"
                 android:layout_marginBottom="@dimen/margin_layout_bottom"
                 android:textColor="@color/nice_blue"
-                android:textSize="18sp"
-                android:textStyle="bold" />
+                android:textSize="18sp" />
 
             <TableLayout
+                android:id="@+id/form"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:visibility="gone">
                 <TableRow
                     android:weightSum="3"
                     android:layout_marginBottom="16dp">
@@ -83,11 +85,13 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Male"
+                            android:id="@+id/male"
                             android:layout_weight="1"
                             android:tag="male"/>
                         <RadioButton
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:id="@+id/female"
                             android:layout_weight="1"
                             android:text="Female"
                             android:tag="female"/>
@@ -113,6 +117,27 @@
                         android:paddingBottom="16dp"
                         android:layout_weight="2"/>
                 </TableRow>
+
+                <!--<TableRow-->
+                    <!--android:weightSum="3"-->
+                    <!--android:layout_marginBottom="16dp">-->
+                    <!--<TextView-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:gravity="center_vertical"-->
+                        <!--android:layout_gravity="center_vertical"-->
+                        <!--style="@style/formTitleText"-->
+                        <!--android:layout_weight="1"-->
+                        <!--android:text="Country"/>-->
+
+                    <!--<android.support.v7.widget.AppCompatSpinner-->
+                        <!--android:layout_weight="2"-->
+                        <!--android:id="@+id/country_spinner"-->
+                        <!--style="@style/Base.Widget.AppCompat.Spinner.Underlined"-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="?attr/actionBarSize"-->
+                        <!--android:spinnerMode="dialog" />-->
+                <!--</TableRow>-->
 
                 <TableRow
                     android:weightSum="3"
@@ -149,6 +174,7 @@
                 </TableRow>
 
                 <TableRow
+                    android:id="@+id/cadre_row"
                     android:weightSum="3"
                     android:layout_marginBottom="16dp">
 
@@ -189,14 +215,178 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:text="Public"
+                        android:id="@+id/sector_public"
                         android:layout_weight="1"/>
 
                     <RadioButton
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:text="Private"
+                        android:id="@+id/sector_private"
                         android:layout_weight="1"/>
                     </RadioGroup>
+                </TableRow>
+            </TableLayout>
+
+            <TableLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/entered_data"
+                >
+                <TableRow
+                    android:weightSum="3"
+                    android:layout_marginBottom="16dp">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center_vertical"
+                        style="@style/formTitleText"
+                        android:layout_weight="1"
+                        android:text="Email"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="2"
+                        android:id="@+id/existent_email"/>
+                </TableRow>
+                <TableRow
+                    android:weightSum="3"
+                    android:layout_marginBottom="16dp">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center_vertical"
+                        style="@style/formTitleText"
+                        android:layout_weight="1"
+                        android:text="Phone"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="2"
+                        android:id="@+id/existent_phone"/>
+                </TableRow>
+                <TableRow
+                    android:weightSum="3"
+                    android:layout_marginBottom="16dp">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center_vertical"
+                        style="@style/formTitleText"
+                        android:layout_weight="1"
+                        android:text="Gender"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="2"
+                        android:id="@+id/existent_gender"/>
+                </TableRow>
+                <TableRow
+                    android:weightSum="3"
+                    android:layout_marginBottom="16dp">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center_vertical"
+                        style="@style/formTitleText"
+                        android:layout_weight="1"
+                        android:text="Age Group"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="2"
+                        android:id="@+id/existent_age_group"/>
+                </TableRow>
+                <TableRow
+                    android:weightSum="3"
+                    android:layout_marginBottom="16dp">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center_vertical"
+                        style="@style/formTitleText"
+                        android:layout_weight="1"
+                        android:text="Country"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="2"
+                        android:id="@+id/existent_country"/>
+                </TableRow>
+
+                <TableRow
+                    android:weightSum="3"
+                    android:layout_marginBottom="16dp">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center_vertical"
+                        style="@style/formTitleText"
+                        android:layout_weight="1"
+                        android:text="County"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="2"
+                        android:id="@+id/existent_county"/>
+                </TableRow>
+                <TableRow
+                    android:weightSum="3"
+                    android:layout_marginBottom="16dp">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center_vertical"
+                        style="@style/formTitleText"
+                        android:layout_weight="1"
+                        android:text="Profession"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="2"
+                        android:id="@+id/existent_profession"/>
+                </TableRow>
+                <TableRow
+                    android:weightSum="3"
+                    android:layout_marginBottom="16dp">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center_vertical"
+                        style="@style/formTitleText"
+                        android:layout_weight="1"
+                        android:text="Cadre"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="2"
+                        android:id="@+id/existent_cadre"/>
+                </TableRow>
+
+                <TableRow
+                    android:weightSum="3"
+                    android:layout_marginBottom="16dp">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center_vertical"
+                        style="@style/formTitleText"
+                        android:layout_weight="1"
+                        android:text="Sector"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="2"
+                        android:id="@+id/existent_sector"/>
                 </TableRow>
             </TableLayout>
 

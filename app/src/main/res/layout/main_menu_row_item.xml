@@ -15,8 +15,8 @@
     <ImageView
         android:id="@+id/menu_icon"
         android:layout_width="95dp"
-        android:layout_height="95dp"
-        android:padding="12dp"/>
+        android:layout_height="120dp"
+        android:padding="18dp"/>
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"

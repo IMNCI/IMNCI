@@ -12,25 +12,34 @@
             android:icon="@drawable/ic_atomic"
             android:title="Elements" />
 
-        <item
-            android:id="@+id/nav_about"
-            android:icon="@drawable/ic_info"
-            android:title="@string/about_imci" />
+        <!--<item-->
+            <!--android:id="@+id/nav_about"-->
+            <!--android:icon="@drawable/ic_info"-->
+            <!--android:title="@string/about_imci" />-->
 
         <item
-            android:id="@+id/nav_gallery"
-            android:icon="@drawable/ic_picture"
-            android:title="Gallery" />
+            android:id="@+id/nav_notifications"
+            android:icon="@drawable/ic_bell"
+            android:title="@string/notifications" />
+
+        <!--<item-->
+            <!--android:id="@+id/nav_gallery"-->
+            <!--android:icon="@drawable/ic_picture"-->
+            <!--android:title="Gallery" />-->
 
         <item
             android:id="@+id/nav_glossary"
             android:icon="@drawable/ic_big_dictionary"
             android:title="Glossary"/>
 
+        <!--<item-->
+            <!--android:id="@+id/nav_settings"-->
+            <!--android:icon="@drawable/ic_settings"-->
+            <!--android:title="Settings" />-->
         <item
-            android:id="@+id/nav_settings"
-            android:icon="@drawable/ic_settings"
-            android:title="Settings" />
+            android:id="@+id/nav_other_apps"
+            android:icon="@drawable/ic_menu"
+            android:title="@string/other_apps" />
 
         <item
             android:id="@+id/nav_profile"

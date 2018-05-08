@@ -97,7 +97,7 @@ public class DashboardFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_dashboard, container, false);
         menuView = (RecyclerView) v.findViewById(R.id.rv_menu);
         mLayoutManager = new LinearLayoutManager(getActivity());
-        mCurrentLayoutManagerType = LayoutManagerType.LINEAR_LAYOUT_MANAGER;
+        mCurrentLayoutManagerType = LayoutManagerType.GRID_LAYOUT_MANAGER;
         if (getActivity().getResources().getConfiguration().orientation == ORIENTATION_LANDSCAPE){
             mCurrentLayoutManagerType = LayoutManagerType.GRID_LAYOUT_MANAGER;
         }
@@ -116,6 +116,7 @@ public class DashboardFragment extends Fragment {
                menuView.getLayoutManager().scrollToPosition(menuList.size()- 1);
             }
         });
+        fab.setVisibility(View.GONE);
 
         MenuAdapter adapter = new MenuAdapter(menuList, getActivity());
         menuView.setAdapter(adapter);
@@ -206,7 +207,7 @@ public class DashboardFragment extends Fragment {
         menu.set_menu_title("Assess, Classify & Identify Treatment");
         menu.set_menu_slug("assess_classify_identify");
         menu.set_menu_color("#FF7043");
-        menu.set_image_resource(R.drawable.ic_checklist);
+        menu.set_image_resource(R.drawable.ic_report);
         menu.set_alert(true);
 
         menuList.add(menu);
@@ -257,6 +258,24 @@ public class DashboardFragment extends Fragment {
         menu.set_menu_slug("gallery");
         menu.set_menu_color("#33b5e5");
         menu.set_image_resource(R.drawable.ic_gallery);
+
+        menuList.add(menu);
+
+        menu = new Menu();
+
+        menu.set_menu_title("Glossary");
+        menu.set_menu_slug("glossary");
+        menu.set_menu_color("#43A047");
+        menu.set_image_resource(R.drawable.ic_big_dictionary);
+
+        menuList.add(menu);
+
+        menu = new Menu();
+
+        menu.set_menu_title("Report an Issue");
+        menu.set_menu_slug("report_issue");
+        menu.set_menu_color("#795548");
+        menu.set_image_resource(R.drawable.ic_consulting_message);
 
         menuList.add(menu);
     }

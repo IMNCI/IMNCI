@@ -12,19 +12,20 @@
     <ImageView
         android:id="@+id/gallery_icon"
         android:layout_width="70dp"
-        android:layout_height="80dp"
+        android:layout_height="match_parent"
         app:srcCompat="@drawable/ic_xls"
         android:padding="16dp"/>
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="8dp">
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:gravity="center">
+            android:gravity="center"
+            android:layout_marginRight="32dp">
             <TextView
                 android:id="@+id/title"
                 android:layout_width="match_parent"
@@ -43,6 +44,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
         </LinearLayout>
+
+        <ImageView
+            android:id="@+id/downloadIcon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            app:srcCompat="@drawable/ic_cloud_download_black_24dp"
+            android:tint="@color/colorPrimary"/>
 
     </RelativeLayout>
 </LinearLayout>

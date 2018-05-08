@@ -20,6 +20,8 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
@@ -37,17 +39,20 @@ import org.ministryofhealth.newimci.fragment.ContentUpdate;
 import org.ministryofhealth.newimci.fragment.DashboardFragment;
 import org.ministryofhealth.newimci.fragment.GlossaryFragment;
 import org.ministryofhealth.newimci.fragment.ImageGalleryFragment;
+import org.ministryofhealth.newimci.fragment.NotificationsFragment;
+import org.ministryofhealth.newimci.fragment.OtherAppsFragment;
 import org.ministryofhealth.newimci.fragment.ReviewFragment;
 import org.ministryofhealth.newimci.fragment.SettingsFragment;
+import org.ministryofhealth.newimci.helper.TaskCompleted;
 import org.ministryofhealth.newimci.service.UpdateService;
 
 import java.lang.reflect.Field;
 import java.text.NumberFormat;
 
 public class MainPageActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener,
+        implements TaskCompleted, NavigationView.OnNavigationItemSelectedListener,
         SettingsFragment.OnPreferenceChangeListener,
-        DashboardFragment.OnFragmentInteractionListener, ImageGalleryFragment.OnFragmentInteractionListener, ContentUpdate.OnFragmentInteractionListener, ReviewFragment.OnFragmentInteractionListener, GlossaryFragment.OnFragmentInteractionListener {
+        DashboardFragment.OnFragmentInteractionListener, ImageGalleryFragment.OnFragmentInteractionListener, ContentUpdate.OnFragmentInteractionListener, ReviewFragment.OnFragmentInteractionListener, GlossaryFragment.OnFragmentInteractionListener, OtherAppsFragment.OnFragmentInteractionListener, NotificationsFragment.OnFragmentInteractionListener {
 
     TextView txtDisplayName;
     TextView txtDisplayEmail;
@@ -63,17 +68,6 @@ public class MainPageActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         scheduleJob(this);
-//        Build.BRAND
-//        Build.DEVICE
-//        Build.MODEL
-
-
-//        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-//        builder.setMessage(sbuilder.toString())
-//                .setPositiveButton("OK",null);
-//        // Create the AlertDialog object and return it
-//        builder.create();
-//        builder.show();
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -99,13 +93,24 @@ public class MainPageActivity extends AppCompatActivity
             e.printStackTrace();
         }
         String version = info.versionName;
-
-        SharedPreferences preference = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-//        String name = preference.getString("display_name", "IMNCI APP");
-//        String email = preference.getString("display_email", "Version " + version);
-
-//        txtDisplayName.setText(name);
         txtDisplayEmail.setText("Version " + version);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.mainpage_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.action_info:
+                startActivity(new Intent(this, AboutActivity.class));
+                break;
+        }
+        return true;
     }
 
     public static void scheduleJob(Context context){
@@ -181,20 +186,26 @@ public class MainPageActivity extends AppCompatActivity
                 newFragment = new DashboardFragment();
                 break;
 
-            case R.id.nav_gallery:
-                newFragment = new ImageGalleryFragment();
+            case R.id.nav_notifications:
+                newFragment = new NotificationsFragment();
                 break;
 
-            case R.id.nav_settings:
-                TAG_FRAGMENT = "settings";
-                getSupportFragmentManager().beginTransaction().remove(getSupportFragmentManager().findFragmentById(R.id.content_frame)).commit();
-                PreferenceFragment settingsFragment = new SettingsFragment();
-                getFragmentManager().beginTransaction().replace(R.id.content_frame, settingsFragment).commit();
-                getFragmentManager().beginTransaction().addToBackStack(null);
-                DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-                drawer.closeDrawer(GravityCompat.START);
-                return true;
+//            case R.id.nav_gallery:
+//                newFragment = new ImageGalleryFragment();
+//                break;
 
+//            case R.id.nav_settings:
+//                TAG_FRAGMENT = "settings";
+//                getSupportFragmentManager().beginTransaction().remove(getSupportFragmentManager().findFragmentById(R.id.content_frame)).commit();
+//                PreferenceFragment settingsFragment = new SettingsFragment();
+//                getFragmentManager().beginTransaction().replace(R.id.content_frame, settingsFragment).commit();
+//                getFragmentManager().beginTransaction().addToBackStack(null);
+//                DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+//                drawer.closeDrawer(GravityCompat.START);
+//                return true;
+            case R.id.nav_other_apps:
+                newFragment = new OtherAppsFragment();
+                break;
             case R.id.nav_updates:
                 newFragment = new ContentUpdate();
                 break;
@@ -212,9 +223,11 @@ public class MainPageActivity extends AppCompatActivity
                 startActivity(sendIntent);
                 return true;
 
-            case R.id.nav_about:
-                startActivity(new Intent(MainPageActivity.this, AboutActivity.class));
-                return true;
+
+
+//            case R.id.nav_about:
+//                startActivity(new Intent(MainPageActivity.this, AboutActivity.class));
+//                return true;
             case R.id.nav_review:
                 newFragment = new ReviewFragment();
                 break;
@@ -259,5 +272,13 @@ public class MainPageActivity extends AppCompatActivity
     @Override
     public void onFragmentInteraction(Uri uri) {
 
+    }
+
+    @Override
+    public void onTaskComplete(Boolean status) {
+        if(status) {
+            MenuItem item = navigationView.getMenu().findItem(R.id.nav_updates);
+            onNavigationItemSelected(item);
+        }
     }
 }

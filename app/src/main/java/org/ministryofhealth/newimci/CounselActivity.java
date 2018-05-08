@@ -6,6 +6,7 @@ import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -193,42 +194,49 @@ public class CounselActivity extends AppCompatActivity {
             final CounselTitle title = this.titles.get(i);
             LayoutInflater infalInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             if (this.getChildrenCount(i) > 0){
-                if (view == null) {
-                    view = infalInflater.inflate(R.layout.custom_list_group, null);
+                try {
+                    if (view == null) {
+                        view = infalInflater.inflate(R.layout.custom_list_group, null);
+                    }
+
+                    TextView blListHeader = (TextView) view
+                            .findViewById(R.id.lblListHeader);
+                    ImageView img = (ImageView) view.findViewById(R.id.indicator);
+
+                    if (b) {
+                        img.setImageResource(R.drawable.ic_remove_circle_outline_black_24dp);
+                    } else {
+                        img.setImageResource(R.drawable.ic_add_circle_outline_black_24dp);
+                    }
+
+                    blListHeader.setText(title.getTitle());
+                }catch (Exception ex){
+                    ex.printStackTrace();
                 }
-
-                TextView blListHeader = (TextView) view
-                        .findViewById(R.id.lblListHeader);
-                ImageView img = (ImageView) view.findViewById(R.id.indicator);
-
-                if (b){
-                    img.setImageResource(R.drawable.ic_remove_circle_outline_black_24dp);
-                }else{
-                    img.setImageResource(R.drawable.ic_add_circle_outline_black_24dp);
-                }
-
-                blListHeader.setText(title.getTitle());
 
             }else{
-                if (view == null) {
-                    view = infalInflater.inflate(R.layout.follow_up_ailments, null);
-                }
-                TextView txtTitle = (TextView) view.findViewById(R.id.ailment);
-                TextView txtTitleID = (TextView) view.findViewById(R.id.ailment_id);
-
-                txtTitle.setTextColor(context.getResources().getColor(R.color.colorBlack));
-                txtTitle.setText(title.getTitle());
-                txtTitleID.setText(String.valueOf(title.getId()));
-
-                view.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Intent intent = new Intent(context, CounselTitleActivity.class);
-                        intent.putExtra("type", "title");
-                        intent.putExtra("id", title.getId());
-                        startActivity(intent);
+                try {
+                    if (view == null) {
+                        view = infalInflater.inflate(R.layout.follow_up_ailments, null);
                     }
-                });
+                    TextView txtTitle = (TextView) view.findViewById(R.id.ailment);
+                    TextView txtTitleID = (TextView) view.findViewById(R.id.ailment_id);
+                    txtTitle.setTextColor(context.getResources().getColor(R.color.colorBlack));
+                    txtTitle.setText(title.getTitle());
+                    txtTitleID.setText(String.valueOf(title.getId()));
+
+                    view.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Intent intent = new Intent(context, CounselTitleActivity.class);
+                            intent.putExtra("type", "title");
+                            intent.putExtra("id", title.getId());
+                            startActivity(intent);
+                        }
+                    });
+                }catch(Exception ex){
+                    ex.printStackTrace();
+                }
             }
             return view;
         }

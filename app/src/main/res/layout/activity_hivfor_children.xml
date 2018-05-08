@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     tools:context="org.ministryofhealth.newimci.HIVForChildrenActivity"
     android:paddingTop="8dp">
+    
     <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -31,5 +32,10 @@
             android:textSize="16sp"
             android:text="There are no HIV Care Items to be displayed"/>
     </LinearLayout>
+    <ExpandableListView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/hiv_care_expandable"
+        android:visibility="gone"/>
 
 </android.support.constraint.ConstraintLayout>

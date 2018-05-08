@@ -103,7 +103,9 @@ public class ReviewFragment extends Fragment {
         final View view = inflater.inflate(R.layout.fragment_review, container, false);
         preference = PreferenceManager.getDefaultSharedPreferences(getContext());
         name = preference.getString("display_name", "");
-        email = preference.getString("display_email", "");
+
+        SharedPreferences pref = getActivity().getSharedPreferences("user_details", Context.MODE_PRIVATE);
+        email = pref.getString("email", "");
 
         txtName = (EditText) view.findViewById(R.id.input_name);
         txtEmail = (EditText) view.findViewById(R.id.input_email);

@@ -1,5 +1,6 @@
 package org.ministryofhealth.newimci;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -20,22 +21,33 @@ import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.basgeekball.awesomevalidation.AwesomeValidation;
 import com.basgeekball.awesomevalidation.ValidationStyle;
 import com.basgeekball.awesomevalidation.utility.RegexTemplate;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import org.ministryofhealth.newimci.database.DatabaseHandler;
+import org.ministryofhealth.newimci.helper.RetrofitHelper;
 import org.ministryofhealth.newimci.model.County;
 import org.ministryofhealth.newimci.model.UserProfile;
+import org.ministryofhealth.newimci.server.Service.UserProfileService;
 
 import java.lang.reflect.Array;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
 
 public class SetupActivity extends AppCompatActivity {
     Spinner ageSpinner, countySpinner, cadreSpinner, professionSpinner;
@@ -46,11 +58,21 @@ public class SetupActivity extends AppCompatActivity {
     Context context;
     TextView txtSkip;
     Button btnSubmit;
+    Boolean page;
+    int user_id;
     AwesomeValidation mAwesomeValidation;
+    SharedPreferences pref;
+    TableLayout enteredDataTable, formTable;
+    TableRow cadreRow;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setup);
+
+        pref = getSharedPreferences("user_details", Context.MODE_PRIVATE);
+        user_id = pref.getInt("id", 0);
+
+        TextView informationText = (TextView) findViewById(R.id.information);
 
         etxEmail = (EditText) findViewById(R.id.emailAddress);
         etxPhone = (EditText) findViewById(R.id.phonenumber);
@@ -62,6 +84,9 @@ public class SetupActivity extends AppCompatActivity {
         professionSpinner = (Spinner) findViewById(R.id.profession_spinner);
         txtSkip = (TextView) findViewById(R.id.skip_now);
         btnSubmit = (Button) findViewById(R.id.submit);
+        enteredDataTable = (TableLayout) findViewById(R.id.entered_data);
+        formTable = (TableLayout) findViewById(R.id.form);
+        cadreRow = (TableRow) findViewById(R.id.cadre_row);
         db = new DatabaseHandler(this);
         context = this;
 
@@ -69,17 +94,6 @@ public class SetupActivity extends AppCompatActivity {
 
         mAwesomeValidation.addValidation(this, R.id.emailAddress, Patterns.EMAIL_ADDRESS, R.string.error_email);
         mAwesomeValidation.addValidation(this, R.id.phonenumber, Patterns.PHONE, R.string.error_phone);
-        countySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-                Toast.makeText(context, "Please select your county", Toast.LENGTH_SHORT).show();
-            }
-        });
 
         countyList = db.getCounties();
         County emptyCounty = new County();
@@ -103,7 +117,7 @@ public class SetupActivity extends AppCompatActivity {
         professionSpinner.setAdapter(professionAdapter);
 
         final SharedPreferences preference = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-        final Boolean page = preference.getBoolean("elements_page", true);
+        page = preference.getBoolean("elements_page", true);
 
         getSupportActionBar().setTitle("My Profile");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -122,30 +136,161 @@ public class SetupActivity extends AppCompatActivity {
                 submitProfile();
             }
         });
+
+        professionSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                if (i == 0 || i == 3){
+                    cadreRow.setVisibility(View.GONE);
+                }else{
+                    cadreRow.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+        if (user_id != 0){
+            TextView txtEmail, txtPhone, txtGender, txtAgeGroup, txtCounty, txtProfession, txtCadre, txtSector;
+
+            informationText.setVisibility(View.GONE);
+            txtSkip.setVisibility(View.GONE);
+            btnSubmit.setVisibility(View.GONE);
+            enteredDataTable.setVisibility(View.VISIBLE);
+            formTable.setVisibility(View.GONE);
+
+            txtEmail = (TextView) findViewById(R.id.existent_email);
+            txtPhone = (TextView) findViewById(R.id.existent_phone);
+            txtGender = (TextView) findViewById(R.id.existent_gender);
+            txtAgeGroup = (TextView) findViewById(R.id.existent_age_group);
+            txtCounty = (TextView) findViewById(R.id.existent_county);
+            txtProfession = (TextView) findViewById(R.id.existent_profession);
+            txtCadre = (TextView) findViewById(R.id.existent_cadre);
+            txtSector = (TextView) findViewById(R.id.existent_sector);
+
+            txtEmail.setText(pref.getString("email", ""));
+            txtPhone.setText(pref.getString("phone", ""));
+            txtGender.setText(pref.getString("gender", ""));
+            txtAgeGroup.setText(pref.getString("age_group", ""));
+            txtCounty.setText(pref.getString("county", ""));
+            txtProfession.setText(pref.getString("profession", ""));
+            txtCadre.setText(pref.getString("cadre", "N/A"));
+            txtSector.setText(pref.getString("sector", ""));
+        }else{
+            enteredDataTable.setVisibility(View.GONE);
+            formTable.setVisibility(View.VISIBLE);
+        }
     }
 
     public void proceed(){
-        startActivity(new Intent(SetupActivity.this, MainPageActivity.class));
+        if (page) {
+            startActivity(new Intent(context, MainActivity.class));
+        }else{
+            startActivity(new Intent(context, MainPageActivity.class));
+        }
         finish();
     }
 
     public void submitProfile(){
-        if (mAwesomeValidation.validate()){
+        String email, phone, gender, age_group, county, profession, cadre, sector;
+        int selected_gender = rgGender.getCheckedRadioButtonId();
+        int selected_sector = rgSector.getCheckedRadioButtonId();
+        int selected_age_group = ageSpinner.getSelectedItemPosition();
+        int selected_county = countySpinner.getSelectedItemPosition();
+        int selected_profession = professionSpinner.getSelectedItemPosition();
+        int selected_cadre = cadreSpinner.getSelectedItemPosition();
 
+        if (mAwesomeValidation.validate()){
+            email = etxEmail.getText().toString();
+            phone = etxPhone.getText().toString();
+
+            if (selected_gender == -1 || selected_sector == -1 || selected_age_group == 0 || selected_county == 0 || selected_profession == 0 || (selected_profession != 0 && selected_profession != 3 && selected_cadre == 0)){
+                Toast.makeText(context, "Please fill in all the fields", Toast.LENGTH_LONG).show();
+            }else{
+                RadioButton genderRadioButton = (RadioButton) findViewById(selected_gender);
+                RadioButton sectorRadioButton = (RadioButton) findViewById(selected_sector);
+                gender = genderRadioButton.getText().toString();
+                sector = sectorRadioButton.getText().toString();
+                age_group = ageSpinner.getSelectedItem().toString();
+                county = countyList.get(selected_county).getCounty();
+                profession = professionSpinner.getSelectedItem().toString();
+                if (selected_cadre != 0)
+                    cadre = cadreSpinner.getSelectedItem().toString();
+                else
+                    cadre = "";
+
+                UserProfile profile = new UserProfile();
+
+                profile.setEmail(email);
+                profile.setAge_group(age_group);
+                profile.setCadre(cadre);
+                profile.setCounty(county);
+                profile.setGender(gender);
+                profile.setPhone(phone);
+                profile.setProfession(profession);
+                profile.setSector(sector);
+                profile.setPhone_id(FirebaseInstanceId.getInstance().getToken());
+
+                try{
+                    final ProgressDialog progressDialog = new ProgressDialog(context);
+                    progressDialog.setMessage("Uploading data");
+                    progressDialog.show();
+                    Retrofit retrofit = RetrofitHelper.getInstance().createHelper();
+                    UserProfileService userProfileClient = retrofit.create(UserProfileService.class);
+                    Call<UserProfile> userProfileCall = userProfileClient.addProfile(profile);
+
+                    userProfileCall.enqueue(new Callback<UserProfile>() {
+                        @Override
+                        public void onResponse(Call<UserProfile> call, Response<UserProfile> response) {
+                            progressDialog.dismiss();
+                            UserProfile savedProfile = response.body();
+                            SharedPreferences pref = context.getSharedPreferences("user_details", Context.MODE_PRIVATE);
+                            SharedPreferences.Editor editor = pref.edit();
+
+                            editor.putInt("id", savedProfile.getId());
+                            editor.putString("email", savedProfile.getEmail());
+                            editor.putString("phone", savedProfile.getPhone());
+                            editor.putString("gender", savedProfile.getGender());
+                            editor.putString("age_group", savedProfile.getAge_group());
+                            editor.putString("county", savedProfile.getCounty());
+                            editor.putString("profession", savedProfile.getProfession());
+                            editor.putString("cadre", savedProfile.getCadre());
+                            editor.putString("sector", savedProfile.getSector());
+                            editor.commit();
+                            SharedPreferences preference = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+                            SharedPreferences.Editor prefEditor = preference.edit();
+                            prefEditor.putBoolean("setup_page", false);
+                            prefEditor.commit();
+
+                            proceed();
+                        }
+
+                        @Override
+                        public void onFailure(Call<UserProfile> call, Throwable t) {
+                            progressDialog.dismiss();
+                            Toast.makeText(context, t.getMessage(), Toast.LENGTH_SHORT).show();
+                            t.printStackTrace();
+                        }
+                    });
+                }catch (Exception ex){
+                    Toast.makeText(context, ex.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            }
         }
-        UserProfile profile = new UserProfile();
-        Toast.makeText(context, "This feature is still under development. Use the back button to proceed", Toast.LENGTH_LONG).show();
     }
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+        proceed();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.setup_menu, menu);
+//        inflater.inflate(R.menu.setup_menu, menu);
         return true;
     }
 
@@ -155,9 +300,9 @@ public class SetupActivity extends AppCompatActivity {
             case android.R.id.home:
                 proceed();
                 return true;
-            case R.id.action_save:
-                submitProfile();
-                return true;
+//            case R.id.action_save:
+//                submitProfile();
+//                return true;
         }
         return false;
     }

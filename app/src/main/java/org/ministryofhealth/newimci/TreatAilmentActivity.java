@@ -52,6 +52,7 @@ public class TreatAilmentActivity extends AppCompatActivity {
         ExpandableListView expandableListView = (ExpandableListView) findViewById(R.id.ailmentsList);
         TreatAilmentExpandableList expandableListAdapter = new TreatAilmentExpandableList(this, _listHeader, this._listContent);
         expandableListView.setAdapter(expandableListAdapter);
+        expandableListView.expandGroup(0);
     }
 
     @Override

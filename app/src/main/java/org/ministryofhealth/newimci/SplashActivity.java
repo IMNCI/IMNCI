@@ -3,11 +3,18 @@ package org.ministryofhealth.newimci;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.os.AsyncTask;
+import android.os.Handler;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.preference.PreferenceManager;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.widget.Toast;
+
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import org.ministryofhealth.newimci.database.DatabaseHandler;
 import org.ministryofhealth.newimci.helper.RetrofitHelper;
@@ -61,6 +68,7 @@ import retrofit2.Retrofit;
 
 public class SplashActivity extends AppCompatActivity {
     DatabaseHandler db;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -86,13 +94,15 @@ public class SplashActivity extends AppCompatActivity {
                     SharedPreferences.Editor editor = pref.edit();
                     editor.putString(getString(R.string.last_update), formattedDate);
                     editor.commit();
+                    new CountyAsyncTask().execute();
                     setupdata();
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Toast.makeText(this, e.getMessage().toString(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
 
+            new ProfileAsyncTask().execute();
             if (!setup_page) {
                 if (page) {
                     startActivity(new Intent(SplashActivity.this, MainActivity.class));
@@ -103,12 +113,13 @@ public class SplashActivity extends AppCompatActivity {
                 startActivity(new Intent(SplashActivity.this, SetupActivity.class));
             }
             finish();
-        }catch (Exception ex){
-            Toast.makeText(this, ex.getMessage(), Toast.LENGTH_SHORT).show();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            Toast.makeText(this, ex.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 
-    private void setupdata() throws Exception {
+    public void setupdata() throws Exception {
         Retrofit retrofit = RetrofitHelper.getInstance().createHelper();
 
         AilmentsService client = retrofit.create(AilmentsService.class);
@@ -124,7 +135,6 @@ public class SplashActivity extends AppCompatActivity {
         TreatAilmentTreatmentService treatAilmentTreatmentClient = retrofit.create(TreatAilmentTreatmentService.class);
         CounselTitlesService counselTitlesClient = retrofit.create(CounselTitlesService.class);
         CounselSubContentService counselSubContentClient = retrofit.create(CounselSubContentService.class);
-        CountyService countyClient = retrofit.create(CountyService.class);
         HIVCareService hivCareClient = retrofit.create(HIVCareService.class);
         GalleryService galleryClient = retrofit.create(GalleryService.class);
         GalleryAilmentService galleryAilmentClient = retrofit.create(GalleryAilmentService.class);
@@ -143,24 +153,11 @@ public class SplashActivity extends AppCompatActivity {
         Call<List<TreatAilmentTreatment>> treatAilmentTreatmentCall = treatAilmentTreatmentClient.get();
         Call<List<CounselTitle>> counselTitlesCall = counselTitlesClient.getTitles();
         Call<List<CounselSubContent>> counselSubContentCall = counselSubContentClient.get();
-        Call<List<County>> countyCall = countyClient.get();
         Call<List<HIVCare>> hivListCall = hivCareClient.get();
         Call<List<Gallery>> galleryCall = galleryClient.getGallery();
         Call<List<GalleryItem>> galleryItemCall = galleryItemClient.getItems();
         Call<List<GalleryAilment>> galleryAilmentCall = galleryAilmentClient.getGalleryAilment();
 
-
-        countyCall.enqueue(new Callback<List<County>>() {
-            @Override
-            public void onResponse(Call<List<County>> call, Response<List<County>> response) {
-                db.addCounties(response.body());
-            }
-
-            @Override
-            public void onFailure(Call<List<County>> call, Throwable t) {
-                Log.e("CountyError", t.getMessage());
-            }
-        });
 
         ageCall.enqueue(new Callback<List<AgeGroup>>() {
             @Override
@@ -367,5 +364,50 @@ public class SplashActivity extends AppCompatActivity {
         });
 
 
+    }
+
+    class CountyAsyncTask extends AsyncTask<String, String, Boolean> {
+
+        @Override
+        protected Boolean doInBackground(String... strings) {
+            try {
+                Retrofit retrofit = RetrofitHelper.getInstance().createHelper();
+                CountyService countyClient = retrofit.create(CountyService.class);
+                final Call<List<County>> countyCall = countyClient.get();
+                List<County> counties = countyCall.execute().body();
+                db.addCounties(counties);
+            } catch (Exception ex) {
+                Log.e("County Error", ex.getMessage());
+            }
+
+            return true;
+        }
+    }
+
+    class ProfileAsyncTask extends AsyncTask<String, String, Boolean> {
+        @Override
+        protected Boolean doInBackground(String... strings) {
+            try {
+                final String refreshedToken = FirebaseInstanceId.getInstance().getToken();
+//                TelephonyManager tManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+//                if (ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+//                    // TODO: Consider calling
+//                    //    ActivityCompat#requestPermissions
+//                    // here to request the missing permissions, and then overriding
+//                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+//                    //                                          int[] grantResults)
+//                    // to handle the case where the user grants the permission. See the documentation
+//                    // for ActivityCompat#requestPermissions for more details.
+//                    return null;
+//                }
+//                String uid = tManager.getDeviceId();
+//                Toast.makeText(SplashActivity.this, uid, Toast.LENGTH_SHORT).show();
+                Log.d("FirebaseID", refreshedToken);
+            }catch(Exception ex){
+                Log.e("FirebaseID", ex.getMessage());
+            }
+
+            return true;
+        }
     }
 }

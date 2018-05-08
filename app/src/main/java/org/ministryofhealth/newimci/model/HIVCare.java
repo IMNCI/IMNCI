@@ -6,7 +6,7 @@ package org.ministryofhealth.newimci.model;
 
 public class HIVCare {
     private int id;
-    private String title, thumbnail;
+    private String title, thumbnail, content, parent;
 
     public int getId() {
         return id;
@@ -30,5 +30,21 @@ public class HIVCare {
 
     public void setThumbnail(String thumbnail) {
         this.thumbnail = thumbnail;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public String getParent() {
+        return parent;
+    }
+
+    public void setParent(String parent) {
+        this.parent = parent;
     }
 }

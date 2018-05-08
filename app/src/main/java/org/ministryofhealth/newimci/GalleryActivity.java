@@ -271,16 +271,16 @@ public class GalleryActivity extends AppCompatActivity {
 
                 switch (item.getItem()){
                     case "Job Aid":
-                        imageResource = R.drawable.ic_picture;
+                        imageResource = R.drawable.ic_job_aid;
                         break;
                     case "Illustrations":
-                        imageResource = R.drawable.ic_video_player;
+                        imageResource = R.drawable.ic_illustration;
                         break;
                     case "Video":
-                        imageResource = R.drawable.ic_video_player;
+                        imageResource = R.drawable.ic_video_1;
                         break;
                     case "Guidelines":
-                        imageResource = R.drawable.ic_video_player;
+                        imageResource = R.drawable.ic_guidelines;
                         break;
                     case "Tools":
                         imageResource = R.drawable.ic_hammer;

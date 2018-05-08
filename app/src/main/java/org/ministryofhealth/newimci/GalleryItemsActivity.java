@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.media.Image;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
@@ -161,6 +162,14 @@ public class GalleryItemsActivity extends AppCompatActivity {
                 holder.txtFileName.setText(gallery.getTitle());
                 holder.txtAilment.setText(ailment.getAilment());
 
+                String file_name = gallery.getLink().replace("gallery/", "");
+
+                File file = new File(getExternalFilesDir(null) + File.separator + file_name);
+
+                if (file.exists()){
+                    holder.downloadIcon.setImageResource(R.drawable.ic_cloud_done_black_24dp);
+                }
+
                 String size = getFileSize(Integer.parseInt(gallery.getSize()));
                 holder.txtFileSize.setText(size);
                 holder.layout.setOnClickListener(new View.OnClickListener() {
@@ -180,7 +189,7 @@ public class GalleryItemsActivity extends AppCompatActivity {
         }
 
         class GalleryViewHolder extends RecyclerView.ViewHolder {
-
+            ImageView downloadIcon;
             ImageView iconImageView;
             TextView txtFileName, txtFileSize, txtFileTime, txtAilment;
             LinearLayout layout;
@@ -193,6 +202,7 @@ public class GalleryItemsActivity extends AppCompatActivity {
                 txtFileSize = (TextView) itemView.findViewById(R.id.size);
                 txtAilment = (TextView) itemView.findViewById(R.id.ailment);
                 layout = (LinearLayout) itemView.findViewById(R.id.gallery_item_layout);
+                downloadIcon = (ImageView) itemView.findViewById(R.id.downloadIcon);
             }
         }
     }

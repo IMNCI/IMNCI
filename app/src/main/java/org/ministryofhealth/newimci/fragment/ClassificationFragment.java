@@ -154,7 +154,7 @@ public class ClassificationFragment extends Fragment implements ExpandableListVi
         titles.add("Signs");
         titles.add("Treatment");
         for (String parent : parentsList){
-            List<AssessmentClassification> classification = db.getAssessmentByParent(parent);
+            List<AssessmentClassification> classification = db.getAssessmentByParent(parent, mAssessment.getId());
             classifications.put(parent, classification);
         }
 

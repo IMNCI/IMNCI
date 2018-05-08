@@ -9,6 +9,10 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AppCompatDelegate;
+import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,8 +25,11 @@ import android.widget.Toast;
 
 import org.ministryofhealth.newimci.GalleryActivity;
 import org.ministryofhealth.newimci.HIVForChildrenActivity;
+import org.ministryofhealth.newimci.MainPageActivity;
 import org.ministryofhealth.newimci.R;
 import org.ministryofhealth.newimci.fragment.ChildCheckDialogFragment;
+import org.ministryofhealth.newimci.fragment.GlossaryFragment;
+import org.ministryofhealth.newimci.fragment.ReviewFragment;
 import org.ministryofhealth.newimci.model.Menu;
 
 import java.util.List;
@@ -37,6 +44,10 @@ public class MenuAdapter extends RecyclerView.Adapter<MenuAdapter.MenuViewHolder
     Activity context;
     Activity a;
 
+    static {
+        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
+    }
+
     public MenuAdapter(List<Menu> menuList, Activity context){
         this.menuList = menuList;
         this.context = context;
@@ -50,7 +61,7 @@ public class MenuAdapter extends RecyclerView.Adapter<MenuAdapter.MenuViewHolder
 
     @Override
     public void onBindViewHolder(MenuViewHolder holder, final int position) {
-        Drawable image = context.getResources().getDrawable(menuList.get(position).get_image_resource());
+//        Drawable image = context.getResources().getDrawable(menuList.get(position).get_image_resource());
 
         holder.imgIcon.setImageResource(menuList.get(position).get_image_resource());
         holder.txtMenuTitle.setText(menuList.get(position).get_menu_title());
@@ -78,10 +89,25 @@ public class MenuAdapter extends RecyclerView.Adapter<MenuAdapter.MenuViewHolder
             ChildCheckDialogFragment frag = ChildCheckDialogFragment.newInstance(menu.get_menu_title(), menu.get_menu_slug());
             frag.show(context.getFragmentManager(), "dialog");
         }else{
+            MainPageActivity activity = (MainPageActivity)context;
+            Fragment newFragment = null;
+            FragmentTransaction transaction = activity.getSupportFragmentManager().beginTransaction();
+            transaction.addToBackStack(null);
+
             if (menu.get_menu_slug().equals("hiv_care")){
                 context.startActivity(new Intent(context, HIVForChildrenActivity.class));
             }else if(menu.get_menu_slug().equals("gallery")){
                 context.startActivity(new Intent(context, GalleryActivity.class));
+            }else if(menu.get_menu_slug().equals("glossary")){
+                activity.getSupportActionBar().setTitle("Glossary");
+                newFragment = new GlossaryFragment();
+                transaction.replace(R.id.content_frame, newFragment);
+                transaction.commit();
+            }else if(menu.get_menu_slug().equals("report_issue")){
+                activity.getSupportActionBar().setTitle("Report Issue");
+                newFragment = new ReviewFragment();
+                transaction.replace(R.id.content_frame, newFragment);
+                transaction.commit();
             }
         }
     }

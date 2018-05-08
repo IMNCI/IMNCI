@@ -25,6 +25,7 @@ import org.ministryofhealth.newimci.model.GalleryAilment;
 import org.ministryofhealth.newimci.model.GalleryItem;
 import org.ministryofhealth.newimci.model.Glossary;
 import org.ministryofhealth.newimci.model.HIVCare;
+import org.ministryofhealth.newimci.model.HIVParent;
 import org.ministryofhealth.newimci.model.TreatAilment;
 import org.ministryofhealth.newimci.model.TreatAilmentTreatment;
 import org.ministryofhealth.newimci.model.TreatTitle;
@@ -38,22 +39,22 @@ import java.util.List;
 
 public class DatabaseHandler extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 20;
+    private static final int DATABASE_VERSION = 22;
     private static final String DATABASE_NAME = "imci_mobile_app";
 
-    private static final String TABLE_AILMENTS = "ailments";
-    private static final String TABLE_AGE_GROUPS = "age_groups";
-    private static final String TABLE_AILMENT_FOLLOWUP = "ailment_followup";
-    private static final String TABLE_CATEGORIES = "categories";
-    private static final String TABLE_ASSESSMENT = "assessments";
-    private static final String TABLE_DISEASE_CLASSIFICATIONS = "disease_classifications";
-    private static final String TABLE_ASSESSMENT_CLASSIFICATIONS = "assessment_classifications";
-    private static final String TABLE_ASSESSMENT_CLASSIFICATION_SIGNS = "assessment_classification_signs";
-    private static final String TABLE_ASSESSMENT_CLASSIFICATION_TREATMENTS = "assessment_classification_treatments";
-    private static final String TABLE_GLOSSARY = "glossary";
-    private static final String TABLE_TREAT_TITLES = "treat_titles";
-    private static final String TABLE_TREAT_AILMENTS = "treat_ailments";
-    private static final String TABLE_TREAT_AILMENT_TREATMENTS = "treat_ailment_treatments";
+    public static final String TABLE_AILMENTS = "ailments";
+    public static final String TABLE_AGE_GROUPS = "age_groups";
+    public static final String TABLE_AILMENT_FOLLOWUP = "ailment_followup";
+    public static final String TABLE_CATEGORIES = "categories";
+    public static final String TABLE_ASSESSMENT = "assessments";
+    public static final String TABLE_DISEASE_CLASSIFICATIONS = "disease_classifications";
+    public static final String TABLE_ASSESSMENT_CLASSIFICATIONS = "assessment_classifications";
+    public static final String TABLE_ASSESSMENT_CLASSIFICATION_SIGNS = "assessment_classification_signs";
+    public static final String TABLE_ASSESSMENT_CLASSIFICATION_TREATMENTS = "assessment_classification_treatments";
+    public static final String TABLE_GLOSSARY = "glossary";
+    public static final String TABLE_TREAT_TITLES = "treat_titles";
+    public static final String TABLE_TREAT_AILMENTS = "treat_ailments";
+    public static final String TABLE_TREAT_AILMENT_TREATMENTS = "treat_ailment_treatments";
     public static final String TABLE_COUNSEL_TITLES = "counsel_titles";
     public static final String TABLE_COUNSEL_SUB_CONTENT = "counsel_sub_contents";
     public static final String TABLE_COUNTY = "county";
@@ -227,7 +228,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         String CREATE_HIV_CARE_TABLE = "CREATE TABLE " + TABLE_HIV_CARE + "("
                 + KEY_ID + " INTEGER,"
                 + KEY_TITLE + " TEXT,"
-                + KEY_THUMBNAIL + " TEXT"
+                + KEY_THUMBNAIL + " TEXT,"
+                + KEY_CONTENT + " TEXT,"
+                + KEY_PARENT + " TEXT"
                 + ");";
 
         String CREATE_GALLERY_TABLE = "CREATE TABLE " + TABLE_GALLERY + "("
@@ -335,6 +338,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         onCreate(db);
     }
+
+    public void clearTable(String table){
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("DELETE FROM " + table);
+    }
+
 
     public List<Ailment> getAilments(){
         List<Ailment> ailmentList = new ArrayList<Ailment>();
@@ -734,9 +743,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return parents;
     }
 
-    public List<AssessmentClassification> getAssessmentByParent(String parent){
+    public List<AssessmentClassification> getAssessmentByParent(String parent, int assessment_id){
         List<AssessmentClassification> assessmentClassifications = new ArrayList<AssessmentClassification>();
-        String query = "SELECT * FROM " + TABLE_ASSESSMENT_CLASSIFICATIONS + " WHERE " + KEY_PARENT + " = '" + parent + "'";
+        String query = "SELECT * FROM " + TABLE_ASSESSMENT_CLASSIFICATIONS + " WHERE " + KEY_PARENT + " = '" + parent + "' AND " + KEY_ASSESSMENT_ID + " = '" + String.valueOf(assessment_id) + "'";
         Cursor cursor = writableDB.rawQuery(query, null);
 
         if (cursor.moveToFirst()) {
@@ -1201,6 +1210,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(KEY_ID, care.getId());
         values.put(KEY_TITLE, care.getTitle());
         values.put(KEY_THUMBNAIL, care.getThumbnail());
+        values.put(KEY_PARENT, care.getParent());
+        values.put(KEY_CONTENT, care.getContent());
 
         db.insert(TABLE_HIV_CARE, null, values);
     }
@@ -1226,12 +1237,53 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 care.setId(cursor.getInt(cursor.getColumnIndex(KEY_ID)));
                 care.setTitle(cursor.getString(cursor.getColumnIndex(KEY_TITLE)));
                 care.setThumbnail(cursor.getString(cursor.getColumnIndex(KEY_THUMBNAIL)));
+                care.setContent(cursor.getString(cursor.getColumnIndex(KEY_CONTENT)));
+                care.setParent(cursor.getString(cursor.getColumnIndex(KEY_PARENT)));
 
                 careList.add(care);
             }while(cursor.moveToNext());
         }
 
         return careList;
+    }
+
+    public List<HIVCare> getHIVCare(String parent){
+        List<HIVCare> careList = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.query(TABLE_HIV_CARE, null, "parent=?", new String[]{parent}, null, null, null);
+
+        if (cursor.moveToFirst()){
+            do{
+                HIVCare care = new HIVCare();
+
+                care.setId(cursor.getInt(cursor.getColumnIndex(KEY_ID)));
+                care.setTitle(cursor.getString(cursor.getColumnIndex(KEY_TITLE)));
+                care.setThumbnail(cursor.getString(cursor.getColumnIndex(KEY_THUMBNAIL)));
+                care.setContent(cursor.getString(cursor.getColumnIndex(KEY_CONTENT)));
+                care.setParent(cursor.getString(cursor.getColumnIndex(KEY_PARENT)));
+
+                careList.add(care);
+            }while(cursor.moveToNext());
+        }
+        return careList;
+    }
+
+    public List<HIVParent> getHIVParents(){
+        List<HIVParent> parents = new ArrayList<HIVParent>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.query(true, TABLE_HIV_CARE, new String[] {KEY_PARENT}, null, null, null, null, null, null);
+        if (cursor.moveToFirst()){
+            do{
+                HIVParent parent = new HIVParent();
+
+                parent.setParent(cursor.getString(0));
+
+                parents.add(parent);
+            }while(cursor.moveToNext());
+        }
+        return parents;
     }
 
     public HIVCare getCare(int id){
@@ -1244,6 +1296,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             care.setId(cursor.getInt(cursor.getColumnIndex(KEY_ID)));
             care.setTitle(cursor.getString(cursor.getColumnIndex(KEY_TITLE)));
             care.setThumbnail(cursor.getString(cursor.getColumnIndex(KEY_THUMBNAIL)));
+            care.setContent(cursor.getString(cursor.getColumnIndex(KEY_CONTENT)));
+            care.setParent(cursor.getString(cursor.getColumnIndex(KEY_PARENT)));
         }
 
         return care;
