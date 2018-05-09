@@ -11,6 +11,8 @@ import com.google.android.gms.measurement.AppMeasurement;
 import org.ministryofhealth.newimci.model.AgeGroup;
 import org.ministryofhealth.newimci.model.Ailment;
 import org.ministryofhealth.newimci.model.AilmentFollowUp;
+import org.ministryofhealth.newimci.model.App;
+import org.ministryofhealth.newimci.model.AppUser;
 import org.ministryofhealth.newimci.model.Assessment;
 import org.ministryofhealth.newimci.model.AssessmentClassification;
 import org.ministryofhealth.newimci.model.AssessmentClassificationSign;
@@ -18,6 +20,7 @@ import org.ministryofhealth.newimci.model.AssessmentClassificationTreatment;
 import org.ministryofhealth.newimci.model.Category;
 import org.ministryofhealth.newimci.model.CounselSubContent;
 import org.ministryofhealth.newimci.model.CounselTitle;
+import org.ministryofhealth.newimci.model.Country;
 import org.ministryofhealth.newimci.model.County;
 import org.ministryofhealth.newimci.model.DiseaseClassification;
 import org.ministryofhealth.newimci.model.Gallery;
@@ -39,7 +42,7 @@ import java.util.List;
 
 public class DatabaseHandler extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 22;
+    private static final int DATABASE_VERSION = 23;
     private static final String DATABASE_NAME = "imci_mobile_app";
 
     public static final String TABLE_AILMENTS = "ailments";
@@ -62,6 +65,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public static final String TABLE_GALLERY = "gallery";
     public static final String TABLE_GALLERY_ITEM = "gallery_item";
     public static final String TABLE_GALLERY_AILMENT = "gallery_ailment";
+    public static final String TABLE_APP_USER = "app_user";
+    public static final String TABLE_COUNTRY = "country";
 
     private static final String KEY_ID = "id";
     private static final String KEY_AILMENT = "ailment";
@@ -115,6 +120,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public static final String KEY_TYPE = "type";
     public static final String KEY_SIZE = "size";
     public static final String KEY_MIME = "mime";
+
+    public static final String KEY_PHONE_ID = "phone_id";
+
+    public static final String KEY_COUNTRY_CODE = "country_code";
+    public static final String KEY_COUNTRY_NAME = "country_name";
+    public static final String KEY_COUNTRY_FLAG = "country_flag";
 
 
     SQLiteDatabase writableDB;
@@ -257,6 +268,18 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 + KEY_ID + " INTEGER,"
                 + KEY_AILMENT + " TEXT"
                 + ");";
+
+        String CREATE_APP_USER_TABLE = "CREATE TABLE " + TABLE_APP_USER + "("
+                + KEY_ID + " INTEGER,"
+                + KEY_PHONE_ID + " TEXT"
+                + ");";
+
+        String CREATE_COUNTRY_TABLE = "CREATE TABLE " + TABLE_COUNTRY + "("
+                + KEY_ID + " INTEGER,"
+                + KEY_COUNTRY_CODE + " TEXT,"
+                + KEY_COUNTRY_NAME + " TEXT,"
+                + KEY_COUNTRY_FLAG + " TEXT"
+                + ");";
 //        String CREATE_ASSESSMENT_CLASSIFICATION_SIGNS_TABLE = "CREATE TABLE " + TABLE_ASSESSMENT_CLASSIFICATION_SIGNS + "("
 //                + KEY_ID + " INTEGER,"
 //                + KEY_CLASSIFICATION_ID + " INTEGER,"
@@ -287,6 +310,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.execSQL(CREATE_GALLERY_TABLE);
         db.execSQL(CREATE_GALLERY_ITEMS_TABLE);
         db.execSQL(CREATE_GALLERY_AILMENTS_TABLE);
+        db.execSQL(CREATE_APP_USER_TABLE);
+        db.execSQL(CREATE_COUNTRY_TABLE);
 //        db.execSQL(CREATE_ASSESSMENT_CLASSIFICATION_SIGNS_TABLE);
 //        db.execSQL(CREATE_ASSESSMENT_CLASSIFICATION_TREATMENTS_TABLE);
     }
@@ -311,6 +336,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_GALLERY);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_GALLERY_AILMENT);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_GALLERY_ITEM);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_APP_USER);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_COUNTRY);
 //        db.execSQL("DROP TABLE IF EXISTS " + TABLE_ASSESSMENT_CLASSIFICATION_SIGNS);
 //        db.execSQL("DROP TABLE IF EXISTS " + TABLE_ASSESSMENT_CLASSIFICATION_TREATMENTS);
         onCreate(db);
@@ -335,6 +362,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_GALLERY);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_GALLERY_AILMENT);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_GALLERY_ITEM);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_APP_USER);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_COUNTRY);
 
         onCreate(db);
     }
@@ -1481,5 +1510,97 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             }while (cursor.moveToNext());
         }
         return galleryList;
+    }
+
+    public void addAppUser(AppUser user){
+        this.clearTable(TABLE_APP_USER);
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+
+        values.put(KEY_ID, user.getId());
+        values.put(KEY_AILMENT, user.getPhone_id());
+
+        db.insert(TABLE_APP_USER, null, values);
+    }
+
+    public AppUser getUser(){
+        AppUser user = new AppUser();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TABLE_APP_USER, null, null, null, null, null, null);
+        if (cursor.moveToFirst()){
+            user.setId(cursor.getInt(cursor.getColumnIndex(KEY_ID)));
+            user.setPhone_id(cursor.getString(cursor.getColumnIndex(KEY_PHONE_ID)));
+        }
+
+        return user;
+    }
+
+    public void addCountry(Country country){
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+
+        values.put(KEY_ID, country.getId());
+        values.put(KEY_COUNTRY_CODE, country.getCountry_code());
+        values.put(KEY_COUNTRY_NAME, country.getCountry_name());
+        values.put(KEY_COUNTRY_FLAG, country.getCountry_flag());
+
+        db.insert(TABLE_COUNTRY, null, values);
+    }
+
+    public void addCountries(List<Country> countries){
+        for (Country country:
+             countries) {
+            addCountry(country);
+        }
+    }
+
+    public List<Country> getCountries(){
+        List<Country> countryList = new ArrayList<Country>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TABLE_COUNTRY, null, null, null, null, null, null);
+
+        if (cursor.moveToFirst()){
+            do {
+               Country country = new Country();
+
+               country.setId(cursor.getInt(cursor.getColumnIndex(KEY_ID)));
+               country.setCountry_code(cursor.getString(cursor.getColumnIndex(KEY_COUNTRY_CODE)));
+               country.setCountry_name(cursor.getString(cursor.getColumnIndex(KEY_COUNTRY_NAME)));
+               country.setCountry_flag(cursor.getString(cursor.getColumnIndex(KEY_COUNTRY_FLAG)));
+
+               countryList.add(country);
+            }while(cursor.moveToNext());
+        }
+        return countryList;
+    }
+
+    public Country getCountry(int id){
+        Country country = new Country();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TABLE_COUNTRY, null, KEY_ID + "=?", new String[]{String.valueOf(id)}, null, null, null);
+
+        if (cursor.moveToFirst()){
+            country.setId(cursor.getInt(cursor.getColumnIndex(KEY_ID)));
+            country.setCountry_code(cursor.getString(cursor.getColumnIndex(KEY_COUNTRY_CODE)));
+            country.setCountry_name(cursor.getString(cursor.getColumnIndex(KEY_COUNTRY_NAME)));
+            country.setCountry_flag(cursor.getString(cursor.getColumnIndex(KEY_COUNTRY_FLAG)));
+        }
+        return country;
+    }
+
+    public Country getCountry(String country_code){
+        Country country = new Country();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TABLE_COUNTRY, null, KEY_COUNTRY_CODE + "=?", new String[]{String.valueOf(country_code)}, null, null, null);
+
+        if (cursor.moveToFirst()){
+            country.setId(cursor.getInt(cursor.getColumnIndex(KEY_ID)));
+            country.setCountry_code(cursor.getString(cursor.getColumnIndex(KEY_COUNTRY_CODE)));
+            country.setCountry_name(cursor.getString(cursor.getColumnIndex(KEY_COUNTRY_NAME)));
+            country.setCountry_flag(cursor.getString(cursor.getColumnIndex(KEY_COUNTRY_FLAG)));
+        }
+        return country;
     }
 }

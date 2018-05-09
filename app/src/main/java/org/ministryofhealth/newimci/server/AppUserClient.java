@@ -5,6 +5,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import org.ministryofhealth.newimci.config.Constants;
+import org.ministryofhealth.newimci.database.DatabaseHandler;
 import org.ministryofhealth.newimci.model.AppUser;
 import org.ministryofhealth.newimci.server.Service.AppUserService;
 
@@ -52,6 +53,9 @@ public class AppUserClient {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
+                }else{
+                    DatabaseHandler db = new DatabaseHandler(context);
+                    db.addAppUser(response.body());
                 }
             }
 
