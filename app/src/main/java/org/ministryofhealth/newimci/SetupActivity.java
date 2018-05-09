@@ -1,10 +1,12 @@
 package org.ministryofhealth.newimci;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -64,6 +66,17 @@ public class SetupActivity extends AppCompatActivity {
     SharedPreferences pref;
     TableLayout enteredDataTable, formTable;
     TableRow cadreRow;
+
+    Button btnGender, btnAgeGroup, btnCountry, btnCounty, btnProfession, btnSector, btnCadre;
+
+    int selected_gender = -1;
+    int selected_age = -1;
+    int selected_profession = -1;
+    int selected_sector = -1;
+    int selected_cadre = -1;
+
+    private static final int COUNTRY_LIST_CODE = 100;
+    private static final int COUNTY_LIST_CODE = 101;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,6 +86,14 @@ public class SetupActivity extends AppCompatActivity {
         user_id = pref.getInt("id", 0);
 
         TextView informationText = (TextView) findViewById(R.id.information);
+
+        btnGender = (Button) findViewById(R.id.spn_gender);
+        btnAgeGroup = (Button) findViewById(R.id.spn_age_group);
+        btnCountry = (Button) findViewById(R.id.spn_country);
+        btnCounty = (Button) findViewById(R.id.spn_county);
+        btnProfession = (Button) findViewById(R.id.spn_profession);
+        btnSector = (Button) findViewById(R.id.spn_sector);
+        btnCadre = (Button) findViewById(R.id.spn_cadre);
 
         etxEmail = (EditText) findViewById(R.id.emailAddress);
         etxPhone = (EditText) findViewById(R.id.phonenumber);
@@ -153,6 +174,57 @@ public class SetupActivity extends AppCompatActivity {
             }
         });
 
+        btnGender.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showGenderChoiceItems((Button) v);
+            }
+        });
+
+        btnAgeGroup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showAgeGroupChoiceItems((Button) v);
+            }
+        });
+
+        btnProfession.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showProfessionChoiceItems((Button) v);
+            }
+        });
+
+        btnSector.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showSectorChoiceItems((Button) v);
+            }
+        });
+
+        btnCadre.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showCadreChoiceItems((Button) v);
+            }
+        });
+
+        btnCountry.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(SetupActivity.this, CountryActivity.class);
+                startActivityForResult(intent, COUNTRY_LIST_CODE);
+            }
+        });
+
+        btnCounty.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(SetupActivity.this, CountyActivity.class);
+                startActivityForResult(intent, COUNTY_LIST_CODE);
+            }
+        });
+
         if (user_id != 0){
             TextView txtEmail, txtPhone, txtGender, txtAgeGroup, txtCounty, txtProfession, txtCadre, txtSector;
 
@@ -192,6 +264,86 @@ public class SetupActivity extends AppCompatActivity {
             startActivity(new Intent(context, MainPageActivity.class));
         }
         finish();
+    }
+
+    public void showGenderChoiceItems(final Button btn){
+        final String[] array_gender = getResources().getStringArray(R.array.gender);
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setCancelable(true);
+        builder.setSingleChoiceItems(array_gender, this.selected_gender, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                btn.setTextColor(Color.BLACK);
+                selected_gender = which;
+                btn.setText(array_gender[which]);
+            }
+        });
+        builder.show();
+    }
+
+    public void showAgeGroupChoiceItems(final Button btn){
+        final String[] array_agegroup = getResources().getStringArray(R.array.age_bracket);
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setCancelable(true);
+        builder.setSingleChoiceItems(array_agegroup, this.selected_age, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                btn.setTextColor(Color.BLACK);
+                selected_age = which;
+                btn.setText(array_agegroup[which]);
+            }
+        });
+        builder.show();
+    }
+
+    public void showProfessionChoiceItems(final Button btn){
+        final String[] array_profession = getResources().getStringArray(R.array.profession);
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setCancelable(true);
+        builder.setSingleChoiceItems(array_profession, this.selected_profession, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                btn.setTextColor(Color.BLACK);
+                selected_profession = which;
+                btn.setText(array_profession[which]);
+            }
+        });
+        builder.show();
+    }
+
+    public void showSectorChoiceItems(final Button btn){
+        final String[] array_sector = getResources().getStringArray(R.array.sector);
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setCancelable(true);
+        builder.setSingleChoiceItems(array_sector, this.selected_sector, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                btn.setTextColor(Color.BLACK);
+                selected_sector = which;
+                btn.setText(array_sector[which]);
+            }
+        });
+        builder.show();
+    }
+
+    public void showCadreChoiceItems(final Button btn){
+        final String[] array_cadre = getResources().getStringArray(R.array.cadre);
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setCancelable(true);
+        builder.setSingleChoiceItems(array_cadre, this.selected_cadre, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                btn.setTextColor(Color.BLACK);
+                selected_cadre = which;
+                btn.setText(array_cadre[which]);
+            }
+        });
+        builder.show();
     }
 
     public void submitProfile(){
@@ -305,6 +457,21 @@ public class SetupActivity extends AppCompatActivity {
 //                return true;
         }
         return false;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == COUNTRY_LIST_CODE && resultCode == Activity.RESULT_OK){
+            String countryCode = data.getStringExtra(CountryActivity.RESULT_COUNTRYCODE);
+            String countryname = data.getStringExtra(CountryActivity.RESULT_COUNTRYNAME);
+            btnCountry.setTextColor(Color.BLACK);
+            btnCountry.setText(countryname);
+        }else if(requestCode == COUNTY_LIST_CODE && resultCode == Activity.RESULT_OK){
+            String countyname = data.getStringExtra(CountyActivity.RESULT_COUNTY_NAME);
+            btnCounty.setTextColor(Color.BLACK);
+            btnCounty.setText(countyname);
+        }
     }
 
     public class CountySpinnerAdapter extends BaseAdapter implements SpinnerAdapter{

@@ -10,8 +10,10 @@
     <color name="colorGreen">#32CD32</color>
     <color name="colorMaroon">#C52429</color>
     <color name="nice_blue">#2196F3</color>
+
     <color name="grey_10">#e6e6e6</color>
     <color name="grey_40">#999999</color>
     <color name="grey_60">#666666</color>
+    <color name="grey_80">#37474F</color>
     <color name="grey_90">#263238</color>
 </resources>
