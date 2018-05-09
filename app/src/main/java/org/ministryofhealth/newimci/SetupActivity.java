@@ -69,11 +69,16 @@ public class SetupActivity extends AppCompatActivity {
 
     Button btnGender, btnAgeGroup, btnCountry, btnCounty, btnProfession, btnSector, btnCadre;
 
+    EditText email, phone;
+
     int selected_gender = -1;
     int selected_age = -1;
     int selected_profession = -1;
     int selected_sector = -1;
     int selected_cadre = -1;
+
+    String country_code = "";
+    String county_name = "";
 
     private static final int COUNTRY_LIST_CODE = 100;
     private static final int COUNTY_LIST_CODE = 101;
@@ -95,6 +100,9 @@ public class SetupActivity extends AppCompatActivity {
         btnSector = (Button) findViewById(R.id.spn_sector);
         btnCadre = (Button) findViewById(R.id.spn_cadre);
 
+        email = (EditText) findViewById(R.id.user_email);
+        phone = (EditText) findViewById(R.id.phone);
+
         etxEmail = (EditText) findViewById(R.id.emailAddress);
         etxPhone = (EditText) findViewById(R.id.phonenumber);
         rgGender = (RadioGroup) findViewById(R.id.gender);
@@ -113,8 +121,8 @@ public class SetupActivity extends AppCompatActivity {
 
         mAwesomeValidation = new AwesomeValidation(ValidationStyle.BASIC);
 
-        mAwesomeValidation.addValidation(this, R.id.emailAddress, Patterns.EMAIL_ADDRESS, R.string.error_email);
-        mAwesomeValidation.addValidation(this, R.id.phonenumber, Patterns.PHONE, R.string.error_phone);
+        mAwesomeValidation.addValidation(this, R.id.user_email, Patterns.EMAIL_ADDRESS, R.string.error_email);
+        mAwesomeValidation.addValidation(this, R.id.phone, Patterns.PHONE, R.string.error_phone);
 
         countyList = db.getCounties();
         County emptyCounty = new County();

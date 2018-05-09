@@ -430,6 +430,7 @@
                 <android.support.v7.widget.AppCompatEditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:id="@+id/user_email"
                     android:hint="Email" />
             </android.support.design.widget.TextInputLayout>
 
@@ -440,6 +441,7 @@
                 <android.support.v7.widget.AppCompatEditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:id="@+id/phone"
                     android:hint="Phone number"
                     android:inputType="phone"/>
             </android.support.design.widget.TextInputLayout>
@@ -482,19 +484,26 @@
                 android:text="Country"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                 android:textColor="@color/grey_40" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/spacing_middle"/>
-
-            <Button
-                android:id="@+id/spn_county"
-                style="@style/Base.Widget.AppCompat.Spinner.Underlined"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="County"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                android:textColor="@color/grey_40" />
+                android:orientation="vertical"
+                android:id="@+id/county_layout"
+                android:visibility="gone">
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/spacing_middle"/>
+
+                <Button
+                    android:id="@+id/spn_county"
+                    style="@style/Base.Widget.AppCompat.Spinner.Underlined"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="County"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                    android:textColor="@color/grey_40" />
+            </LinearLayout>
+
 
             <View
                 android:layout_width="match_parent"
@@ -509,18 +518,27 @@
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                 android:textColor="@color/grey_40" />
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/spacing_middle"/>
 
-            <Button
-                android:id="@+id/spn_cadre"
-                style="@style/Base.Widget.AppCompat.Spinner.Underlined"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Cadre"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                android:textColor="@color/grey_40" />
+                android:orientation="vertical"
+                android:id="@+id/cadre_layout"
+                android:visibility="gone">
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/spacing_middle"/>
+
+                <Button
+                    android:id="@+id/spn_cadre"
+                    style="@style/Base.Widget.AppCompat.Spinner.Underlined"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Cadre"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                    android:textColor="@color/grey_40" />
+            </LinearLayout>
+
 
             <View
                 android:layout_width="match_parent"
