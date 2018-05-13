@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/IMNCI.iml" filepath="$PROJECT_DIR$/IMNCI.iml" />
       <module fileurl="file://$PROJECT_DIR$/NewIMCI.iml" filepath="$PROJECT_DIR$/NewIMCI.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>

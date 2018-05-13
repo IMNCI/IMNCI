@@ -51,6 +51,7 @@ dependencies {
     implementation 'com.jaredrummler:android-device-names:1.1.5'
     implementation 'com.balysv:material-ripple:1.0.2'
     implementation 'com.caverock:androidsvg:1.2.1'
+    implementation 'com.birbit:android-priority-jobqueue:2.0.1'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.7.1'
     testImplementation 'junit:junit:4.12'
 }

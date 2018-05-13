@@ -2,6 +2,7 @@ package org.ministryofhealth.newimci.app;
 
 import android.app.Application;
 
+import org.ministryofhealth.newimci.receiver.ConnectivityReceiver;
 import org.ministryofhealth.newimci.util.FontsOverride;
 
 import java.util.Locale;
@@ -24,5 +25,9 @@ public class AppController extends Application {
 
     public static synchronized AppController getInstance() {
         return mInstance;
+    }
+
+    public void setConnectivityListener(ConnectivityReceiver.ConnectivityReceiverListener listener) {
+        ConnectivityReceiver.connectivityReceiverListener = listener;
     }
 }

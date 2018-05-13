@@ -180,6 +180,7 @@ public class MainPageActivity extends AppCompatActivity
                 finish();
                 return true;
             case R.id.nav_profile:
+
                 startActivity(new Intent(MainPageActivity.this, SetupActivity.class));
                 return true;
             case R.id.nav_dashboard:
@@ -218,7 +219,7 @@ public class MainPageActivity extends AppCompatActivity
                 Intent sendIntent = new Intent();
                 sendIntent.setAction(Intent.ACTION_SEND);
                 sendIntent.putExtra(Intent.EXTRA_TEXT,
-                        "Hey check out the IMCI APP at: https://play.google.com/store/apps/details?id=org.ministryofhealth.imci");
+                        "Hey check out the IMCI APP at: https://play.google.com/store/apps/details?id=org.ministryofhealth.newimci");
                 sendIntent.setType("text/plain");
                 startActivity(sendIntent);
                 return true;
@@ -234,7 +235,7 @@ public class MainPageActivity extends AppCompatActivity
         }
 
         if(newFragment != null){
-            if (TAG_FRAGMENT == "settings") {
+            if (TAG_FRAGMENT.equals("settings")) {
                 getFragmentManager().beginTransaction().remove(getFragmentManager().findFragmentById(R.id.content_frame)).commit();
             }
             TAG_FRAGMENT = "";

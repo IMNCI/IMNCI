@@ -7,10 +7,12 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.preference.PreferenceManager;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -38,12 +40,15 @@ import com.basgeekball.awesomevalidation.ValidationStyle;
 import com.basgeekball.awesomevalidation.utility.RegexTemplate;
 import com.google.firebase.iid.FirebaseInstanceId;
 
+import org.ministryofhealth.newimci.app.AppController;
 import org.ministryofhealth.newimci.database.DatabaseHandler;
 import org.ministryofhealth.newimci.helper.RetrofitHelper;
 import org.ministryofhealth.newimci.model.County;
 import org.ministryofhealth.newimci.model.UserProfile;
+import org.ministryofhealth.newimci.receiver.ConnectivityReceiver;
 import org.ministryofhealth.newimci.server.Service.UserProfileService;
 
+import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.List;
 
@@ -52,7 +57,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
-public class SetupActivity extends AppCompatActivity {
+public class SetupActivity extends AppCompatActivity implements ConnectivityReceiver.ConnectivityReceiverListener{
     Spinner ageSpinner, countySpinner, cadreSpinner, professionSpinner;
     EditText etxEmail, etxPhone;
     RadioGroup rgGender, rgSector;
@@ -80,6 +85,8 @@ public class SetupActivity extends AppCompatActivity {
     int selected_sector = -1;
     int selected_cadre = -1;
 
+    Boolean checkUploaded = false;
+
     String selected_gender_ = "";
     String selected_age_ = "";
     String selected_profession_ = "";
@@ -100,6 +107,8 @@ public class SetupActivity extends AppCompatActivity {
 
         pref = getSharedPreferences("user_details", Context.MODE_PRIVATE);
         user_id = pref.getInt("id", 0);
+        checkUploaded = pref.getBoolean("uploaded", false);
+
 
         TextView informationText = (TextView) findViewById(R.id.information);
 
@@ -444,6 +453,7 @@ public class SetupActivity extends AppCompatActivity {
                             SharedPreferences pref = context.getSharedPreferences("user_details", Context.MODE_PRIVATE);
                             SharedPreferences.Editor editor = pref.edit();
 
+                            assert savedProfile != null;
                             editor.putInt("id", savedProfile.getId());
                             editor.putString("email", savedProfile.getEmail());
                             editor.putString("phone", savedProfile.getPhone());
@@ -453,11 +463,11 @@ public class SetupActivity extends AppCompatActivity {
                             editor.putString("profession", savedProfile.getProfession());
                             editor.putString("cadre", savedProfile.getCadre());
                             editor.putString("sector", savedProfile.getSector());
-                            editor.commit();
+                            editor.apply();
                             SharedPreferences preference = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
                             SharedPreferences.Editor prefEditor = preference.edit();
                             prefEditor.putBoolean("setup_page", false);
-                            prefEditor.commit();
+                            prefEditor.apply();
 
                             proceed();
                         }
@@ -476,6 +486,23 @@ public class SetupActivity extends AppCompatActivity {
         }
     }
 
+    private void saveUserPreference(UserProfile profile, Boolean uploaded){
+        SharedPreferences pref = context.getSharedPreferences("user_details", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+
+        editor.putInt("id", profile.getId());
+        editor.putString("email", profile.getEmail());
+        editor.putString("phone", profile.getPhone());
+        editor.putString("gender", profile.getGender());
+        editor.putString("age_group", profile.getAge_group());
+        editor.putString("county", profile.getCounty());
+        editor.putString("profession", profile.getProfession());
+        editor.putString("cadre", profile.getCadre());
+        editor.putString("sector", profile.getSector());
+        editor.putBoolean("uploaded", uploaded);
+        editor.apply();
+    }
+
     public void createProfile(){
         if (mAwesomeValidation.validate()){
             String email = editEmail.getText().toString();
@@ -490,21 +517,51 @@ public class SetupActivity extends AppCompatActivity {
                 profile.setPhone(phone);
                 profile.setAge_group(selected_age_);
                 profile.setGender(selected_gender_);
-                profile.setCountry(country_code);
+                profile.setCountry_code(country_code);
                 profile.setCounty(county_name);
                 profile.setProfession(selected_profession_);
                 profile.setCadre(selected_cadre_);
                 profile.setSector(selected_sector_);
                 profile.setPhone_id(FirebaseInstanceId.getInstance().getToken());
 
+                if (ConnectivityReceiver.isConnected()){
+                    final ProgressDialog progressDialog = new ProgressDialog(context);
+                    progressDialog.setMessage("Uploading data");
+                    progressDialog.show();
+                    Retrofit retrofit = RetrofitHelper.getInstance().createHelper();
+                    UserProfileService userProfileClient = retrofit.create(UserProfileService.class);
+                    Call<UserProfile> userProfileCall = userProfileClient.addProfile(profile);
 
-                final ProgressDialog progressDialog = new ProgressDialog(context);
-                progressDialog.setMessage("Uploading data");
-                progressDialog.show();
-                Retrofit retrofit = RetrofitHelper.getInstance().createHelper();
-                UserProfileService userProfileClient = retrofit.create(UserProfileService.class);
-                Call<UserProfile> userProfileCall = userProfileClient.addProfile(profile);
-                
+                    userProfileCall.enqueue(new Callback<UserProfile>() {
+                        @Override
+                        public void onResponse(@NonNull Call<UserProfile> call, @NonNull Response<UserProfile> response) {
+                            progressDialog.dismiss();
+                            if(response.code() == 200){
+                                assert response.body() != null;
+                                saveUserPreference(response.body(), ConnectivityReceiver.isConnected());
+                                Toast.makeText(context, "User profile uploaded successfully", Toast.LENGTH_SHORT).show();
+                            }else{
+                                try {
+                                    Log.e("Userprofile", response.errorBody().string());
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                                Toast.makeText(context, "There was an error adding your profile", Toast.LENGTH_SHORT).show();
+                            }
+
+                        }
+
+                        @Override
+                        public void onFailure(@NonNull Call<UserProfile> call, Throwable throwable) {
+                            Toast.makeText(context, "There was an error saving your profile", Toast.LENGTH_SHORT).show();
+                            Log.e("Userprofile", throwable.getMessage());
+                            throwable.printStackTrace();
+                        }
+                    });
+                }else{
+                    Toast.makeText(context, "Your data will be uploaded when you are online.", Toast.LENGTH_SHORT).show();
+                }
+
 
             }
         }
@@ -513,6 +570,12 @@ public class SetupActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         proceed();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        AppController.getInstance().setConnectivityListener(this);
     }
 
     @Override
@@ -554,6 +617,48 @@ public class SetupActivity extends AppCompatActivity {
             county_name = data.getStringExtra(CountyActivity.RESULT_COUNTY_NAME);
             btnCounty.setTextColor(Color.BLACK);
             btnCounty.setText(county_name);
+        }
+    }
+
+    @Override
+    public void onNetworkConnectionChanged(boolean isConnected) {
+        if (!isConnected){
+            Toast.makeText(context, "Seems like you have no connection", Toast.LENGTH_SHORT).show();
+        }else{
+            SharedPreferences pref = context.getSharedPreferences("user_details", Context.MODE_PRIVATE);
+            final SharedPreferences.Editor editor = pref.edit();
+            Boolean uploaded = pref.getBoolean("uploaded", false);
+            if(!uploaded){
+                Retrofit retrofit = RetrofitHelper.getInstance().createHelper();
+                UserProfileService userProfileClient = retrofit.create(UserProfileService.class);
+
+                UserProfile profile = new UserProfile();
+
+                profile.setEmail(pref.getString("email", ""));
+                profile.setPhone(pref.getString("phone", ""));
+                profile.setGender(pref.getString("gender", ""));
+                profile.setAge_group(pref.getString("age_group", ""));
+                profile.setCountry_code(pref.getString("country", "KEN"));
+                profile.setCounty(pref.getString("county", ""));
+                profile.setProfession(pref.getString("profession", ""));
+                profile.setCadre(pref.getString("cadre", ""));
+                profile.setSector(pref.getString("sector", ""));
+
+                Call<UserProfile> userProfileCall = userProfileClient.addProfile(profile);
+                userProfileCall.enqueue(new Callback<UserProfile>() {
+                    @Override
+                    public void onResponse(Call<UserProfile> call, Response<UserProfile> response) {
+                        assert response.body() != null;
+                        editor.putBoolean("uploaded", true);
+                        Toast.makeText(context, "User profile uploaded successfully", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onFailure(Call<UserProfile> call, Throwable throwable) {
+                        Toast.makeText(context, "There was an error uploading your profile", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
         }
     }
 

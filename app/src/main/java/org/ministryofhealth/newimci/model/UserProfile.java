@@ -5,7 +5,7 @@ package org.ministryofhealth.newimci.model;
  */
 
 public class UserProfile {
-    private String email, phone, gender, age_group, country, county, profession, cadre, sector, phone_id;
+    private String email, phone, gender, age_group, country_code, county, profession, cadre, sector, phone_id;
     private int id;
 
     public String getEmail() {
@@ -88,11 +88,11 @@ public class UserProfile {
         this.id = id;
     }
 
-    public String getCountry() {
-        return country;
+    public String getCountry_code() {
+        return country_code;
     }
 
-    public void setCountry(String country) {
-        this.country = country;
+    public void setCountry_code(String country_code) {
+        this.country_code = country_code;
     }
 }
