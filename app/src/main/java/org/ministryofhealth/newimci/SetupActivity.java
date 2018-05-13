@@ -23,6 +23,7 @@ import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
@@ -67,9 +68,11 @@ public class SetupActivity extends AppCompatActivity {
     TableLayout enteredDataTable, formTable;
     TableRow cadreRow;
 
-    Button btnGender, btnAgeGroup, btnCountry, btnCounty, btnProfession, btnSector, btnCadre;
+    LinearLayout countyLayout,cadreLayout;
 
-    EditText email, phone;
+    Button btnGender, btnAgeGroup, btnCountry, btnCounty, btnProfession, btnSector, btnCadre, btnCreateProfile;
+
+    EditText editEmail, editPhone;
 
     int selected_gender = -1;
     int selected_age = -1;
@@ -77,7 +80,15 @@ public class SetupActivity extends AppCompatActivity {
     int selected_sector = -1;
     int selected_cadre = -1;
 
+    String selected_gender_ = "";
+    String selected_age_ = "";
+    String selected_profession_ = "";
+    String selected_sector_ = "";
+    String selected_cadre_ = "";
+
     String country_code = "";
+    String country_name = "";
+
     String county_name = "";
 
     private static final int COUNTRY_LIST_CODE = 100;
@@ -92,6 +103,10 @@ public class SetupActivity extends AppCompatActivity {
 
         TextView informationText = (TextView) findViewById(R.id.information);
 
+        countyLayout = (LinearLayout) findViewById(R.id.county_layout);
+        cadreLayout = (LinearLayout) findViewById(R.id.cadre_layout);
+
+        btnCreateProfile = findViewById(R.id.create_profile);
         btnGender = (Button) findViewById(R.id.spn_gender);
         btnAgeGroup = (Button) findViewById(R.id.spn_age_group);
         btnCountry = (Button) findViewById(R.id.spn_country);
@@ -100,8 +115,8 @@ public class SetupActivity extends AppCompatActivity {
         btnSector = (Button) findViewById(R.id.spn_sector);
         btnCadre = (Button) findViewById(R.id.spn_cadre);
 
-        email = (EditText) findViewById(R.id.user_email);
-        phone = (EditText) findViewById(R.id.phone);
+        editEmail = (EditText) findViewById(R.id.user_email);
+        editPhone = (EditText) findViewById(R.id.phone);
 
         etxEmail = (EditText) findViewById(R.id.emailAddress);
         etxPhone = (EditText) findViewById(R.id.phonenumber);
@@ -163,6 +178,13 @@ public class SetupActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 submitProfile();
+            }
+        });
+
+        btnCreateProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                createProfile();
             }
         });
 
@@ -285,6 +307,7 @@ public class SetupActivity extends AppCompatActivity {
                 btn.setTextColor(Color.BLACK);
                 selected_gender = which;
                 btn.setText(array_gender[which]);
+                selected_gender_ = array_gender[which];
             }
         });
         builder.show();
@@ -301,6 +324,7 @@ public class SetupActivity extends AppCompatActivity {
                 btn.setTextColor(Color.BLACK);
                 selected_age = which;
                 btn.setText(array_agegroup[which]);
+                selected_age_ = array_agegroup[which];
             }
         });
         builder.show();
@@ -317,6 +341,14 @@ public class SetupActivity extends AppCompatActivity {
                 btn.setTextColor(Color.BLACK);
                 selected_profession = which;
                 btn.setText(array_profession[which]);
+                selected_profession_ = array_profession[which];
+                if (array_profession[which].equals("Student")){
+                    cadreLayout.setVisibility(View.GONE);
+                    selected_cadre = -1;
+                    selected_cadre_ = "";
+                }else{
+                    cadreLayout.setVisibility(View.VISIBLE);
+                }
             }
         });
         builder.show();
@@ -333,6 +365,7 @@ public class SetupActivity extends AppCompatActivity {
                 btn.setTextColor(Color.BLACK);
                 selected_sector = which;
                 btn.setText(array_sector[which]);
+                selected_sector_ = array_sector[which];
             }
         });
         builder.show();
@@ -349,6 +382,7 @@ public class SetupActivity extends AppCompatActivity {
                 btn.setTextColor(Color.BLACK);
                 selected_cadre = which;
                 btn.setText(array_cadre[which]);
+                selected_cadre_ = array_cadre[which];
             }
         });
         builder.show();
@@ -442,6 +476,40 @@ public class SetupActivity extends AppCompatActivity {
         }
     }
 
+    public void createProfile(){
+        if (mAwesomeValidation.validate()){
+            String email = editEmail.getText().toString();
+            String phone = editPhone.getText().toString();
+
+            if (selected_gender == -1 || selected_age == -1 || selected_sector == -1 || country_code.equals("") || (country_code.equals("KEN") && county_name.equals("")) || selected_profession == -1 || (selected_profession != 2 && selected_cadre == -1)){
+                Toast.makeText(context, "Please make sure you fill in all the fields", Toast.LENGTH_SHORT).show();
+            }else{
+                UserProfile profile = new UserProfile();
+
+                profile.setEmail(email);
+                profile.setPhone(phone);
+                profile.setAge_group(selected_age_);
+                profile.setGender(selected_gender_);
+                profile.setCountry(country_code);
+                profile.setCounty(county_name);
+                profile.setProfession(selected_profession_);
+                profile.setCadre(selected_cadre_);
+                profile.setSector(selected_sector_);
+                profile.setPhone_id(FirebaseInstanceId.getInstance().getToken());
+
+
+                final ProgressDialog progressDialog = new ProgressDialog(context);
+                progressDialog.setMessage("Uploading data");
+                progressDialog.show();
+                Retrofit retrofit = RetrofitHelper.getInstance().createHelper();
+                UserProfileService userProfileClient = retrofit.create(UserProfileService.class);
+                Call<UserProfile> userProfileCall = userProfileClient.addProfile(profile);
+                
+
+            }
+        }
+    }
+
     @Override
     public void onBackPressed() {
         proceed();
@@ -471,14 +539,21 @@ public class SetupActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == COUNTRY_LIST_CODE && resultCode == Activity.RESULT_OK){
-            String countryCode = data.getStringExtra(CountryActivity.RESULT_COUNTRYCODE);
-            String countryname = data.getStringExtra(CountryActivity.RESULT_COUNTRYNAME);
+            country_code = data.getStringExtra(CountryActivity.RESULT_COUNTRYCODE);
+            String country_name = data.getStringExtra(CountryActivity.RESULT_COUNTRYNAME);
             btnCountry.setTextColor(Color.BLACK);
-            btnCountry.setText(countryname);
+            btnCountry.setText(country_name);
+            if (country_code.equals("KEN")){
+                Toast.makeText(context, country_code, Toast.LENGTH_SHORT).show();
+                countyLayout.setVisibility(View.VISIBLE);
+            }else{
+                countyLayout.setVisibility(View.GONE);
+                county_name = "";
+            }
         }else if(requestCode == COUNTY_LIST_CODE && resultCode == Activity.RESULT_OK){
-            String countyname = data.getStringExtra(CountyActivity.RESULT_COUNTY_NAME);
+            county_name = data.getStringExtra(CountyActivity.RESULT_COUNTY_NAME);
             btnCounty.setTextColor(Color.BLACK);
-            btnCounty.setText(countyname);
+            btnCounty.setText(county_name);
         }
     }
 
