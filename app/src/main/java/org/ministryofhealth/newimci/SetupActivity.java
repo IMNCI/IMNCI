@@ -540,6 +540,7 @@ public class SetupActivity extends AppCompatActivity implements ConnectivityRece
                                 assert response.body() != null;
                                 saveUserPreference(response.body(), ConnectivityReceiver.isConnected());
                                 Toast.makeText(context, "User profile uploaded successfully", Toast.LENGTH_SHORT).show();
+                                startActivity(new Intent(context, UserProfileDetailsActivity.class));
                             }else{
                                 try {
                                     Log.e("Userprofile", response.errorBody().string());
@@ -559,7 +560,7 @@ public class SetupActivity extends AppCompatActivity implements ConnectivityRece
                         }
                     });
                 }else{
-                    Toast.makeText(context, "Your data will be uploaded when you are online.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "You are offline. Please turn on internet connection and try again.", Toast.LENGTH_SHORT).show();
                 }
 
 

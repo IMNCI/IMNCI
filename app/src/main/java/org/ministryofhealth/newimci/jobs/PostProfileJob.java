@@ -11,8 +11,12 @@ import org.ministryofhealth.newimci.model.UserProfile;
 
 public class PostProfileJob extends Job {
     public static final int PRIORITY = 1;
+    private long localId;
+    UserProfile profile;
     public PostProfileJob(UserProfile profile) {
         super(new Params(PRIORITY).requireNetwork().persist());
+        localId = -System.currentTimeMillis();
+        this.profile = profile;
     }
 
     @Override

@@ -180,8 +180,13 @@ public class MainPageActivity extends AppCompatActivity
                 finish();
                 return true;
             case R.id.nav_profile:
+                SharedPreferences pref = getSharedPreferences("user_details", Context.MODE_PRIVATE);
+                if (pref.getBoolean("uploaded", false)){
+                    startActivity(new Intent(MainPageActivity.this, UserProfileDetailsActivity.class));
+                }else{
+                    startActivity(new Intent(MainPageActivity.this, SetupActivity.class));
+                }
 
-                startActivity(new Intent(MainPageActivity.this, SetupActivity.class));
                 return true;
             case R.id.nav_dashboard:
                 newFragment = new DashboardFragment();

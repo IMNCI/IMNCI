@@ -4,7 +4,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <!--<uses-permission android:name="android.permission.READ_PHONE_STATE" />-->
+    <!-- <uses-permission android:name="android.permission.READ_PHONE_STATE" /> -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -40,8 +40,9 @@
                 <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE" />
             </intent-filter>
         </service>
-        
-        <receiver android:name=".receiver.ConnectivityReceiver"
+
+        <receiver
+            android:name=".receiver.ConnectivityReceiver"
             android:enabled="true">
             <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
@@ -112,21 +113,25 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".GalleryItemsActivity" />
         <activity android:name=".ViewGalleryItemActivity" />
-        <activity android:name=".HIVCareDetailActivity"
+        <activity
+            android:name=".HIVCareDetailActivity"
             android:parentActivityName=".HIVForChildrenActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".HIVForChildrenActivity" /></activity>
-
-        <activity android:name=".CountryActivity"
-            android:theme="@android:style/Theme.Holo.Light.Dialog"
+                android:value=".HIVForChildrenActivity" />
+        </activity>
+        <activity
+            android:name=".CountryActivity"
+            android:label="Select your Country"
             android:noHistory="true"
-            android:label="Select your Country"/>
-
-        <activity android:name=".CountyActivity"
-            android:theme="@android:style/Theme.Holo.Light.Dialog"
+            android:theme="@android:style/Theme.Holo.Light.Dialog" />
+        <activity
+            android:name=".CountyActivity"
+            android:label="Select your County"
             android:noHistory="true"
-            android:label="Select your County"/>
+            android:theme="@android:style/Theme.Holo.Light.Dialog" />
+        <activity android:name=".UserProfileDetailsActivity"
+            android:theme="@style/UserProfileDetailsTheme"></activity>
     </application>
 
 </manifest>
