@@ -7,7 +7,9 @@ import android.widget.Toast;
 import org.ministryofhealth.newimci.config.Constants;
 import org.ministryofhealth.newimci.database.DatabaseHandler;
 import org.ministryofhealth.newimci.model.AppUser;
+import org.ministryofhealth.newimci.model.UserProfile;
 import org.ministryofhealth.newimci.server.Service.AppUserService;
+import org.ministryofhealth.newimci.server.Service.UserProfileService;
 
 import java.io.IOException;
 
@@ -39,7 +41,7 @@ public class AppUserClient {
                 .baseUrl(Constants.BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create());
 
-        Retrofit retrofit = builder.build();
+        final Retrofit retrofit = builder.build();
         AppUserService client = retrofit.create(AppUserService.class);
 
         Call<AppUser> call = client.createAppUser(appUser);
@@ -56,6 +58,22 @@ public class AppUserClient {
                 }else{
                     DatabaseHandler db = new DatabaseHandler(context);
                     db.addAppUser(response.body());
+                    int app_user_id = response.body().getId();
+
+                    UserProfileService userProfileService = retrofit.create(UserProfileService.class);
+                    Call<UserProfile> userProfileCall = userProfileService.getProfile(app_user_id, response.body().getPhone_id());
+
+                    userProfileCall.enqueue(new Callback<UserProfile>() {
+                        @Override
+                        public void onResponse(Call<UserProfile> call, Response<UserProfile> response) {
+                            Log.d("User", response.body().toString());
+                        }
+
+                        @Override
+                        public void onFailure(Call<UserProfile> call, Throwable t) {
+
+                        }
+                    });
                 }
             }
 

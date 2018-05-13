@@ -84,6 +84,7 @@ public class SplashActivity extends AppCompatActivity {
             db = new DatabaseHandler(this);
 //        db.initDB();
             List<Ailment> ailmentList = db.getAilments();
+            new ProfileAsyncTask().execute();
             if (ailmentList.size() == 0) {
                 try {
                     Date currentTime = Calendar.getInstance().getTime();
@@ -98,6 +99,7 @@ public class SplashActivity extends AppCompatActivity {
                     editor.commit();
                     new CountyAsyncTask().execute();
                     new CountryAsyncTask().execute();
+
                     setupdata();
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -405,30 +407,18 @@ public class SplashActivity extends AppCompatActivity {
         }
     }
 
-//    class ProfileAsyncTask extends AsyncTask<String, String, Boolean> {
-//        @Override
-//        protected Boolean doInBackground(String... strings) {
-//            try {
-//                final String refreshedToken = FirebaseInstanceId.getInstance().getToken();
-////                TelephonyManager tManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-////                if (ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-////                    // TODO: Consider calling
-////                    //    ActivityCompat#requestPermissions
-////                    // here to request the missing permissions, and then overriding
-////                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-////                    //                                          int[] grantResults)
-////                    // to handle the case where the user grants the permission. See the documentation
-////                    // for ActivityCompat#requestPermissions for more details.
-////                    return null;
-////                }
-////                String uid = tManager.getDeviceId();
-////                Toast.makeText(SplashActivity.this, uid, Toast.LENGTH_SHORT).show();
-//                Log.d("FirebaseID", refreshedToken);
-//            }catch(Exception ex){
-//                Log.i("FirebaseID", ex.getMessage());
-//            }
-//
-//            return true;
-//        }
-//    }
+    class ProfileAsyncTask extends AsyncTask<String, String, Boolean> {
+        @Override
+        protected Boolean doInBackground(String... strings) {
+            try {
+                final String refreshedToken = FirebaseInstanceId.getInstance().getToken();
+
+                Log.d("FirebaseID", refreshedToken);
+            }catch(Exception ex){
+                Log.i("FirebaseID", ex.getMessage());
+            }
+
+            return true;
+        }
+    }
 }

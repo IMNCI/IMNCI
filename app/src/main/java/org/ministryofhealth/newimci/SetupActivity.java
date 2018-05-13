@@ -68,6 +68,7 @@ public class SetupActivity extends AppCompatActivity implements ConnectivityRece
     Button btnSubmit;
     Boolean page;
     int user_id;
+    int app_user_id;
     AwesomeValidation mAwesomeValidation;
     SharedPreferences pref;
     TableLayout enteredDataTable, formTable;
@@ -142,6 +143,8 @@ public class SetupActivity extends AppCompatActivity implements ConnectivityRece
         cadreRow = (TableRow) findViewById(R.id.cadre_row);
         db = new DatabaseHandler(this);
         context = this;
+
+        app_user_id = db.getUser().getId();
 
         mAwesomeValidation = new AwesomeValidation(ValidationStyle.BASIC);
 
@@ -436,6 +439,7 @@ public class SetupActivity extends AppCompatActivity implements ConnectivityRece
                 profile.setProfession(profession);
                 profile.setSector(sector);
                 profile.setPhone_id(FirebaseInstanceId.getInstance().getToken());
+                profile.setApp_user_id(app_user_id);
 
                 try{
                     final ProgressDialog progressDialog = new ProgressDialog(context);

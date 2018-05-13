@@ -1,6 +1,7 @@
 package org.ministryofhealth.newimci.service;
 
 import android.os.Build;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -26,7 +27,6 @@ public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService {
             Calendar cal = Calendar.getInstance();
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             final String formatted_date = format.format(cal.getTime());
-
             DeviceName.with(getApplicationContext()).request(new DeviceName.Callback() {
                 @Override
                 public void onFinished(DeviceName.DeviceInfo info, Exception error) {
