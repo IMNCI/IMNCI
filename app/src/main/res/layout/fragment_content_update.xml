@@ -58,7 +58,7 @@
         android:layout_marginTop="32dp"
         android:layout_marginBottom="32dp"
         android:orientation="vertical"
-        android:visibility="gone"
+        android:visibility="visible"
         android:padding="16dp">
         <ImageView
             android:id="@+id/coat_of_arms"

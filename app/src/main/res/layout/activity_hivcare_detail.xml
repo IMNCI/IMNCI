@@ -4,11 +4,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context="org.ministryofhealth.newimci.HIVCareDetailActivity">
     <org.sufficientlysecure.htmltextview.HtmlTextView
+        android:visibility="gone"
         android:id="@+id/hiv_content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="fill"
         android:padding="16dp"></org.sufficientlysecure.htmltextview.HtmlTextView>
+    <WebView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/hiv_content_webview"
+        android:padding="16dp"></WebView>
+
 </LinearLayout>
