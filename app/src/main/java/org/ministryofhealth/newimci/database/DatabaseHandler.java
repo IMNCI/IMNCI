@@ -1519,7 +1519,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
 
         values.put(KEY_ID, user.getId());
-        values.put(KEY_AILMENT, user.getPhone_id());
+        values.put(KEY_PHONE_ID, user.getPhone_id());
 
         db.insert(TABLE_APP_USER, null, values);
     }

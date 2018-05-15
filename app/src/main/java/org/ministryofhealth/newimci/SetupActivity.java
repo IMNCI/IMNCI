@@ -70,7 +70,7 @@ public class SetupActivity extends AppCompatActivity implements ConnectivityRece
     int user_id;
     int app_user_id;
     AwesomeValidation mAwesomeValidation;
-    SharedPreferences pref;
+    static SharedPreferences pref;
     TableLayout enteredDataTable, formTable;
     TableRow cadreRow;
 
@@ -101,6 +101,8 @@ public class SetupActivity extends AppCompatActivity implements ConnectivityRece
 
     private static final int COUNTRY_LIST_CODE = 100;
     private static final int COUNTY_LIST_CODE = 101;
+
+//    SharedPreferences pref = getSharedPreferences("user_details", Context.MODE_PRIVATE);
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -145,7 +147,6 @@ public class SetupActivity extends AppCompatActivity implements ConnectivityRece
         context = this;
 
         app_user_id = db.getUser().getId();
-
         mAwesomeValidation = new AwesomeValidation(ValidationStyle.BASIC);
 
         mAwesomeValidation.addValidation(this, R.id.user_email, Patterns.EMAIL_ADDRESS, R.string.error_email);
@@ -490,8 +491,7 @@ public class SetupActivity extends AppCompatActivity implements ConnectivityRece
         }
     }
 
-    private void saveUserPreference(UserProfile profile, Boolean uploaded){
-        SharedPreferences pref = context.getSharedPreferences("user_details", Context.MODE_PRIVATE);
+    public static void saveUserPreference(UserProfile profile, Boolean uploaded){
         SharedPreferences.Editor editor = pref.edit();
 
         editor.putInt("id", profile.getId());
@@ -527,6 +527,7 @@ public class SetupActivity extends AppCompatActivity implements ConnectivityRece
                 profile.setCadre(selected_cadre_);
                 profile.setSector(selected_sector_);
                 profile.setPhone_id(FirebaseInstanceId.getInstance().getToken());
+                profile.setApp_user_id(app_user_id);
 
                 if (ConnectivityReceiver.isConnected()){
                     final ProgressDialog progressDialog = new ProgressDialog(context);
@@ -545,6 +546,7 @@ public class SetupActivity extends AppCompatActivity implements ConnectivityRece
                                 saveUserPreference(response.body(), ConnectivityReceiver.isConnected());
                                 Toast.makeText(context, "User profile uploaded successfully", Toast.LENGTH_SHORT).show();
                                 startActivity(new Intent(context, UserProfileDetailsActivity.class));
+                                finish();
                             }else{
                                 try {
                                     Log.e("Userprofile", response.errorBody().string());
@@ -612,7 +614,6 @@ public class SetupActivity extends AppCompatActivity implements ConnectivityRece
             btnCountry.setTextColor(Color.BLACK);
             btnCountry.setText(country_name);
             if (country_code.equals("KEN")){
-                Toast.makeText(context, country_code, Toast.LENGTH_SHORT).show();
                 countyLayout.setVisibility(View.VISIBLE);
             }else{
                 countyLayout.setVisibility(View.GONE);

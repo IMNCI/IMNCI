@@ -2,6 +2,7 @@ package org.ministryofhealth.newimci;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
@@ -35,6 +36,7 @@ import com.firebase.jobdispatcher.Lifetime;
 import com.firebase.jobdispatcher.RetryStrategy;
 import com.firebase.jobdispatcher.Trigger;
 
+import org.ministryofhealth.newimci.database.DatabaseHandler;
 import org.ministryofhealth.newimci.fragment.ContentUpdate;
 import org.ministryofhealth.newimci.fragment.DashboardFragment;
 import org.ministryofhealth.newimci.fragment.GlossaryFragment;
@@ -44,6 +46,7 @@ import org.ministryofhealth.newimci.fragment.OtherAppsFragment;
 import org.ministryofhealth.newimci.fragment.ReviewFragment;
 import org.ministryofhealth.newimci.fragment.SettingsFragment;
 import org.ministryofhealth.newimci.helper.TaskCompleted;
+import org.ministryofhealth.newimci.model.AppUser;
 import org.ministryofhealth.newimci.service.UpdateService;
 
 import java.lang.reflect.Field;
@@ -58,6 +61,9 @@ public class MainPageActivity extends AppCompatActivity
     TextView txtDisplayEmail;
     NavigationView navigationView;
 
+    DatabaseHandler db;
+    SharedPreferences pref;
+
     String TAG_FRAGMENT = "";
 
     @Override
@@ -68,6 +74,32 @@ public class MainPageActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         scheduleJob(this);
+
+        db = new DatabaseHandler(this);
+
+        AppUser appUser = db.getUser();
+        pref = getSharedPreferences("user_details", Context.MODE_PRIVATE);
+        int id = pref.getInt("id", 0);
+
+        if (id == 0 && appUser.getId() != 0){
+            android.support.v7.app.AlertDialog alertDialog = new android.support.v7.app.AlertDialog.Builder(this).create();
+            alertDialog.setTitle("User Profile");
+            alertDialog.setMessage("Hello there. Welcome to " + getString(R.string.app_name) + ". Please take a minute to fill in your profile.");
+            alertDialog.setButton(android.support.v7.app.AlertDialog.BUTTON_POSITIVE, "OK",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            startActivity(new Intent(MainPageActivity.this, SetupActivity.class));
+                        }
+                    });
+            alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Not Now", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+            alertDialog.show();
+        }
+
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(

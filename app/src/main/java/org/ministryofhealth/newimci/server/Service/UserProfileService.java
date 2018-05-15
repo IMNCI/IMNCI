@@ -1,6 +1,7 @@
 package org.ministryofhealth.newimci.server.Service;
 
 import org.ministryofhealth.newimci.model.UserProfile;
+import org.ministryofhealth.newimci.server.model.ProfileRequest;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -17,7 +18,5 @@ public interface UserProfileService {
     Call<UserProfile> addProfile(@Body UserProfile profile);
 
     @POST("api/user/getprofile")
-    @FormUrlEncoded
-    
-    Call<UserProfile> getProfile(@Field("app_user_id") int app_user_id, @Field("token") String token);
+    Call<UserProfile> getProfile(@Body ProfileRequest profileRequest);
 }
