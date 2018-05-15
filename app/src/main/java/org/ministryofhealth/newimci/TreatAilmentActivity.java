@@ -10,6 +10,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ImageView;
@@ -172,8 +174,21 @@ public class TreatAilmentActivity extends AppCompatActivity {
             TextView txtListChild = (TextView) convertView
                     .findViewById(R.id.treat_child_id);
             HtmlTextView txtHtmlChild = (HtmlTextView) convertView.findViewById(R.id.treat_child);
+            final WebView webView = convertView.findViewById(R.id.treat_child_webview);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    WebSettings s = webView.getSettings();
+                    s.setUseWideViewPort(false);
+                    s.setSupportZoom(true);
+                    s.setBuiltInZoomControls(true);
+                    s.setDisplayZoomControls(true);
+                    s.setJavaScriptEnabled(true);
+                    webView.loadData(ailment.getTreatment(), "text/html", "utf-8");
+                }
+            });
             ImageView imgHand = (ImageView) convertView.findViewById(R.id.image_hand);
-            txtHtmlChild.setHtml(ailment.getTreatment(),new URLImageParser(txtHtmlChild, _context));
+//            txtHtmlChild.setHtml(ailment.getTreatment(),new URLImageParser(txtHtmlChild, _context));
             txtListChild.setText(String.valueOf(ailment.getId()));
 
             if (getGroup(groupPosition) == "Content"){

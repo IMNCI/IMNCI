@@ -27,6 +27,12 @@
         android:id="@+id/treat_child"
         android:layout_toLeftOf="@id/image_hand"/>
 
+    <WebView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/treat_child_webview"
+        android:padding="16dp"></WebView>
+
     <!--<TextView-->
         <!--android:layout_width="match_parent"-->
         <!--android:layout_height="match_parent"-->

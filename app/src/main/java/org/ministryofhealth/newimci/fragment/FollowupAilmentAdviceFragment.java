@@ -2,12 +2,15 @@ package org.ministryofhealth.newimci.fragment;
 
 import android.content.Context;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,6 +33,9 @@ public class FollowupAilmentAdviceFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private static final String ARG_AILMENT_FOLLOWUP = "ailment_follow_up";
+
+    WebView webView;
+    String adviceContent;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -76,12 +82,42 @@ public class FollowupAilmentAdviceFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_followup_ailment_advice, container, false);
-        HtmlTextView ailmentText = (HtmlTextView) rootView.findViewById(R.id.ailment_advice);
-        if (mAilmentFollowUp.getAdvice() != null)
-            ailmentText.setHtml(mAilmentFollowUp.getAdvice());
-        else
-            ailmentText.setText("No Advice for this ailment");
+        webView = rootView.findViewById(R.id.ailment_advice_webview);
+
+        new LoadAdviceView().execute();
+//        HtmlTextView ailmentText = (HtmlTextView) rootView.findViewById(R.id.ailment_advice);
+//        if (mAilmentFollowUp.getAdvice() != null)
+//            ailmentText.setHtml(mAilmentFollowUp.getAdvice());
+//        else
+//            ailmentText.setText("No Advice for this ailment");
         return rootView;
+    }
+
+    class LoadAdviceView extends AsyncTask{
+
+        @Override
+        protected Object doInBackground(Object[] objects) {
+            adviceContent = mAilmentFollowUp.getAdvice();
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Object o) {
+            super.onPostExecute(o);
+
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    WebSettings s = webView.getSettings();
+                    s.setUseWideViewPort(false);
+                    s.setSupportZoom(true);
+                    s.setBuiltInZoomControls(true);
+                    s.setDisplayZoomControls(true);
+                    s.setJavaScriptEnabled(true);
+                    webView.loadData(adviceContent, "text/html", "utf-8");
+                }
+            });
+        }
     }
 
     // TODO: Rename method, update argument and hook method into UI event

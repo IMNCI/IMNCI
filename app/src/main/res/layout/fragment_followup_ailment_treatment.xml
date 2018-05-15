@@ -10,6 +10,13 @@
         android:id="@+id/ailment_treatment"
         android:fontFamily="@font/sourcesansproregular"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:visibility="gone"/>
+
+    <WebView
+        style="@style/followup_html"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/ailment_treatment_webview"></WebView>
 
 </FrameLayout>

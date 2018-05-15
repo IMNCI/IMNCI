@@ -2,11 +2,14 @@ package org.ministryofhealth.newimci.fragment;
 
 import android.content.Context;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,10 +33,14 @@ public class FollowupAilmentTreatmentFragment extends Fragment {
     private static final String ARG_PARAM2 = "param2";
     private static final String ARG_AILMENT_FOLLOWUP = "ailment_follow_up";
 
+    WebView webView;
+
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
     private AilmentFollowUp mAilmentFollowUp;
+
+    String followUp;
 
     private OnFragmentInteractionListener mListener;
 
@@ -75,12 +82,41 @@ public class FollowupAilmentTreatmentFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_followup_ailment_treatment, container, false);
-        HtmlTextView treatment = (HtmlTextView) rootView.findViewById(R.id.ailment_treatment);
-        if (mAilmentFollowUp.getTreatment() != null)
-            treatment.setHtml(mAilmentFollowUp.getTreatment());
-        else
-            treatment.setText("No treatment for this ailment");
+        webView = rootView.findViewById(R.id.ailment_treatment_webview);
+        new LoadFollowupCare().execute();
+//        HtmlTextView treatment = (HtmlTextView) rootView.findViewById(R.id.ailment_treatment);
+//        if (mAilmentFollowUp.getTreatment() != null)
+//            treatment.setHtml(mAilmentFollowUp.getTreatment());
+//        else
+//            treatment.setText("No treatment for this ailment");
         return rootView;
+    }
+
+    class LoadFollowupCare extends AsyncTask{
+
+        @Override
+        protected Object doInBackground(Object[] objects) {
+            followUp = mAilmentFollowUp.getTreatment();
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Object o) {
+            super.onPostExecute(o);
+
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    WebSettings s = webView.getSettings();
+                    s.setUseWideViewPort(false);
+                    s.setSupportZoom(true);
+                    s.setBuiltInZoomControls(true);
+                    s.setDisplayZoomControls(true);
+                    s.setJavaScriptEnabled(true);
+                    webView.loadData(followUp, "text/html", "utf-8");
+                }
+            });
+        }
     }
 
     // TODO: Rename method, update argument and hook method into UI event

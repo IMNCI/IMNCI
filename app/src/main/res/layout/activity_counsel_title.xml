@@ -6,19 +6,20 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="org.ministryofhealth.newimci.CounselTitleActivity">
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+    <!--<ScrollView-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent">-->
         <org.sufficientlysecure.htmltextview.HtmlTextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/content"
-            android:padding="16dp"/>
-    </ScrollView>
-    <ZoomControls
-        android:layout_width="wrap_content"
+            android:padding="16dp"
+            android:visibility="gone"/>
+
+    <WebView
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/zoomeControls"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"></ZoomControls>
+        android:id="@+id/content_webview"
+        android:padding="16dp"></WebView>
+    <!--</ScrollView>-->
 </RelativeLayout>

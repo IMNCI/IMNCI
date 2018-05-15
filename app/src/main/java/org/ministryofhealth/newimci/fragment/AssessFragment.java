@@ -1,12 +1,17 @@
 package org.ministryofhealth.newimci.fragment;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,6 +44,11 @@ public class AssessFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
+    ProgressDialog dialog;
+
+    WebView webView;
+
+    String assessmentContent;
     public AssessFragment() {
         // Required empty public constructor
     }
@@ -77,14 +87,19 @@ public class AssessFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_assess, container, false);
+
 //        TextView txtAssess = (TextView) rootView.findViewById(R.id.assess);
         HtmlTextView txtAssess = (HtmlTextView) rootView.findViewById(R.id.assess);
+        webView = rootView.findViewById(R.id.assess_web_view);
 //        Toast.makeText(getContext(), mAssessment.getAssessment(), Toast.LENGTH_SHORT).show();
-        if (mAssessment.getAssessment() != null)
-            txtAssess.setHtml(mAssessment.getAssessment(),new URLImageParser(txtAssess, getContext()));
+        if (mAssessment.getAssessment() != null) {
+//            txtAssess.setHtml(mAssessment.getAssessment(),new URLImageParser(txtAssess, getContext()));
 //            txtAssess.setText(HtmlHelper.parseHTML(mAssessment.getAssessment()));
-        else
+        }else {
             txtAssess.setText("No assessment available");
+        }
+
+        new LoadAssessWebView().execute();
         return rootView;
     }
 
@@ -125,5 +140,44 @@ public class AssessFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    class LoadAssessWebView extends AsyncTask{
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            dialog = new ProgressDialog(getContext());
+            dialog.setMessage("Getting Assessment");
+            dialog.setCancelable(false);
+            dialog.setIndeterminate(true);
+            dialog.show();
+        }
+
+        @Override
+        protected Object doInBackground(Object[] objects) {
+            assessmentContent = mAssessment.getAssessment();
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Object o) {
+            super.onPostExecute(o);
+
+            dialog.dismiss();
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    WebSettings s = webView.getSettings();
+                    s.setUseWideViewPort(false);
+                    s.setSupportZoom(true);
+                    s.setBuiltInZoomControls(true);
+                    s.setDisplayZoomControls(true);
+                    s.setJavaScriptEnabled(true);
+                    webView.loadData(assessmentContent, "text/html", "utf-8");
+                }
+            });
+        }
     }
 }
