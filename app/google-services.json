@@ -15,12 +15,24 @@
       },
       "oauth_client": [
         {
+          "client_id": "109213056048-1p58sn325lbkqsnil23v9hq67a210o97.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "org.ministryofhealth.newimci",
+            "certificate_hash": "16279b9932a8c3addec59d2f797dd5a12972f554"
+          }
+        },
+        {
           "client_id": "109213056048-nbhg8a9ajb812e4qob9ec2l7h859mu2u.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "org.ministryofhealth.newimci",
             "certificate_hash": "5b9fe54cb253629a005bd6a73da97417a20477a7"
           }
+        },
+        {
+          "client_id": "109213056048-chehsqo4643g73puihs7u37u1m8lq3gm.apps.googleusercontent.com",
+          "client_type": 3
         },
         {
           "client_id": "109213056048-chehsqo4643g73puihs7u37u1m8lq3gm.apps.googleusercontent.com",

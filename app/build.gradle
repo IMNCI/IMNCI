@@ -7,7 +7,7 @@ android {
         applicationId "org.ministryofhealth.newimci"
         minSdkVersion 14
         targetSdkVersion 26
-        versionCode 7
+        versionCode 8
         versionName "2.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
@@ -53,6 +53,7 @@ dependencies {
     implementation 'com.caverock:androidsvg:1.2.1'
     implementation 'com.birbit:android-priority-jobqueue:2.0.1'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.7.1'
+    implementation 'org.ocpsoft.prettytime:prettytime:4.0.1.Final'
     testImplementation 'junit:junit:4.12'
 }
 

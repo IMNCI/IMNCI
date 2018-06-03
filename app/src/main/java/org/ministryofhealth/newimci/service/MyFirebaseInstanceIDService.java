@@ -1,13 +1,16 @@
 package org.ministryofhealth.newimci.service;
 
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.jaredrummler.android.device.DeviceName;
 
+import org.ministryofhealth.newimci.config.Constants;
 import org.ministryofhealth.newimci.helper.AppHelper;
 import org.ministryofhealth.newimci.model.AppUser;
 import org.ministryofhealth.newimci.server.AppUserClient;
@@ -24,6 +27,8 @@ public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService {
     public void onTokenRefresh() {
         try {
             final String refreshedToken = FirebaseInstanceId.getInstance().getToken();
+            storeRegIdInPref(refreshedToken);
+            FirebaseMessaging.getInstance().subscribeToTopic(Constants.TOPIC_GLOBAL);
             Calendar cal = Calendar.getInstance();
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             final String formatted_date = format.format(cal.getTime());
@@ -49,5 +54,12 @@ public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService {
         }catch(Exception ex){
             Toast.makeText(getApplicationContext(), ex.getMessage(), Toast.LENGTH_LONG).show();
         }
+    }
+
+    private void storeRegIdInPref(String token) {
+        SharedPreferences pref = getApplicationContext().getSharedPreferences(Constants.FIREBASE_SHARED_PREF, 0);
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putString("regId", token);
+        editor.commit();
     }
 }

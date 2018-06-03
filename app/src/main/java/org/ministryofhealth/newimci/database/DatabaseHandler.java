@@ -29,6 +29,7 @@ import org.ministryofhealth.newimci.model.GalleryItem;
 import org.ministryofhealth.newimci.model.Glossary;
 import org.ministryofhealth.newimci.model.HIVCare;
 import org.ministryofhealth.newimci.model.HIVParent;
+import org.ministryofhealth.newimci.model.Notification;
 import org.ministryofhealth.newimci.model.TreatAilment;
 import org.ministryofhealth.newimci.model.TreatAilmentTreatment;
 import org.ministryofhealth.newimci.model.TreatTitle;
@@ -42,7 +43,7 @@ import java.util.List;
 
 public class DatabaseHandler extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 23;
+    private static final int DATABASE_VERSION = 24;
     private static final String DATABASE_NAME = "imci_mobile_app";
 
     public static final String TABLE_AILMENTS = "ailments";
@@ -67,6 +68,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public static final String TABLE_GALLERY_AILMENT = "gallery_ailment";
     public static final String TABLE_APP_USER = "app_user";
     public static final String TABLE_COUNTRY = "country";
+    public static final String TABLE_NOTIFICATIONS = "notifications";
 
     private static final String KEY_ID = "id";
     private static final String KEY_AILMENT = "ailment";
@@ -127,6 +129,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public static final String KEY_COUNTRY_NAME = "country_name";
     public static final String KEY_COUNTRY_FLAG = "country_flag";
 
+    public static final String KEY_MESSAGE = "message";
+    public static final String KEY_STATUS = "status";
 
     SQLiteDatabase writableDB;
 
@@ -280,6 +284,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 + KEY_COUNTRY_NAME + " TEXT,"
                 + KEY_COUNTRY_FLAG + " TEXT"
                 + ");";
+
+        String CREATE_NOTIFICATIONS_TABLE = "CREATE TABLE " + TABLE_NOTIFICATIONS + "("
+                + KEY_ID + " INTEGER,"
+                + KEY_TITLE + " TEXT,"
+                + KEY_MESSAGE + " TEXT,"
+                + KEY_STATUS + " INTEGER,"
+                + KEY_CREATED_AT + " TEXT"
+                + ");";
 //        String CREATE_ASSESSMENT_CLASSIFICATION_SIGNS_TABLE = "CREATE TABLE " + TABLE_ASSESSMENT_CLASSIFICATION_SIGNS + "("
 //                + KEY_ID + " INTEGER,"
 //                + KEY_CLASSIFICATION_ID + " INTEGER,"
@@ -312,6 +324,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.execSQL(CREATE_GALLERY_AILMENTS_TABLE);
         db.execSQL(CREATE_APP_USER_TABLE);
         db.execSQL(CREATE_COUNTRY_TABLE);
+        db.execSQL(CREATE_NOTIFICATIONS_TABLE);
 //        db.execSQL(CREATE_ASSESSMENT_CLASSIFICATION_SIGNS_TABLE);
 //        db.execSQL(CREATE_ASSESSMENT_CLASSIFICATION_TREATMENTS_TABLE);
     }
@@ -338,6 +351,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_GALLERY_ITEM);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_APP_USER);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_COUNTRY);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_NOTIFICATIONS);
 //        db.execSQL("DROP TABLE IF EXISTS " + TABLE_ASSESSMENT_CLASSIFICATION_SIGNS);
 //        db.execSQL("DROP TABLE IF EXISTS " + TABLE_ASSESSMENT_CLASSIFICATION_TREATMENTS);
         onCreate(db);
@@ -364,6 +378,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_GALLERY_ITEM);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_APP_USER);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_COUNTRY);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_NOTIFICATIONS);
 
         onCreate(db);
     }
@@ -1602,5 +1617,55 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             country.setCountry_flag(cursor.getString(cursor.getColumnIndex(KEY_COUNTRY_FLAG)));
         }
         return country;
+    }
+
+    public void addNotification(Notification notification){
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+
+        values.put(KEY_ID, notification.getId());
+        values.put(KEY_TITLE, notification.getTitle());
+        values.put(KEY_MESSAGE, notification.getMessage());
+        values.put(KEY_STATUS, notification.getStatus());
+        values.put(KEY_CREATED_AT, notification.getCreated_at());
+
+        db.insert(TABLE_NOTIFICATIONS, null, values);
+    }
+
+    public List<Notification> getNotifications(){
+        List<Notification> notifications = new ArrayList<Notification>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TABLE_NOTIFICATIONS, null, null, null, null, null, KEY_ID+ " DESC");
+
+        if (cursor.moveToFirst()){
+            do {
+                Notification notification = new Notification();
+
+                notification.setId(cursor.getInt(cursor.getColumnIndex(KEY_ID)));
+                notification.setTitle(cursor.getString(cursor.getColumnIndex(KEY_TITLE)));
+                notification.setMessage(cursor.getString(cursor.getColumnIndex(KEY_MESSAGE)));
+                notification.setStatus(cursor.getInt(cursor.getColumnIndex(KEY_STATUS)));
+                notification.setCreated_at(cursor.getString(cursor.getColumnIndex(KEY_CREATED_AT)));
+
+                notifications.add(notification);
+            }while(cursor.moveToNext());
+        }
+        return notifications;
+    }
+
+    public Notification getNotification(int id){
+        Notification notification = new Notification();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TABLE_NOTIFICATIONS, null, KEY_ID + "=?", new String[]{String.valueOf(id)}, null, null, null);
+
+        if (cursor.moveToFirst()){
+            notification.setId(cursor.getInt(cursor.getColumnIndex(KEY_ID)));
+            notification.setTitle(cursor.getString(cursor.getColumnIndex(KEY_TITLE)));
+            notification.setMessage(cursor.getString(cursor.getColumnIndex(KEY_MESSAGE)));
+            notification.setStatus(cursor.getInt(cursor.getColumnIndex(KEY_STATUS)));
+            notification.setCreated_at(cursor.getString(cursor.getColumnIndex(KEY_CREATED_AT)));
+        }
+        return notification;
     }
 }

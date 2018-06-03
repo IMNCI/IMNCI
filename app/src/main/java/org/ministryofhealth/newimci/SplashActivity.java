@@ -15,7 +15,9 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.messaging.FirebaseMessaging;
 
+import org.ministryofhealth.newimci.config.Constants;
 import org.ministryofhealth.newimci.database.DatabaseHandler;
 import org.ministryofhealth.newimci.helper.RetrofitHelper;
 import org.ministryofhealth.newimci.model.AgeGroup;
@@ -74,6 +76,7 @@ public class SplashActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FirebaseMessaging.getInstance().subscribeToTopic(Constants.TOPIC_GLOBAL);
         setContentView(R.layout.activity_splash);
 
         try {

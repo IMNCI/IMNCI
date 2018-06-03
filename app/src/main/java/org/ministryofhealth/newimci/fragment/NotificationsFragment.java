@@ -3,12 +3,29 @@ package org.ministryofhealth.newimci.fragment;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import org.ministryofhealth.newimci.R;
+import org.ministryofhealth.newimci.database.DatabaseHandler;
+import org.ministryofhealth.newimci.model.Notification;
+import org.ministryofhealth.newimci.util.DividerItemDecoration;
+import org.ocpsoft.prettytime.PrettyTime;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -23,6 +40,9 @@ public class NotificationsFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+
+    RecyclerView recyclerView;
+    RelativeLayout noNofiticationsLayout;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -64,8 +84,29 @@ public class NotificationsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.fragment_notifications, container, false);
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_notifications, container, false);
+        DatabaseHandler db = new DatabaseHandler(getContext());
+        List<Notification> notifications = db.getNotifications();
+        recyclerView = rootView.findViewById(R.id.notifications_rv);
+        noNofiticationsLayout = rootView.findViewById(R.id.no_notifications_holder);
+        if(notifications.size() > 0) {
+            recyclerView.setVisibility(View.VISIBLE);
+            noNofiticationsLayout.setVisibility(View.GONE);
+
+            NotificationsAdapter adapter = new NotificationsAdapter(getContext(), notifications);
+            RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getContext());
+
+            recyclerView.setLayoutManager(mLayoutManager);
+            recyclerView.setItemAnimator(new DefaultItemAnimator());
+            recyclerView.addItemDecoration(new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL));
+
+            recyclerView.setAdapter(adapter);
+        }else{
+            recyclerView.setVisibility(View.GONE);
+            noNofiticationsLayout.setVisibility(View.VISIBLE);
+        }
+        return rootView;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -105,5 +146,59 @@ public class NotificationsFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdapter.NotificationViewHolder>{
+        private List<Notification> notificationList;
+        private Context context;
+
+        public NotificationsAdapter(Context c, List<Notification> notifications){
+            this.notificationList = notifications;
+            this.context = c;
+        }
+
+        @NonNull
+        @Override
+        public NotificationViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.notification_list_item, parent, false);
+            return new NotificationViewHolder(itemView);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull NotificationViewHolder holder, int position) {
+            Notification notification = notificationList.get(position);
+
+            PrettyTime p = new PrettyTime();
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+            try {
+                Date date = format.parse(notification.getCreated_at());
+                holder.txtDate.setText(p.format(date));
+                Log.d("Date", p.format(date));
+            } catch (ParseException e) {
+                e.printStackTrace();
+                Log.e("Date", e.getMessage());
+            }
+
+            holder.txtTitle.setText(notification.getTitle());
+            holder.txtMessage.setText(notification.getMessage());
+
+        }
+
+        @Override
+        public int getItemCount() {
+            return notificationList.size();
+        }
+
+        class NotificationViewHolder extends RecyclerView.ViewHolder{
+            TextView txtTitle, txtMessage, txtDate;
+            public NotificationViewHolder(View itemView) {
+                super(itemView);
+
+                txtTitle = (TextView) itemView.findViewById(R.id.title);
+                txtMessage = (TextView) itemView.findViewById(R.id.message);
+                txtDate = (TextView) itemView.findViewById(R.id.date);
+            }
+        }
     }
 }

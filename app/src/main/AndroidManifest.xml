@@ -12,10 +12,10 @@
     <application
         android:name=".app.AppController"
         android:allowBackup="true"
+        android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
-        android:hardwareAccelerated="true"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <provider
@@ -31,6 +31,11 @@
         <service android:name=".service.MyFirebaseInstanceIDService">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
+            </intent-filter>
+        </service>
+        <service android:name=".service.MyFirebaseMessagingService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
         <service
@@ -131,8 +136,10 @@
             android:label="Select your County"
             android:noHistory="true"
             android:theme="@android:style/Theme.Holo.Light.Dialog" />
-        <activity android:name=".UserProfileDetailsActivity"
-            android:theme="@style/UserProfileDetailsTheme"></activity>
+        <activity
+            android:name=".UserProfileDetailsActivity"
+            android:theme="@style/UserProfileDetailsTheme" />
+        <activity android:name=".NotificationActivity"></activity>
     </application>
 
 </manifest>

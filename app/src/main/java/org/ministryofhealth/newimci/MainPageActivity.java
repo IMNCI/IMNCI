@@ -21,6 +21,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -35,6 +36,7 @@ import com.firebase.jobdispatcher.Job;
 import com.firebase.jobdispatcher.Lifetime;
 import com.firebase.jobdispatcher.RetryStrategy;
 import com.firebase.jobdispatcher.Trigger;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import org.ministryofhealth.newimci.database.DatabaseHandler;
 import org.ministryofhealth.newimci.fragment.ContentUpdate;
@@ -72,6 +74,8 @@ public class MainPageActivity extends AppCompatActivity
         setContentView(R.layout.activity_main_page);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        Log.d("FirebaseID", FirebaseInstanceId.getInstance().getToken());
 
         scheduleJob(this);
 
@@ -225,6 +229,7 @@ public class MainPageActivity extends AppCompatActivity
                 break;
 
             case R.id.nav_notifications:
+                // startActivity(new Intent(MainPageActivity.this, NotificationActivity.class));
                 newFragment = new NotificationsFragment();
                 break;
 
