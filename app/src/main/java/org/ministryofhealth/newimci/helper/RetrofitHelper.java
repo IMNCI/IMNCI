@@ -1,5 +1,8 @@
 package org.ministryofhealth.newimci.helper;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import org.ministryofhealth.newimci.config.Constants;
 
 import java.util.concurrent.TimeUnit;
@@ -24,9 +27,12 @@ public class RetrofitHelper {
     }
 
     public Retrofit createHelper(){
+        GsonBuilder gbuilder = new GsonBuilder();
+        gbuilder.registerTypeAdapter(Boolean.class, new BooleanTypeAdapter());
+        Gson gson = gbuilder.create();
         Retrofit.Builder builder = new Retrofit.Builder()
                 .baseUrl(Constants.BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create());
+                .addConverterFactory(GsonConverterFactory.create(gson));
 
         return builder.build();
     }

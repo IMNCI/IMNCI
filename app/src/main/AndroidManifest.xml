@@ -139,7 +139,20 @@
         <activity
             android:name=".UserProfileDetailsActivity"
             android:theme="@style/UserProfileDetailsTheme" />
-        <activity android:name=".NotificationActivity"></activity>
+        <activity android:name=".NotificationActivity" />
+        <activity
+            android:name=".TestActivity"
+            android:theme="@style/TestTheme" />
+        <activity android:name=".tests.TestListActivity" />
+        <activity
+            android:name=".tests.TestIntroductionActivity"
+            android:theme="@style/TestTheme" />
+        <activity android:name=".tests.ActualTestActivity"
+            android:theme="@style/TestTheme"></activity>
+
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
     </application>
 
 </manifest>

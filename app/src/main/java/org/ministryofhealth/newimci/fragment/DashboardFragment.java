@@ -263,6 +263,15 @@ public class DashboardFragment extends Fragment {
 
         menu = new Menu();
 
+        menu.set_menu_title("Test");
+        menu.set_menu_slug("test");
+        menu.set_menu_color("#E91E63");
+        menu.set_image_resource(R.drawable.ic_graduation_hat);
+
+        menuList.add(menu);
+
+        menu = new Menu();
+
         menu.set_menu_title("Glossary");
         menu.set_menu_slug("glossary");
         menu.set_menu_color("#43A047");

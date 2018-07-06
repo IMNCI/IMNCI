@@ -36,6 +36,9 @@ import org.ministryofhealth.newimci.model.GalleryAilment;
 import org.ministryofhealth.newimci.model.GalleryItem;
 import org.ministryofhealth.newimci.model.Glossary;
 import org.ministryofhealth.newimci.model.HIVCare;
+import org.ministryofhealth.newimci.model.Question;
+import org.ministryofhealth.newimci.model.QuestionChoice;
+import org.ministryofhealth.newimci.model.Test;
 import org.ministryofhealth.newimci.model.TreatAilment;
 import org.ministryofhealth.newimci.model.TreatAilmentTreatment;
 import org.ministryofhealth.newimci.model.TreatTitle;
@@ -55,6 +58,7 @@ import org.ministryofhealth.newimci.server.Service.GalleryItemService;
 import org.ministryofhealth.newimci.server.Service.GalleryService;
 import org.ministryofhealth.newimci.server.Service.GlossaryService;
 import org.ministryofhealth.newimci.server.Service.HIVCareService;
+import org.ministryofhealth.newimci.server.Service.TestService;
 import org.ministryofhealth.newimci.server.Service.TreatAilmentService;
 import org.ministryofhealth.newimci.server.Service.TreatAilmentTreatmentService;
 import org.ministryofhealth.newimci.server.Service.TreatTitlesService;
@@ -148,6 +152,7 @@ public class SplashActivity extends AppCompatActivity {
         GalleryService galleryClient = retrofit.create(GalleryService.class);
         GalleryAilmentService galleryAilmentClient = retrofit.create(GalleryAilmentService.class);
         GalleryItemService galleryItemClient = retrofit.create(GalleryItemService.class);
+        TestService testClient = retrofit.create(TestService.class);
 
         Call<List<AgeGroup>> ageCall = ageClient.getAgeGroups();
         Call<List<Ailment>> ailmentsCall = client.getAilments();
@@ -166,6 +171,9 @@ public class SplashActivity extends AppCompatActivity {
         Call<List<Gallery>> galleryCall = galleryClient.getGallery();
         Call<List<GalleryItem>> galleryItemCall = galleryItemClient.getItems();
         Call<List<GalleryAilment>> galleryAilmentCall = galleryAilmentClient.getGalleryAilment();
+        Call<List<Test>> getTestCall = testClient.getTests();
+        Call<List<Question>> getQuestionsCall = testClient.getQuestions();
+        Call<List<QuestionChoice>> getQuestionChoicesCall = testClient.getQuestionChoices();
 
 
         ageCall.enqueue(new Callback<List<AgeGroup>>() {
@@ -372,7 +380,42 @@ public class SplashActivity extends AppCompatActivity {
             }
         });
 
+        getTestCall.enqueue(new Callback<List<Test>>() {
+            @Override
+            public void onResponse(Call<List<Test>> call, Response<List<Test>> response) {
+                System.out.println("Tests: => " +  response.body().size());
+                db.addTests(response.body());
+            }
 
+            @Override
+            public void onFailure(Call<List<Test>> call, Throwable t) {
+                Log.e("Test", t.getMessage());
+            }
+        });
+
+        getQuestionsCall.enqueue(new Callback<List<Question>>() {
+            @Override
+            public void onResponse(Call<List<Question>> call, Response<List<Question>> response) {
+                db.addQuestions(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<List<Question>> call, Throwable t) {
+                Log.e("Questions", t.getMessage());
+            }
+        });
+
+        getQuestionChoicesCall.enqueue(new Callback<List<QuestionChoice>>() {
+            @Override
+            public void onResponse(Call<List<QuestionChoice>> call, Response<List<QuestionChoice>> response) {
+                db.addQuestionChoices(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<List<QuestionChoice>> call, Throwable t) {
+                Log.e("QuestionChoices", t.getMessage());
+            }
+        });
     }
 
     class CountryAsyncTask extends AsyncTask<String, String, Boolean>{

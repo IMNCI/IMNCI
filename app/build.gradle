@@ -7,7 +7,7 @@ android {
         applicationId "org.ministryofhealth.newimci"
         minSdkVersion 14
         targetSdkVersion 26
-        versionCode 8
+        versionCode 9
         versionName "2.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true

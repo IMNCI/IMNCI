@@ -5,7 +5,8 @@ package org.ministryofhealth.newimci.config;
  */
 
 public class Constants {
-    public static String BASE_URL = "http://197.232.32.36/";
+//    public static String BASE_URL = "http://197.232.32.36/";
+    public static String BASE_URL = "http://imci.nascop.org/";
     public static String APP_STATS_URL = "http://188.166.75.97:3000";
     public static final String TOPIC_GLOBAL = "global";
     public static final String REGISTRATION_COMPLETE = "registrationComplete";

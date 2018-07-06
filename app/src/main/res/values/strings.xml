@@ -72,4 +72,7 @@
     <string name="download_app">Download App</string>
     <string name="other_apps">Other Apps</string>
     <string name="notifications">Notifications</string>
+
+    <string name="lorem_ipsum">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam efficitur ipsum in placerat molestie.  Fusce quis mauris a enim sollicitudin
+        \n\nLorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam efficitur ipsum in placerat molestie.  Fusce quis mauris a enim sollicitudin</string>
 </resources>

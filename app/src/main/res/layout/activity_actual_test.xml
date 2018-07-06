@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".tests.ActualTestActivity"
+    android:orientation="vertical">
+    <android.support.v4.view.ViewPager
+        android:layout_width="match_parent"
+        android:layout_height="0px"
+        android:layout_weight="1"
+        android:id="@+id/pager"/>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/grey_10"/>
+    <RelativeLayout android:orientation="horizontal"
+        android:measureWithLargestChild="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Back"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
+            android:id="@+id/backButton"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:clickable="true"
+            android:drawableLeft="@drawable/ic_chevron_left"
+            android:drawableTint="@color/colorWhite"
+            android:background="@color/nice_blue"
+            android:textColor="@color/colorWhite"
+            />
+
+        <TextView
+            android:id="@+id/question_counter"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@id/nextButton"
+            android:layout_toRightOf="@id/backButton"
+            android:text="Question 1 of 5"
+            android:textAlignment="center"
+            android:padding="8dp"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Next"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:id="@+id/nextButton"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:clickable="true"
+            android:drawableRight="@drawable/ic_chevron_right"
+            android:drawableTint="@color/colorWhite"
+            android:background="@color/nice_blue"
+            android:textColor="@color/colorWhite"
+            />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Finish"
+            android:visibility="gone"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:id="@+id/finishButton"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:clickable="true"
+            android:background="@color/colorPrimaryDark"
+            android:textColor="@color/colorWhite"
+            />
+    </RelativeLayout>
+</LinearLayout>

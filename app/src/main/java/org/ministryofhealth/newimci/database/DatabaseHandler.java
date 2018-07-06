@@ -30,6 +30,9 @@ import org.ministryofhealth.newimci.model.Glossary;
 import org.ministryofhealth.newimci.model.HIVCare;
 import org.ministryofhealth.newimci.model.HIVParent;
 import org.ministryofhealth.newimci.model.Notification;
+import org.ministryofhealth.newimci.model.Question;
+import org.ministryofhealth.newimci.model.QuestionChoice;
+import org.ministryofhealth.newimci.model.Test;
 import org.ministryofhealth.newimci.model.TreatAilment;
 import org.ministryofhealth.newimci.model.TreatAilmentTreatment;
 import org.ministryofhealth.newimci.model.TreatTitle;
@@ -43,7 +46,7 @@ import java.util.List;
 
 public class DatabaseHandler extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 24;
+    private static final int DATABASE_VERSION = 27;
     private static final String DATABASE_NAME = "imci_mobile_app";
 
     public static final String TABLE_AILMENTS = "ailments";
@@ -69,6 +72,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public static final String TABLE_APP_USER = "app_user";
     public static final String TABLE_COUNTRY = "country";
     public static final String TABLE_NOTIFICATIONS = "notifications";
+    public static final String TABLE_TESTS = "tests";
+    public static final String TABLE_QUESTIONS = "questions";
+    public static final String TABLE_QUESTION_CHOICES = "question_choices";
 
     private static final String KEY_ID = "id";
     private static final String KEY_AILMENT = "ailment";
@@ -131,6 +137,17 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     public static final String KEY_MESSAGE = "message";
     public static final String KEY_STATUS = "status";
+
+    public static final String KEY_TEST_NAME = "test_name";
+
+    public static final String KEY_QUESTION = "question";
+    public static final String KEY_QUESTION_TYPE = "question_type";
+    public static final String KEY_TESTS_ID = "tests_id";
+    public static final String KEY_HAS_CHILDREN = "has_children";
+
+    public static final String KEY_QUESTION_ID = "question_id";
+    public static final String KEY_CHOICE = "choice";
+    public static final String KEY_CORRECT_ANSWER = "correct_answer";
 
     SQLiteDatabase writableDB;
 
@@ -303,6 +320,29 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 //                + KEY_CLASSIFICATION_ID + " INTEGER,"
 //                + KEY_TREATMENT + " TEXT"
 //                + ");";
+        String CREATE_TESTS_TABLE = "CREATE TABLE " + TABLE_TESTS + "("
+                + KEY_ID + " INTEGER,"
+                + KEY_TEST_NAME + " TEXT,"
+                + KEY_DESCRIPTION + " TEXT,"
+                + KEY_CREATED_AT + " TEXT,"
+                + KEY_STATUS + " INTEGER"
+                + ");";
+
+        String CREATE_QUESTIONS_TABLE = "CREATE TABLE " + TABLE_QUESTIONS + "(" +
+                KEY_ID + " INTEGER," +
+                KEY_QUESTION + " TEXT," +
+                KEY_QUESTION_TYPE + " TEXT," +
+                KEY_TESTS_ID + " INTEGER," +
+                KEY_PARENT + " INTEGER," +
+                KEY_HAS_CHILDREN + " INTEGER" +
+                ");";
+
+        String CREATE_QUESTION_CHOICES_TABLE = "CREATE TABLE " + TABLE_QUESTION_CHOICES + "(" +
+                KEY_ID + " INTEGER," +
+                KEY_QUESTION_ID + " INTEGER," +
+                KEY_CHOICE + " TEXT," +
+                KEY_CORRECT_ANSWER + " INTEGER" +
+                ");";
 
         db.execSQL(CREATE_AGE_GROUPS_TABLE);
         db.execSQL(CREATE_AILMENTS_TABLE);
@@ -325,6 +365,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.execSQL(CREATE_APP_USER_TABLE);
         db.execSQL(CREATE_COUNTRY_TABLE);
         db.execSQL(CREATE_NOTIFICATIONS_TABLE);
+        db.execSQL(CREATE_TESTS_TABLE);
+        db.execSQL(CREATE_QUESTIONS_TABLE);
+        db.execSQL(CREATE_QUESTION_CHOICES_TABLE);
 //        db.execSQL(CREATE_ASSESSMENT_CLASSIFICATION_SIGNS_TABLE);
 //        db.execSQL(CREATE_ASSESSMENT_CLASSIFICATION_TREATMENTS_TABLE);
     }
@@ -352,6 +395,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_APP_USER);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_COUNTRY);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_NOTIFICATIONS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_TESTS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_QUESTIONS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_QUESTION_CHOICES);
 //        db.execSQL("DROP TABLE IF EXISTS " + TABLE_ASSESSMENT_CLASSIFICATION_SIGNS);
 //        db.execSQL("DROP TABLE IF EXISTS " + TABLE_ASSESSMENT_CLASSIFICATION_TREATMENTS);
         onCreate(db);
@@ -379,6 +425,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_APP_USER);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_COUNTRY);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_NOTIFICATIONS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_TESTS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_QUESTIONS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_QUESTION_CHOICES);
 
         onCreate(db);
     }
@@ -1667,5 +1716,190 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             notification.setCreated_at(cursor.getString(cursor.getColumnIndex(KEY_CREATED_AT)));
         }
         return notification;
+    }
+
+    public void addTest(Test test){
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+
+        values.put(KEY_ID, test.getId());
+        values.put(KEY_TEST_NAME, test.getTest_name());
+        values.put(KEY_DESCRIPTION, test.getDescription());
+        values.put(KEY_STATUS, (test.isStatus()) ? 1 : 0);
+        values.put(KEY_CREATED_AT, test.getCreated_at());
+
+        db.insert(TABLE_TESTS, null, values);
+    }
+
+    public void addTests(List<Test> tests){
+        for (Test test:
+             tests) {
+            this.addTest(test);
+        }
+    }
+
+    public List<Test> getTests(){
+        List<Test> tests = new ArrayList<Test>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.query(TABLE_TESTS, null, null, null, null, null, KEY_ID + " DESC");
+        if (cursor.moveToFirst()){
+            do{
+                tests.add(getTest(cursor));
+            }
+            while(cursor.moveToNext());
+        }
+
+        return tests;
+    }
+
+    public Test getTest(int id){
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TABLE_TESTS, null, KEY_ID + "=?", new String[]{String.valueOf(id)}, null, null, null);
+        if (cursor.moveToFirst())
+            return this.getTest(cursor);
+        else
+            return new Test();
+    }
+
+    public Test getTest(Cursor cursor){
+        Test test = new Test();
+        test.setId(cursor.getInt(cursor.getColumnIndex(KEY_ID)));
+        test.setTest_name(cursor.getString(cursor.getColumnIndex(KEY_TEST_NAME)));
+        test.setDescription(cursor.getString(cursor.getColumnIndex(KEY_DESCRIPTION)));
+        test.setStatus(cursor.getInt(cursor.getColumnIndex(KEY_STATUS)) == 1);
+        test.setCreated_at(cursor.getString(cursor.getColumnIndex(KEY_CREATED_AT)));
+        return test;
+    }
+
+    public void addQuestion(Question question){
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+
+        values.put(KEY_ID, question.getId());
+        values.put(KEY_QUESTION, question.getQuestion());
+        values.put(KEY_QUESTION_TYPE, question.getQuestion_type());
+        values.put(KEY_PARENT, question.getParent());
+        values.put(KEY_TESTS_ID, question.getTests_id());
+        values.put(KEY_HAS_CHILDREN, (question.isHas_children()) ? 1 : 0);
+
+        db.insert(TABLE_QUESTIONS, null, values);
+    }
+
+    public void addQuestions(List<Question> questions){
+        for (Question question:
+             questions) {
+            addQuestion(question);
+        }
+    }
+
+    public Question getQuestion(Cursor cursor){
+        Question question = new Question();
+
+        question.setId(cursor.getInt(cursor.getColumnIndex(KEY_ID)));
+        question.setQuestion(cursor.getString(cursor.getColumnIndex(KEY_QUESTION)));
+        question.setQuestion_type(cursor.getString(cursor.getColumnIndex(KEY_QUESTION_TYPE)));
+        question.setTests_id(cursor.getInt(cursor.getColumnIndex(KEY_TESTS_ID)));
+        question.setParent(cursor.getInt(cursor.getColumnIndex(KEY_PARENT)));
+        question.setHas_children(cursor.getInt(cursor.getColumnIndex(KEY_HAS_CHILDREN)) == 1);
+
+        return question;
+    }
+
+    public Question getQuestion(int id){
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TABLE_QUESTIONS, null, KEY_ID + "=?", new String[]{String.valueOf(id)}, null, null, null);
+
+        if (cursor.moveToFirst()){
+            return getQuestion(cursor);
+        }
+        return new Question();
+    }
+
+    public List<Question> getQuestions(){
+        List<Question> questions = new ArrayList<Question>();
+        SQLiteDatabase db = this.getReadableDatabase();
+//        Cursor cursor = db.query(TABLE_QUESTIONS, null, null, null, null, null, RANDOM(), null);
+        String selectAilmentQuery = "SELECT * FROM " + TABLE_QUESTIONS + " ORDER BY RANDOM() LIMIT 10";
+        Cursor cursor = writableDB.rawQuery(selectAilmentQuery, null);
+        if (cursor.moveToFirst()){
+            do {
+                questions.add(getQuestion(cursor));
+            }while(cursor.moveToNext());
+        }
+        return questions;
+    }
+
+    public List<Question> getQuestionByTest(int test_id){
+        List<Question> questions = new ArrayList<Question>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TABLE_QUESTIONS, null, KEY_TESTS_ID + "=?", new String[]{String.valueOf(test_id)}, null, null, null);
+        if (cursor.moveToFirst()){
+            do {
+                questions.add(getQuestion(cursor));
+            }while(cursor.moveToNext());
+        }
+        return questions;
+    }
+
+    public void addQuestionChoice(QuestionChoice questionChoice){
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+
+        values.put(KEY_ID, questionChoice.getId());
+        values.put(KEY_QUESTION_ID, questionChoice.getQuestions_id());
+        values.put(KEY_CHOICE, questionChoice.getChoice());
+        values.put(KEY_CORRECT_ANSWER, (questionChoice.isCorrect_answer()) ? 1 : 0);
+
+        db.insert(TABLE_QUESTION_CHOICES, null, values);
+    }
+
+    public void addQuestionChoices(List<QuestionChoice> questionChoices){
+        for (QuestionChoice choice:
+             questionChoices) {
+            addQuestionChoice(choice);
+        }
+    }
+
+    public QuestionChoice getQuestionChoice(Cursor cursor){
+        QuestionChoice choice = new QuestionChoice();
+
+        choice.setId(cursor.getInt(cursor.getColumnIndex(KEY_ID)));
+        choice.setChoice(cursor.getString(cursor.getColumnIndex(KEY_CHOICE)));
+        choice.setCorrect_answer(cursor.getInt(cursor.getColumnIndex(KEY_CORRECT_ANSWER)) == 1);
+        choice.setQuestions_id(cursor.getInt(cursor.getColumnIndex(KEY_QUESTION_ID)));
+
+        return choice;
+    }
+
+    public QuestionChoice getQuestionChoice(int id){
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TABLE_QUESTION_CHOICES, null, KEY_ID + "=?", new String[]{String.valueOf(id)}, null, null, null);
+
+        if (cursor.moveToFirst()){
+            return getQuestionChoice(cursor);
+        }
+        return new QuestionChoice();
+    }
+
+    public List<QuestionChoice> getQuestionChoices(int question_id){
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor;
+        if (question_id != 0) {
+            cursor = db.query(TABLE_QUESTION_CHOICES, null, KEY_QUESTION_ID + "=?", new String[]{String.valueOf(question_id)}, null, null, null);
+        }else{
+            cursor = db.query(TABLE_QUESTION_CHOICES, null, null, null, null, null, null);
+        }
+
+        List<QuestionChoice> choices = new ArrayList<QuestionChoice>();
+        if (cursor.moveToFirst()){
+            do {
+                choices.add(getQuestionChoice(cursor));
+            }while(cursor.moveToNext());
+        }
+        return choices;
     }
 }

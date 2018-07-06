@@ -27,6 +27,7 @@ import org.ministryofhealth.newimci.GalleryActivity;
 import org.ministryofhealth.newimci.HIVForChildrenActivity;
 import org.ministryofhealth.newimci.MainPageActivity;
 import org.ministryofhealth.newimci.R;
+import org.ministryofhealth.newimci.TestActivity;
 import org.ministryofhealth.newimci.fragment.ChildCheckDialogFragment;
 import org.ministryofhealth.newimci.fragment.GlossaryFragment;
 import org.ministryofhealth.newimci.fragment.ReviewFragment;
@@ -108,6 +109,8 @@ public class MenuAdapter extends RecyclerView.Adapter<MenuAdapter.MenuViewHolder
                 newFragment = new ReviewFragment();
                 transaction.replace(R.id.content_frame, newFragment);
                 transaction.commit();
+            }else if(menu.get_menu_slug().equals("test")){
+                context.startActivity(new Intent(context, TestActivity.class));
             }
         }
     }
