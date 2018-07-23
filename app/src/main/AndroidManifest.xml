@@ -165,7 +165,7 @@
         <activity android:name=".tests.TestMarkingActivity" />
         <activity android:name=".tests.ScoreboardActivity" />
         <activity android:name=".tests.AboutTestActivity" />
-        <activity android:name=".tests.AfterTestActivity"></activity>
+        <activity android:name=".tests.AfterTestActivity" android:theme="@style/NoActionBar"></activity>
     </application>
 
 </manifest>
