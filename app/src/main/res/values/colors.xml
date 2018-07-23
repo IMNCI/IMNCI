@@ -21,4 +21,7 @@
     <color name="blue_grey_600">#546E7A</color>
     <color name="orange_500">#FF9800</color>
     <color name="grey_3">#f7f7f7</color>
+
+    <color name="correctGreen">#4CAF50</color>
+    <color name="incorrectRed">#F44336</color>
 </resources>

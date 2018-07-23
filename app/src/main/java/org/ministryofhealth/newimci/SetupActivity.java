@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -87,6 +88,7 @@ public class SetupActivity extends AppCompatActivity implements ConnectivityRece
     int selected_cadre = -1;
 
     Boolean checkUploaded = false;
+    Boolean forResult = false;
 
     String selected_gender_ = "";
     String selected_age_ = "";
@@ -107,6 +109,12 @@ public class SetupActivity extends AppCompatActivity implements ConnectivityRece
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setup);
+
+        if (getCallingActivity() == null){
+            forResult = false;
+        }else{
+            forResult = true;
+        }
 
         pref = getSharedPreferences("user_details", Context.MODE_PRIVATE);
         user_id = pref.getInt("id", 0);
@@ -294,6 +302,9 @@ public class SetupActivity extends AppCompatActivity implements ConnectivityRece
             txtProfession.setText(pref.getString("profession", ""));
             txtCadre.setText(pref.getString("cadre", "N/A"));
             txtSector.setText(pref.getString("sector", ""));
+
+            editEmail.setText(pref.getString("email", ""));
+            editPhone.setText(pref.getString("phone", ""));
         }else{
             enteredDataTable.setVisibility(View.GONE);
             formTable.setVisibility(View.VISIBLE);
@@ -441,6 +452,7 @@ public class SetupActivity extends AppCompatActivity implements ConnectivityRece
                 profile.setSector(sector);
                 profile.setPhone_id(FirebaseInstanceId.getInstance().getToken());
                 profile.setApp_user_id(app_user_id);
+                profile.setDisplay_no(Build.DISPLAY);
 
                 try{
                     final ProgressDialog progressDialog = new ProgressDialog(context);
@@ -527,6 +539,7 @@ public class SetupActivity extends AppCompatActivity implements ConnectivityRece
                 profile.setCadre(selected_cadre_);
                 profile.setSector(selected_sector_);
                 profile.setPhone_id(FirebaseInstanceId.getInstance().getToken());
+                profile.setDisplay_no(Build.DISPLAY);
                 profile.setApp_user_id(app_user_id);
 
                 if (ConnectivityReceiver.isConnected()){
@@ -544,8 +557,15 @@ public class SetupActivity extends AppCompatActivity implements ConnectivityRece
                             if(response.code() == 200){
                                 assert response.body() != null;
                                 saveUserPreference(response.body(), ConnectivityReceiver.isConnected());
+                                int user_id = response.body().getId();
                                 Toast.makeText(context, "User profile uploaded successfully", Toast.LENGTH_SHORT).show();
-                                startActivity(new Intent(context, UserProfileDetailsActivity.class));
+                                if(forResult){
+                                    Intent data = new Intent();
+                                    data.putExtra("user_id",user_id);
+                                    setResult(RESULT_OK,data);
+                                }else {
+                                    startActivity(new Intent(context, UserProfileDetailsActivity.class));
+                                }
                                 finish();
                             }else{
                                 try {
@@ -576,7 +596,11 @@ public class SetupActivity extends AppCompatActivity implements ConnectivityRece
 
     @Override
     public void onBackPressed() {
-        proceed();
+        if(forResult){
+            finish();
+        }else {
+            proceed();
+        }
     }
 
     @Override
@@ -596,7 +620,7 @@ public class SetupActivity extends AppCompatActivity implements ConnectivityRece
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case android.R.id.home:
-                proceed();
+                onBackPressed();
                 return true;
 //            case R.id.action_save:
 //                submitProfile();

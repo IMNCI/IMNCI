@@ -72,7 +72,10 @@
     <string name="download_app">Download App</string>
     <string name="other_apps">Other Apps</string>
     <string name="notifications">Notifications</string>
+    <string name="counterString">Question %1$2s of %2$2s</string>
 
     <string name="lorem_ipsum">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam efficitur ipsum in placerat molestie.  Fusce quis mauris a enim sollicitudin
         \n\nLorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam efficitur ipsum in placerat molestie.  Fusce quis mauris a enim sollicitudin</string>
+    <string name="HIDE">HIDE</string>
+    <string name="about_test"><![CDATA[\n&#8226;This module provides quick test questions to assess knowledge on case management.\n&#8226;Each test instance provides a set of 10 randomly selected questions for attempt.\n&#8226;It takes an average time of 5 minutes to complete a test.]]></string>
 </resources>

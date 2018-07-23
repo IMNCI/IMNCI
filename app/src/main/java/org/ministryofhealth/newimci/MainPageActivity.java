@@ -75,7 +75,7 @@ public class MainPageActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        Log.d("FirebaseID", FirebaseInstanceId.getInstance().getToken());
+//        Log.d("FirebaseID", FirebaseInstanceId.getInstance().getToken());
 
         scheduleJob(this);
 

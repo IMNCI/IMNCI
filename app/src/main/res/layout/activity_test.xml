@@ -8,10 +8,12 @@
     android:fitsSystemWindows="true"
     android:orientation="vertical"
     tools:context=".TestActivity">
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="120dp"
-        android:background="@color/orange_500">
+        android:background="@color/nice_blue">
+
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
@@ -25,14 +27,14 @@
 
         <ImageView
             android:id="@+id/time_of_day"
-            android:layout_marginRight="@dimen/spacing_middle"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
-            app:srcCompat="@drawable/ic_sunset"
+            android:layout_marginRight="@dimen/spacing_middle"
+            android:padding="@dimen/spacing_xmedium"
             android:tint="@color/colorWhite"
-            android:padding="@dimen/spacing_xmedium"/>
+            app:srcCompat="@drawable/ic_sunset" />
     </RelativeLayout>
 
     <android.support.v7.widget.CardView
@@ -82,14 +84,14 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Begin Test"
+                        android:text="Take a Test"
                         android:textAlignment="center"
                         android:textAppearance="@style/Base.TextAppearance.AppCompat.Subhead"
                         android:textColor="@color/grey_40"/>
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:background="@color/colorPrimaryDark"
+                        android:background="@color/nice_blue"
                         android:layout_marginTop="@dimen/spacing_large"
                         android:layout_marginRight="@dimen/spacing_large"
                         android:layout_marginLeft="@dimen/spacing_large"/>
@@ -97,7 +99,7 @@
                 <View
                     android:layout_width="1dp"
                     android:layout_height="match_parent"
-                    android:background="@color/colorPrimaryDark"
+                    android:background="@color/nice_blue"
                     android:layout_marginTop="@dimen/spacing_xmedium"
                     android:layout_marginBottom="@dimen/spacing_xmedium"/>
                 <LinearLayout
@@ -127,7 +129,7 @@
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:background="@color/colorPrimaryDark"
+                        android:background="@color/nice_blue"
                         android:layout_marginTop="@dimen/spacing_large"
                         android:layout_marginRight="@dimen/spacing_large"
                         android:layout_marginLeft="@dimen/spacing_large"/>
@@ -154,7 +156,7 @@
                     <ImageView
                         android:layout_width="match_parent"
                         android:layout_height="80dp"
-                        app:srcCompat="@drawable/ic_info_question"
+                        app:srcCompat="@drawable/ic_information"
                         android:padding="@dimen/spacing_middle"/>
                     <View
                         android:layout_width="match_parent"
@@ -170,7 +172,7 @@
                 <View
                     android:layout_width="1dp"
                     android:layout_height="match_parent"
-                    android:background="@color/colorPrimaryDark"
+                    android:background="@color/nice_blue"
                     android:layout_marginTop="@dimen/spacing_xmedium"
                     android:layout_marginBottom="@dimen/spacing_xmedium"/>
                 <LinearLayout
@@ -237,9 +239,9 @@
                         android:textColor="@color/grey_60" />
 
                     <TextView
+                        android:id="@+id/testCompletedText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Jun 12, 2018 - 3pm"
                         android:textAppearance="@style/Base.TextAppearance.AppCompat.Caption"
                         android:textColor="@color/grey_60" />
 
@@ -248,13 +250,14 @@
                 <RelativeLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/shape_rounded_orange"
+                    android:background="@drawable/shape_rounded_blue"
                     android:paddingBottom="@dimen/spacing_small"
                     android:paddingLeft="@dimen/spacing_xmedium"
                     android:paddingRight="@dimen/spacing_xmedium"
                     android:paddingTop="@dimen/spacing_small">
 
                     <TextView
+                        android:id="@+id/pointsText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="5/10 Points"

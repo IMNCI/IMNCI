@@ -34,6 +34,7 @@
             android:drawableTint="@color/colorWhite"
             android:background="@color/nice_blue"
             android:textColor="@color/colorWhite"
+            android:visibility="gone"
             />
 
         <TextView
@@ -45,7 +46,8 @@
             android:layout_toRightOf="@id/backButton"
             android:text="Question 1 of 5"
             android:textAlignment="center"
-            android:padding="8dp"/>
+            android:padding="8dp"
+            android:visibility="gone"/>
 
         <Button
             android:layout_width="wrap_content"
@@ -71,7 +73,7 @@
             android:id="@+id/finishButton"
             android:foreground="?android:attr/selectableItemBackground"
             android:clickable="true"
-            android:background="@color/colorPrimaryDark"
+            android:background="@color/nice_blue"
             android:textColor="@color/colorWhite"
             />
     </RelativeLayout>

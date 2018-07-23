@@ -22,10 +22,10 @@
             <ImageView
                 android:layout_width="100dp"
                 android:layout_height="100dp"
-                android:padding="8dp"
+                android:padding="@dimen/spacing_large"
                 android:scaleType="centerCrop"
                 android:id="@+id/appLogo"
-                app:srcCompat="@drawable/ic_menu"/>
+                app:srcCompat="@drawable/ic_app"/>
 
             <RelativeLayout
                 android:layout_width="match_parent"

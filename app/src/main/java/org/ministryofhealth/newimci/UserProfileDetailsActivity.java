@@ -1,9 +1,12 @@
 package org.ministryofhealth.newimci;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -89,9 +92,20 @@ public class UserProfileDetailsActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.user_profile_menu, menu);
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home){
             finish();
+        }else if(item.getItemId() == R.id.item_edit){
+            Intent intent = new Intent("org.ministryofhealth.newimci.SetupActivity");
+            intent.putExtra("id", userprofile.getInt("id", 0));
+            startActivityForResult(intent, 101);
         }
         return super.onOptionsItemSelected(item);
     }

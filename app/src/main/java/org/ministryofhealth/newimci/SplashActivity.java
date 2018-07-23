@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -23,6 +24,7 @@ import org.ministryofhealth.newimci.helper.RetrofitHelper;
 import org.ministryofhealth.newimci.model.AgeGroup;
 import org.ministryofhealth.newimci.model.Ailment;
 import org.ministryofhealth.newimci.model.AilmentFollowUp;
+import org.ministryofhealth.newimci.model.AppUser;
 import org.ministryofhealth.newimci.model.Assessment;
 import org.ministryofhealth.newimci.model.AssessmentClassification;
 import org.ministryofhealth.newimci.model.Category;
@@ -42,9 +44,11 @@ import org.ministryofhealth.newimci.model.Test;
 import org.ministryofhealth.newimci.model.TreatAilment;
 import org.ministryofhealth.newimci.model.TreatAilmentTreatment;
 import org.ministryofhealth.newimci.model.TreatTitle;
+import org.ministryofhealth.newimci.model.UserProfile;
 import org.ministryofhealth.newimci.server.Service.AgeGroupService;
 import org.ministryofhealth.newimci.server.Service.AilmentFollowUpService;
 import org.ministryofhealth.newimci.server.Service.AilmentsService;
+import org.ministryofhealth.newimci.server.Service.AppUserService;
 import org.ministryofhealth.newimci.server.Service.AssessmentClassificationService;
 import org.ministryofhealth.newimci.server.Service.AssessmentService;
 import org.ministryofhealth.newimci.server.Service.CategoryService;
@@ -84,14 +88,20 @@ public class SplashActivity extends AppCompatActivity {
         setContentView(R.layout.activity_splash);
 
         try {
-
+            db = new DatabaseHandler(this);
             SharedPreferences preference = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+            AppUser appUser = db.getUser();
+            SharedPreferences userPref = getSharedPreferences("user_details", Context.MODE_PRIVATE);
+            int id = userPref.getInt("id", 0);
             Boolean page = preference.getBoolean("elements_page", true);
 //            Boolean setup_page = preference.getBoolean("setup_page", true);
-            db = new DatabaseHandler(this);
 //        db.initDB();
             List<Ailment> ailmentList = db.getAilments();
             new ProfileAsyncTask().execute();
+            if (id == 0 && appUser.getId() != 0){
+
+
+            }
             if (ailmentList.size() == 0) {
                 try {
                     Date currentTime = Calendar.getInstance().getTime();
@@ -465,6 +475,33 @@ public class SplashActivity extends AppCompatActivity {
             }
 
             return true;
+        }
+    }
+
+    class UserProfileAsyncTask extends AsyncTask<String, String, UserProfile>{
+
+        @Override
+        protected UserProfile doInBackground(String... strings) {
+            try {
+                String displayno = Build.DISPLAY;
+                Retrofit retrofit = RetrofitHelper.getInstance().createHelper();
+                AppUserService appUserService = retrofit.create(AppUserService.class);
+                Call<UserProfile> appUserCall = appUserService.getAppUser(displayno);
+                UserProfile appUser = appUserCall.execute().body();
+                return appUser;
+            }catch(Exception ex){
+                Log.e("UserProfile", ex.getMessage());
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(UserProfile appUser) {
+            super.onPostExecute(appUser);
+
+            if (appUser != null){
+                Toast.makeText(SplashActivity.this, "We got a user: " +  appUser.getId(), Toast.LENGTH_SHORT).show();
+            }
         }
     }
 }

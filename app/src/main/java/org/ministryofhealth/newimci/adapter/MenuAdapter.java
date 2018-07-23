@@ -30,6 +30,7 @@ import org.ministryofhealth.newimci.R;
 import org.ministryofhealth.newimci.TestActivity;
 import org.ministryofhealth.newimci.fragment.ChildCheckDialogFragment;
 import org.ministryofhealth.newimci.fragment.GlossaryFragment;
+import org.ministryofhealth.newimci.fragment.OtherAppsFragment;
 import org.ministryofhealth.newimci.fragment.ReviewFragment;
 import org.ministryofhealth.newimci.model.Menu;
 
@@ -111,6 +112,11 @@ public class MenuAdapter extends RecyclerView.Adapter<MenuAdapter.MenuViewHolder
                 transaction.commit();
             }else if(menu.get_menu_slug().equals("test")){
                 context.startActivity(new Intent(context, TestActivity.class));
+            }else if(menu.get_menu_slug().equals("other_apps")){
+                activity.getSupportActionBar().setTitle("Other Apps");
+                newFragment = new OtherAppsFragment();
+                transaction.replace(R.id.content_frame, newFragment);
+                transaction.commit();
             }
         }
     }

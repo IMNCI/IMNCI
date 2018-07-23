@@ -2,11 +2,13 @@ package org.ministryofhealth.newimci.fragment;
 
 import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -16,13 +18,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 
 import org.ministryofhealth.newimci.R;
+import org.ministryofhealth.newimci.helper.AppHelper;
 import org.ministryofhealth.newimci.helper.RetrofitHelper;
 import org.ministryofhealth.newimci.model.App;
 import org.ministryofhealth.newimci.server.Service.OtherAppService;
+import org.ministryofhealth.newimci.tests.ActualTestActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -142,7 +147,6 @@ public class OtherAppsFragment extends Fragment {
         appCall.enqueue(new Callback<List<App>>() {
             @Override
             public void onResponse(Call<List<App>> call, Response<List<App>> response) {
-                Log.d("OTHERAPPS", response.raw().toString()+ "");
                 fetchLayout.setVisibility(View.GONE);
                 if (response.body().size() > 0){
                     recyclerView.setVisibility(View.VISIBLE);
@@ -196,10 +200,13 @@ public class OtherAppsFragment extends Fragment {
     public class OtherAppsAdapter extends RecyclerView.Adapter<OtherAppsFragment.OtherAppsAdapter.AppsViewHolder>{
         List<App> appList = new ArrayList<App>();
         OtherAppsFragment context;
+        AppHelper appHelper;
 
         OtherAppsAdapter(List<App> apps, OtherAppsFragment context){
             this.appList = apps;
             this.context = context;
+
+            appHelper = new AppHelper();
         }
         @Override
         public OtherAppsAdapter.AppsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -213,6 +220,8 @@ public class OtherAppsFragment extends Fragment {
             final String logoUrl = "http:" + appList.get(position).getIcon();
             final String appUrl = appList.get(position).getUrl();
             String title = appList.get(position).getTitle();
+            String appID = appList.get(position).getAppId();
+            Boolean download = true;
 
             holder.title.setText(title);
             try {
@@ -223,11 +232,47 @@ public class OtherAppsFragment extends Fragment {
                 Log.e("OTHERAPPS", ex.getMessage());
             }
 
+            if (appHelper.isPackageInstalled(appID, getContext().getPackageManager())){
+                holder.link.setText("View App");
+                download = false;
+            }else{
+                holder.link.setText("Download App");
+                download = true;
+            }
+
+//            if (!download){
+//                holder.link.setText("View App");
+//            }else{
+//                holder.link.setText(R.string.download_app);
+//            }
+
+            final Boolean finalDownload = download;
             holder.mainLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     try {
-                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appList.get(position).getAppId())));
+                        if (finalDownload) {
+                            if(null != appUrl) {
+                                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appList.get(position).getAppId())));
+                            }else{
+                                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                                builder.setTitle("No App URL");
+                                builder.setMessage("This app has to be downloaded from a server. Please contact administrator");
+                                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                                    }
+                                });
+                                builder.setNegativeButton("Cancel", null);
+                                builder.show();
+                            }
+                        }else {
+                            Intent launchIntent = getActivity().getPackageManager().getLaunchIntentForPackage(appList.get(position).getAppId());
+                            if (launchIntent != null) {
+                                startActivity(launchIntent);//null pointer check in case package name was not found
+                            }
+                        }
                     } catch (ActivityNotFoundException e) {
                         Intent myIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(appUrl));
                         startActivity(myIntent);

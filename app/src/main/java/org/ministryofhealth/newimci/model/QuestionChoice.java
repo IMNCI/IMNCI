@@ -1,5 +1,8 @@
 package org.ministryofhealth.newimci.model;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class QuestionChoice {
     public int id, questions_id;
     public String choice;
@@ -35,5 +38,19 @@ public class QuestionChoice {
 
     public void setChoice(String choice) {
         this.choice = choice;
+    }
+
+    public JSONObject toJSONObject(){
+        JSONObject json = new JSONObject();
+
+        try {
+            json.put("id", id);
+            json.put("questions_id", questions_id);
+            json.put("choice", choice);
+            json.put("correct_answer", correct_answer);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return json;
     }
 }

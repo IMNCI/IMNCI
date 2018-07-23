@@ -79,6 +79,14 @@ public class GalleryItemsActivity extends AppCompatActivity {
         item_id = getIntent().getIntExtra("gallery_item_id", 0);
         ailment_id = getIntent().getIntExtra("ailment_id", 0);
 
+        setupGalleryList();
+
+        getSupportActionBar().setTitle(getIntent().getStringExtra("gallery_item"));
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
+
+    public void setupGalleryList(){
         List<Gallery> galleryList = db.getGallery(ailment_id, item_id);
 
         recyclerView = (RecyclerView) findViewById(R.id.gallery_items);
@@ -90,10 +98,12 @@ public class GalleryItemsActivity extends AppCompatActivity {
         GalleryAdapter adapter = new GalleryAdapter(galleryList);
 
         recyclerView.setAdapter(adapter);
+    }
 
-        getSupportActionBar().setTitle(getIntent().getStringExtra("gallery_item"));
-        getSupportActionBar().setHomeButtonEnabled(true);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setupGalleryList();
     }
 
     @Override

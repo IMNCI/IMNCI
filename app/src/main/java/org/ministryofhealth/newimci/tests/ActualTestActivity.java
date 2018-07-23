@@ -7,11 +7,13 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -27,26 +29,34 @@ import android.widget.Toast;
 import org.ministryofhealth.newimci.R;
 import org.ministryofhealth.newimci.TestActivity;
 import org.ministryofhealth.newimci.database.DatabaseHandler;
+import org.ministryofhealth.newimci.fragment.QuestionFragment;
 import org.ministryofhealth.newimci.model.Question;
 import org.ministryofhealth.newimci.model.QuestionChoice;
 import org.ministryofhealth.newimci.model.Test;
+import org.ministryofhealth.newimci.model.TestAttempt;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Formatter;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
-public class ActualTestActivity extends AppCompatActivity {
+public class ActualTestActivity extends AppCompatActivity implements QuestionFragment.IGetValues{
     Test test;
-    List<Question> questions = new ArrayList<>();
+    public List<Question> questions = new ArrayList<>();
     List<QuestionChoice> questionChoices = new ArrayList<>();
     DatabaseHandler databaseHandler;
-    TestFragmentPagerAdapter adapter;
+    public TestFragmentPagerAdapter adapter;
     ViewPager viewPager;
     Button nextButton, finishButton, backButton;
     TextView txtCounter;
     Formatter formatter;
     private static final String counterString = "Question %1$2s of %2$2s";
+    TestAttempt attempt;
+    int attempt_id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +65,10 @@ public class ActualTestActivity extends AppCompatActivity {
 
         databaseHandler = new DatabaseHandler(this);
         questions = databaseHandler.getQuestions();
+
+        attempt_id = getIntent().getIntExtra("attempt_id", 0);
+
+        attempt = databaseHandler.getTestAttemptAttempt(attempt_id);
 
         nextButton = findViewById(R.id.nextButton);
         backButton = findViewById(R.id.backButton);
@@ -73,6 +87,10 @@ public class ActualTestActivity extends AppCompatActivity {
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+//                HashMap<Integer, Boolean> values = mFragment.getResponses();
+                QuestionFragment mFragment = (QuestionFragment) adapter.getItem(viewPager.getCurrentItem());
+//                HashMap<Integer, Boolean> values = mFragment.getData();
+//                Log.d("Values", values.toString());
                 viewPager.setCurrentItem(viewPager.getCurrentItem() + 1);
                 setCounterText(viewPager.getCurrentItem() + 1);
                 if (viewPager.getCurrentItem() + 1 == questions.size()){
@@ -88,8 +106,9 @@ public class ActualTestActivity extends AppCompatActivity {
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                viewPager.setCurrentItem(viewPager.getCurrentItem() - 1);
-                setCounterText(viewPager.getCurrentItem() - 1);
+                int current_count = viewPager.getCurrentItem() - 1;
+                viewPager.setCurrentItem(current_count);
+                setCounterText(viewPager.getCurrentItem() + 1);
                 if (viewPager.getCurrentItem() + 1 == questions.size()){
                     nextButton.setVisibility(View.GONE);
                     finishButton.setVisibility(View.VISIBLE);
@@ -102,6 +121,27 @@ public class ActualTestActivity extends AppCompatActivity {
         finishButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                finishTest();
+            }
+        });
+
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                if(position != 0) {
+                    QuestionFragment mFragment = (QuestionFragment) adapter.getItem(position - 1);
+                    mFragment.getFragmentData(position);
+                }
+                Question question = questions.get(position);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
 
             }
         });
@@ -122,7 +162,7 @@ public class ActualTestActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        exitTest();
+        Toast.makeText(this, "Disabled", Toast.LENGTH_SHORT).show();;
     }
 
     private void finishTest(){
@@ -133,10 +173,17 @@ public class ActualTestActivity extends AppCompatActivity {
         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-//                Intent intent = new Intent(ActualTestActivity.this, TestActivity.class);
-//                startActivity(intent);
-//                finish();
+                Date currentTime = Calendar.getInstance().getTime();
+                SimpleDateFormat formatter = new SimpleDateFormat ("yyyy-MM-dd HH:mm:ss");
+                String current_time = formatter.format(currentTime);
+                TestAttempt finishAttempt = databaseHandler.getTestAttemptAttempt(attempt_id);
+                finishAttempt.setTest_completed(current_time);
+                databaseHandler.updateTestAttempt(finishAttempt);
+                Intent intent = new Intent(ActualTestActivity.this, TestMarkingActivity.class);
+                intent.putExtra("attempt_id", attempt_id);
+                startActivity(intent);
                 Toast.makeText(ActualTestActivity.this, "Test Complete", Toast.LENGTH_SHORT).show();
+                finish();
             }
         });
         builder.setNegativeButton("No", null);
@@ -160,6 +207,12 @@ public class ActualTestActivity extends AppCompatActivity {
         builder.show();
     }
 
+    @Override
+    public HashMap<Integer, Boolean> getResponses(int question_id, Boolean singleType, RadioGroup radioGroup) {
+        Toast.makeText(this, "" + question_id, Toast.LENGTH_SHORT).show();
+        return null;
+    }
+
     public class TestFragmentPagerAdapter extends FragmentPagerAdapter{
 
         public TestFragmentPagerAdapter(FragmentManager fm) {
@@ -170,79 +223,12 @@ public class ActualTestActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             QuestionFragment fragment = new QuestionFragment();
             int question = questions.get(position).getId();
-            return QuestionFragment.newInstance(question);
+            return QuestionFragment.newInstance(question, position, getCount(), attempt.getId());
         }
 
         @Override
         public int getCount() {
             return questions.size();
-        }
-    }
-
-    public static class QuestionFragment extends Fragment{
-        @Override
-        public void onCreate(@Nullable Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-        }
-
-        @Nullable
-        @Override
-        public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-            View swipeView = inflater.inflate(R.layout.question_fragment, container, false);
-            DatabaseHandler db = new DatabaseHandler(getContext());
-            TextView tv = swipeView.findViewById(R.id.question);
-            TextView title = swipeView.findViewById(R.id.toolbar);
-
-            Bundle args = getArguments();
-            int question_id = args.getInt("question_id");
-            Question question = db.getQuestion(question_id);
-            Test test = db.getTest(question.getTests_id());
-            title.setText(test.getTest_name());
-
-            List<QuestionChoice> choices = db.getQuestionChoices(question.getId());
-            tv.setText(question.getQuestion());
-//            RadioGroup ll = new RadioGroup(getContext());
-            if(question.getQuestion_type().equals("Single Choice")){
-                setupradiobuttons(choices, swipeView);
-            }
-            else{
-                setupcheckboxbuttons(choices, swipeView);
-            }
-            return swipeView;
-        }
-
-        private void setupradiobuttons(List<QuestionChoice> choices, View swipeView){
-            RadioGroup radioGroup = swipeView.findViewById(R.id.question_choices_radiogroup);
-            radioGroup.setVisibility(View.VISIBLE);
-            radioGroup.setOrientation(LinearLayout.VERTICAL);
-            for (QuestionChoice choice:
-                    choices) {
-                RadioButton button = new RadioButton(getContext());
-                button.setId(choice.getId());
-                button.setText(choice.getChoice());
-                radioGroup.addView(button);
-            }
-        }
-
-        private void setupcheckboxbuttons(List<QuestionChoice> choices, View swipeView){
-            LinearLayout checkGroup = swipeView.findViewById(R.id.question_choices_check);
-            checkGroup.setVisibility(View.VISIBLE);
-            checkGroup.setOrientation(LinearLayout.VERTICAL);
-            for (QuestionChoice choice:
-                    choices) {
-                CheckBox button = new  CheckBox(getContext());
-                button.setId(choice.getId());
-                button.setText(choice.getChoice());
-                checkGroup.addView(button);
-            }
-        }
-
-        static QuestionFragment newInstance(int question_id){
-            QuestionFragment fragment = new QuestionFragment();
-            Bundle args = new Bundle();
-            args.putInt("question_id", question_id);
-            fragment.setArguments(args);
-            return fragment;
         }
     }
 }
