@@ -5,7 +5,7 @@ package org.ministryofhealth.newimci.config;
  */
 
 public class Constants {
-//    public static String BASE_URL = "http://babfb010.ngrok.io/";
+//    public static String BASE_URL = "http://12c35aec.ngrok.io/";
     public static String BASE_URL = "https://imci.nascop.org/";
     public static String APP_STATS_URL = "http://188.166.75.97:3000";
     public static final String TOPIC_GLOBAL = "global";

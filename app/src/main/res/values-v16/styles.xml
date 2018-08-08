@@ -6,19 +6,19 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:fontFamily">@font/sourcesansproregular</item>
+        <item name="android:fontFamily">@font/muli</item>
         <!--<item name="android:typeface">monospace</item>-->
     </style>
 
     <style name="NoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowFullscreen">true</item>
-        <item name="android:fontFamily">@font/sourcesansproregular</item>
+        <item name="android:fontFamily">@font/muli</item>
         <!--<item name="android:typeface">monospace</item>-->
     </style>
 
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
-        <item name="android:fontFamily">@font/sourcesansproregular</item>
+        <item name="android:fontFamily">@font/muli</item>
     </style>
 </resources>

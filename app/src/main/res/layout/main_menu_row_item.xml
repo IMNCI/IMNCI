@@ -32,7 +32,7 @@
             android:textAlignment="center"
             android:text="sample text"
             android:textColor="@color/colorWhite"
-            android:textAllCaps="true"
+            android:capitalize="words"
             android:textStyle="bold"/>
     </RelativeLayout>
 </LinearLayout>

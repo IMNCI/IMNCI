@@ -2,7 +2,7 @@
 <layer-list xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:drawable="@color/colorWhite"/>
-    <item android:gravity="center">
+    <item android:gravity="center_vertical|center_horizontal">
         <bitmap
             android:src="@drawable/coat_of_arms" />
     </item>

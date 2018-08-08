@@ -13,6 +13,9 @@ import org.ministryofhealth.newimci.R;
 import org.ministryofhealth.newimci.TestActivity;
 
 import java.lang.reflect.Field;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Created by chriz on 10/17/2017.
@@ -69,5 +72,17 @@ public class AppHelper {
         });
         builder.setNegativeButton("No", null);
         builder.show();
+    }
+
+    public String formatDate(String date, String currentDateFormat, String desiredDateFormat) throws ParseException {
+        String formattedDate = "";
+
+        SimpleDateFormat currentSimpleDateFormat = new SimpleDateFormat(currentDateFormat);
+        Date currentDate = currentSimpleDateFormat.parse(date);
+
+        SimpleDateFormat newDateFormat = new SimpleDateFormat(desiredDateFormat);
+        formattedDate = newDateFormat.format(currentDate);
+
+        return formattedDate;
     }
 }

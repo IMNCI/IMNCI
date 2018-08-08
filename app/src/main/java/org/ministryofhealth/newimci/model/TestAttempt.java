@@ -5,10 +5,12 @@ import org.ministryofhealth.newimci.database.DatabaseHandler;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 public class TestAttempt {
-    private int id, user_id;
+    private int id, user_id, uploaded, deleted;
     private String test_started, test_cancelled, test_completed, questions_attempted, total_score, correct_answers, wrong_answers;
+    private List<TestResponse> responses;
 
     public int getId() {
         return id;
@@ -90,5 +92,29 @@ public class TestAttempt {
 
         this.setTest_cancelled(current_time);
         db.updateTestAttempt(this);
+    }
+
+    public int getUploaded() {
+        return uploaded;
+    }
+
+    public void setUploaded(int uploaded) {
+        this.uploaded = uploaded;
+    }
+
+    public int getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(int deleted) {
+        this.deleted = deleted;
+    }
+
+    public List<TestResponse> getResponses() {
+        return responses;
+    }
+
+    public void setResponses(List<TestResponse> responses) {
+        this.responses = responses;
     }
 }

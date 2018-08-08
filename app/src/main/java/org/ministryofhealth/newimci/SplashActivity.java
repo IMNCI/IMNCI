@@ -1,5 +1,10 @@
 package org.ministryofhealth.newimci;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
+import android.annotation.SuppressLint;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -15,6 +20,7 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
 
@@ -38,6 +44,7 @@ import org.ministryofhealth.newimci.model.GalleryAilment;
 import org.ministryofhealth.newimci.model.GalleryItem;
 import org.ministryofhealth.newimci.model.Glossary;
 import org.ministryofhealth.newimci.model.HIVCare;
+import org.ministryofhealth.newimci.model.KeyElements;
 import org.ministryofhealth.newimci.model.Question;
 import org.ministryofhealth.newimci.model.QuestionChoice;
 import org.ministryofhealth.newimci.model.Test;
@@ -45,6 +52,8 @@ import org.ministryofhealth.newimci.model.TreatAilment;
 import org.ministryofhealth.newimci.model.TreatAilmentTreatment;
 import org.ministryofhealth.newimci.model.TreatTitle;
 import org.ministryofhealth.newimci.model.UserProfile;
+import org.ministryofhealth.newimci.model.UserUsage;
+import org.ministryofhealth.newimci.provider.UsageContract;
 import org.ministryofhealth.newimci.server.Service.AgeGroupService;
 import org.ministryofhealth.newimci.server.Service.AilmentFollowUpService;
 import org.ministryofhealth.newimci.server.Service.AilmentsService;
@@ -57,6 +66,7 @@ import org.ministryofhealth.newimci.server.Service.CounselTitlesService;
 import org.ministryofhealth.newimci.server.Service.CountryService;
 import org.ministryofhealth.newimci.server.Service.CountyService;
 import org.ministryofhealth.newimci.server.Service.DiseaseClassificationService;
+import org.ministryofhealth.newimci.server.Service.ElementsService;
 import org.ministryofhealth.newimci.server.Service.GalleryAilmentService;
 import org.ministryofhealth.newimci.server.Service.GalleryItemService;
 import org.ministryofhealth.newimci.server.Service.GalleryService;
@@ -66,6 +76,9 @@ import org.ministryofhealth.newimci.server.Service.TestService;
 import org.ministryofhealth.newimci.server.Service.TreatAilmentService;
 import org.ministryofhealth.newimci.server.Service.TreatAilmentTreatmentService;
 import org.ministryofhealth.newimci.server.Service.TreatTitlesService;
+import org.ministryofhealth.newimci.syncadapter.AccountGeneral;
+import org.ministryofhealth.newimci.syncadapter.SyncAdapter;
+import org.ministryofhealth.newimci.syncadapter.TestSyncAdapter;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -80,13 +93,21 @@ import retrofit2.Retrofit;
 
 public class SplashActivity extends AppCompatActivity {
     DatabaseHandler db;
+    private FirebaseAnalytics mFirebaseAnalytics;
+
+    ContentResolver mContentResolver;
+
+    Account mAccount=null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+
+        mContentResolver = getContentResolver();
+
         FirebaseMessaging.getInstance().subscribeToTopic(Constants.TOPIC_GLOBAL);
         setContentView(R.layout.activity_splash);
-
         try {
             db = new DatabaseHandler(this);
             SharedPreferences preference = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
@@ -94,8 +115,24 @@ public class SplashActivity extends AppCompatActivity {
             SharedPreferences userPref = getSharedPreferences("user_details", Context.MODE_PRIVATE);
             int id = userPref.getInt("id", 0);
             Boolean page = preference.getBoolean("elements_page", true);
-//            Boolean setup_page = preference.getBoolean("setup_page", true);
-//        db.initDB();
+
+            Date currTime = Calendar.getInstance().getTime();
+
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String timestamp = simpleDateFormat.format(currTime);
+            ContentValues value = new ContentValues();
+            value.put(UsageContract.Usages.COL_USER_ID, id);
+            value.put(UsageContract.Usages.COL_DEVICE_ID, Build.DISPLAY);
+            value.put(UsageContract.Usages.COL_TIMESTAMP, timestamp);
+            value.put(UsageContract.Usages.COL_TYPE, "app_open");
+
+            mContentResolver.insert(UsageContract.Usages.CONTENT_URI, value);
+
+            AccountGeneral.createSyncAccount(this);
+
+            SyncAdapter.performSync();
+            TestSyncAdapter.performSync();
+
             List<Ailment> ailmentList = db.getAilments();
             new ProfileAsyncTask().execute();
             if (id == 0 && appUser.getId() != 0){
@@ -106,16 +143,17 @@ public class SplashActivity extends AppCompatActivity {
                 try {
                     Date currentTime = Calendar.getInstance().getTime();
 
-                    SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    @SuppressLint("SimpleDateFormat") SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     String formattedDate = df.format(currentTime);
 
                     Context context = SplashActivity.this;
                     SharedPreferences pref = context.getSharedPreferences(getString(R.string.updates), Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor = pref.edit();
                     editor.putString(getString(R.string.last_update), formattedDate);
-                    editor.commit();
+                    editor.apply();
                     new CountyAsyncTask().execute();
                     new CountryAsyncTask().execute();
+                    new ElementsAsyncTask().execute();
 
                     setupdata();
                 } catch (Exception e) {
@@ -460,6 +498,24 @@ public class SplashActivity extends AppCompatActivity {
             }
 
             return true;
+        }
+    }
+
+    class ElementsAsyncTask extends AsyncTask<String, String, Boolean>{
+
+        @Override
+        protected Boolean doInBackground(String... strings) {
+            try {
+                Retrofit retrofit = RetrofitHelper.getInstance().createHelper();
+                ElementsService elementsClient = retrofit.create(ElementsService.class);
+                Call<KeyElements> elementsCall = elementsClient.get();
+                KeyElements elements = elementsCall.execute().body();
+                db.addElements(elements);
+                return true;
+            }catch(Exception ex){
+                System.out.println(ex.getMessage());
+            }
+            return false;
         }
     }
 

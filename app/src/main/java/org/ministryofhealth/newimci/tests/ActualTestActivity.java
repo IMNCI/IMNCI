@@ -34,6 +34,7 @@ import org.ministryofhealth.newimci.model.Question;
 import org.ministryofhealth.newimci.model.QuestionChoice;
 import org.ministryofhealth.newimci.model.Test;
 import org.ministryofhealth.newimci.model.TestAttempt;
+import org.ministryofhealth.newimci.model.TestResponse;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -41,6 +42,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Formatter;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
@@ -91,14 +93,19 @@ public class ActualTestActivity extends AppCompatActivity implements QuestionFra
                 QuestionFragment mFragment = (QuestionFragment) adapter.getItem(viewPager.getCurrentItem());
 //                HashMap<Integer, Boolean> values = mFragment.getData();
 //                Log.d("Values", values.toString());
-                viewPager.setCurrentItem(viewPager.getCurrentItem() + 1);
-                setCounterText(viewPager.getCurrentItem() + 1);
-                if (viewPager.getCurrentItem() + 1 == questions.size()){
-                    nextButton.setVisibility(View.GONE);
-                    finishButton.setVisibility(View.VISIBLE);
+
+                if (checkIfAnswered(attempt_id, questions.get(viewPager.getCurrentItem()).getId())) {
+                    viewPager.setCurrentItem(viewPager.getCurrentItem() + 1);
+                    setCounterText(viewPager.getCurrentItem() + 1);
+                    if (viewPager.getCurrentItem() + 1 == questions.size()) {
+                        nextButton.setVisibility(View.GONE);
+                        finishButton.setVisibility(View.VISIBLE);
+                    } else {
+                        nextButton.setVisibility(View.VISIBLE);
+                        finishButton.setVisibility(View.GONE);
+                    }
                 }else{
-                    nextButton.setVisibility(View.VISIBLE);
-                    finishButton.setVisibility(View.GONE);
+                    Toast.makeText(ActualTestActivity.this, getString(R.string.unanswered_question_response), Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -121,7 +128,11 @@ public class ActualTestActivity extends AppCompatActivity implements QuestionFra
         finishButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finishTest();
+                if (checkIfAnswered(attempt_id, questions.get(viewPager.getCurrentItem()).getId())) {
+                    finishTest();
+                }else{
+                    Toast.makeText(ActualTestActivity.this, getString(R.string.unanswered_question_response), Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -155,9 +166,16 @@ public class ActualTestActivity extends AppCompatActivity implements QuestionFra
 
     }
 
+    private boolean checkIfAnswered(int attempt_id, int question_id){
+        int responses = databaseHandler.getResponseCount(attempt_id, questions.get(viewPager.getCurrentItem()).getId());
+        if (responses > 0)
+            return true;
+        return false;
+    }
+
     private void setCounterText(int position){
         txtCounter.setText("");
-        txtCounter.setText(String.format(counterString, position, questions.size()).toString());
+        txtCounter.setText(String.format(counterString, position, questions.size()));
     }
 
     @Override
@@ -168,7 +186,6 @@ public class ActualTestActivity extends AppCompatActivity implements QuestionFra
     private void finishTest(){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Complete Test");
-//        builder.setIcon(R.drawable.ic_warning);
         builder.setMessage("Submit your responses now?");
         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
@@ -179,8 +196,9 @@ public class ActualTestActivity extends AppCompatActivity implements QuestionFra
                 TestAttempt finishAttempt = databaseHandler.getTestAttemptAttempt(attempt_id);
                 finishAttempt.setTest_completed(current_time);
                 databaseHandler.updateTestAttempt(finishAttempt);
-                Intent intent = new Intent(ActualTestActivity.this, TestMarkingActivity.class);
+                Intent intent = new Intent(ActualTestActivity.this, AfterTestActivity.class);
                 intent.putExtra("attempt_id", attempt_id);
+                markTest();
                 startActivity(intent);
                 Toast.makeText(ActualTestActivity.this, "Test Complete", Toast.LENGTH_SHORT).show();
                 finish();
@@ -188,6 +206,95 @@ public class ActualTestActivity extends AppCompatActivity implements QuestionFra
         });
         builder.setNegativeButton("No", null);
         builder.show();
+    }
+
+    private void markTest(){
+        List<TestResponse> responseList;
+
+        responseList = databaseHandler.getTestResponses(attempt_id);
+        attempt = databaseHandler.getTestAttemptAttempt(attempt_id);
+
+        HashMap<Integer, List<Integer>> questionResponses = new HashMap<>();
+        String timeStarted = attempt.getTest_started();
+        String timeCompleted = attempt.getTest_completed();
+
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date timeStartedDate = null;
+        Date timeCompletedDate = null;
+
+        float differenceMinutes = 0, differenceSeconds = 0;
+
+        try{
+            timeStartedDate = format.parse(timeStarted);
+            timeCompletedDate = format.parse(timeCompleted);
+
+            long difference = timeCompletedDate.getTime() - timeStartedDate.getTime();
+            Log.d("TimeCalculation", "Difference => " + difference);
+
+            differenceSeconds = (float) difference / 1000 % 60;
+            differenceMinutes = (float)difference / (60 * 1000) % 60;
+
+            Log.d("TimeCalculation", "Difference Minutes => " + differenceMinutes + " => " + differenceSeconds);
+        }catch (Exception ex){
+            Log.e("TimeCalculation", ex.getMessage());
+        }
+
+        for (TestResponse response:
+                responseList) {
+            List<Integer> responseListing = new ArrayList<>();
+            if (questionResponses.containsKey(response.getQuestion_id())){
+                responseListing = questionResponses.get(response.getQuestion_id());
+            }
+
+            responseListing.add(response.getResponse_id());
+            questionResponses.put(response.getQuestion_id(), responseListing);
+        }
+
+        Iterator it = questionResponses.entrySet().iterator();
+        int question_count = 0, incorrect_total = 0, correct_total = 0;
+        while(it.hasNext()){
+            boolean got_it = false;
+            HashMap.Entry pair = (HashMap.Entry) it.next();
+            List<Integer> values = (List<Integer>) pair.getValue();
+            Question question = databaseHandler.getQuestion((Integer) pair.getKey());
+            List<QuestionChoice> answers = databaseHandler.getCorrectAnswers((Integer) pair.getKey());
+            int correct_count = 0, incorrect_count = 0;
+            List<Integer> answerIDs = new ArrayList<>();
+            for (QuestionChoice oneAnswer:
+                    answers) {
+                answerIDs.add(oneAnswer.getId());
+            }
+            for (Integer value:
+                    values) {
+                if (answerIDs.contains(value)){
+                    correct_count++;
+                }else{
+                    incorrect_count++;
+                }
+            }
+            if (incorrect_count > 0){
+                got_it = false;
+                incorrect_total++;
+            }else{
+                got_it = true;
+                correct_total++;
+            }
+            int qid = question.getId();
+            for (Integer response_id : values){
+                TestResponse response = databaseHandler.getTestResponse(qid, attempt_id, response_id);
+                response.setGot_it(got_it);
+                databaseHandler.markTestResponse(response);
+            }
+            question_count++;
+        }
+
+        if(attempt.getCorrect_answers() == null){
+            attempt.setQuestions_attempted(String.valueOf(question_count));
+            attempt.setTotal_score(String.valueOf(correct_total));
+            attempt.setWrong_answers(String.valueOf(incorrect_total));
+
+            databaseHandler.updateTestAttempt(attempt);
+        }
     }
 
     private void exitTest(){

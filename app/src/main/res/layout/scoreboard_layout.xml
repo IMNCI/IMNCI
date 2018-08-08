@@ -1,41 +1,95 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:clickable="true"
+    android:focusable="true"
+    android:background="?android:attr/selectableItemBackground"
+    android:id="@+id/itemLayout">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:minHeight="?attr/actionBarSize"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:background="@color/colorWhite">
         <View
             android:layout_width="@dimen/spacing_smlarge"
             android:layout_height="wrap_content" />
-        <TextView
+
+        <ImageView
+            android:id="@+id/icon"
+            android:padding="@dimen/spacing_medium"
+            android:layout_width="50dp"
+            android:layout_height="50dp"/>
+        <View
+            android:layout_width="@dimen/spacing_middle"
+            android:layout_height="match_parent" />
+        <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Item (s)"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            android:id="@+id/attempt_time"/>
+            android:orientation="vertical"
+            android:layout_weight="2">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="26/09/2013"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                android:id="@+id/attempt_date"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="08:00:07"
+                android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                android:id="@+id/attempt_time"/>
+        </LinearLayout>
+
 
         <View
             android:layout_width="@dimen/spacing_smlarge"
             android:layout_height="wrap_content" />
-        <TextView
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_weight="1"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="$ 455.62"
-            android:id="@+id/score"
-            android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
-        <View
-            android:layout_width="@dimen/spacing_smlarge"
-            android:layout_height="wrap_content" />
+            android:orientation="vertical"
+            android:layout_gravity="center_vertical|center_horizontal">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="$ 455.62"
+                android:textAlignment="center"
+                android:id="@+id/score"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
+            <android.support.v7.widget.AppCompatRatingBar
+                android:id="@+id/test_rating"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:numStars="5"
+                android:isIndicator="true"
+                android:layout_gravity="center_horizontal"
+                style="@style/Base.Widget.AppCompat.RatingBar.Small"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center_vertical">
+            <ImageButton
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                app:srcCompat="@drawable/ic_arrow_forward"
+                android:padding="@dimen/spacing_middle"
+                android:background="?attr/selectableItemBackgroundBorderless"/>
+        </LinearLayout>
     </LinearLayout>
     <View
         android:layout_width="match_parent"
         android:layout_height="1px"
-        android:background="@color/grey_10" />
+        android:background="@color/grey_40" />
 </LinearLayout>
