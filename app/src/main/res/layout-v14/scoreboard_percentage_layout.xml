@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
     android:layout_height="match_parent">
-
-</android.support.constraint.ConstraintLayout>
+    <TextView
+        android:id="@+id/latest_test_percentage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Display3"
+        android:hint="60%"
+        android:padding="@dimen/spacing_middle"
+        android:textAlignment="center"
+        android:gravity="center" />
+</LinearLayout>

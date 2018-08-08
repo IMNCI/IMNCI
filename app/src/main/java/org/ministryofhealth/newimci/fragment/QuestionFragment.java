@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.res.ResourcesCompat;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -117,7 +118,7 @@ public class QuestionFragment extends Fragment {
             }
         });
 
-        tv.setText(question.getQuestion());
+        tv.setText(Html.fromHtml(question.getQuestion()));
 //            RadioGroup ll = new RadioGroup(getContext());
         if(question.getQuestion_type().equals("Single Choice")){
             singleType = true;

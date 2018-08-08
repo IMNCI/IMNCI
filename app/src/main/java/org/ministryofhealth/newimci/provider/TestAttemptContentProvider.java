@@ -12,15 +12,15 @@ import android.support.annotation.Nullable;
 
 import org.ministryofhealth.newimci.database.DatabaseHandler;
 
-public class UsageContentProvider extends ContentProvider {
-    public static final int USERUSAGE = 1;
-    public static final int USERUSAGE_ID = 2;
+public class TestAttemptContentProvider extends ContentProvider {
+    public static final int TESTATTEMPT = 1;
+    public static final int TESTATTEMPT_ID = 2;
 
     public static final UriMatcher uriMatcher;
     static {
         uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-        uriMatcher.addURI(UsageContract.CONTENT_AUTHORITY, UsageContract.PATH_USAGE, USERUSAGE);
-        uriMatcher.addURI(UsageContract.CONTENT_AUTHORITY, UsageContract.PATH_USAGE + "/#", USERUSAGE_ID);
+        uriMatcher.addURI(UsageContract.CONTENT_AUTHORITY, TestAttemptContract.PATH_TEST_ATTEMPT, TESTATTEMPT);
+        uriMatcher.addURI(UsageContract.CONTENT_AUTHORITY, TestAttemptContract.PATH_TEST_ATTEMPT + "/#", TESTATTEMPT_ID);
     }
 
     private SQLiteDatabase db;
@@ -35,20 +35,20 @@ public class UsageContentProvider extends ContentProvider {
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
         Cursor c;
         switch(uriMatcher.match(uri)){
-            case USERUSAGE:
-                c = db.query(UsageContract.Usages.NAME, projection, selection, selectionArgs, null, null, sortOrder);
+            case TESTATTEMPT:
+                c = db.query(TestAttemptContract.TestAttempt.NAME, projection, selection, selectionArgs, null, null, sortOrder);
                 break;
-            case USERUSAGE_ID:
+            case TESTATTEMPT_ID:
                 long _id = ContentUris.parseId(uri);
-                c = db.query(UsageContract.Usages.NAME,
+                c = db.query(TestAttemptContract.TestAttempt.NAME,
                         projection,
-                        UsageContract.Usages.COL_ID + "=?",
+                        TestAttemptContract.TestAttempt.COL_ID + "=?",
                         new String[] { String.valueOf(_id) },
                         null,
                         null,
                         sortOrder);
                 break;
-                default: throw new IllegalArgumentException("Invalid URI!");
+            default: throw new IllegalArgumentException("Invalid URI!");
 
         }
         assert getContext() != null;
@@ -61,10 +61,10 @@ public class UsageContentProvider extends ContentProvider {
     @Override
     public String getType(@NonNull Uri uri) {
         switch (uriMatcher.match(uri)){
-            case USERUSAGE:
-                return UsageContract.Usages.CONTENT_TYPE;
-            case USERUSAGE_ID:
-                return UsageContract.Usages.CONTENT_ITEM_TYPE;
+            case TESTATTEMPT:
+                return TestAttemptContract.TestAttempt.CONTENT_TYPE;
+            case TESTATTEMPT_ID:
+                return TestAttemptContract.TestAttempt.CONTENT_ITEM_TYPE;
             default: throw new IllegalArgumentException("Invalid URI!");
         }
     }
@@ -76,8 +76,8 @@ public class UsageContentProvider extends ContentProvider {
         long _id;
 
         switch (uriMatcher.match(uri)) {
-            case USERUSAGE:
-                _id = db.insert(UsageContract.Usages.NAME, null, values);
+            case TESTATTEMPT:
+                _id = db.insert(TestAttemptContract.TestAttempt.NAME, null, values);
                 returnUri = ContentUris.withAppendedId(UsageContract.Usages.CONTENT_URI, _id);
                 break;
             default: throw new IllegalArgumentException("Invalid URI!");
@@ -91,8 +91,8 @@ public class UsageContentProvider extends ContentProvider {
     public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
         int rows;
         switch (uriMatcher.match(uri)) {
-            case USERUSAGE:
-                rows = db.delete(UsageContract.Usages.NAME, selection, selectionArgs);
+            case TESTATTEMPT:
+                rows = db.delete(TestAttemptContract.TestAttempt.NAME, selection, selectionArgs);
                 break;
             default: throw new IllegalArgumentException("Invalid URI!");
         }
@@ -109,8 +109,8 @@ public class UsageContentProvider extends ContentProvider {
     public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection, @Nullable String[] selectionArgs) {
         int rows;
         switch (uriMatcher.match(uri)) {
-            case USERUSAGE:
-                rows = db.update(UsageContract.Usages.NAME, values, selection, selectionArgs);
+            case TESTATTEMPT:
+                rows = db.update(TestAttemptContract.TestAttempt.NAME, values, selection, selectionArgs);
                 break;
             default: throw new IllegalArgumentException("Invalid URI!");
         }

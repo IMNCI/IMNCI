@@ -1,6 +1,7 @@
 package org.ministryofhealth.newimci.app;
 
 import android.app.Application;
+import android.support.multidex.MultiDexApplication;
 
 import org.ministryofhealth.newimci.receiver.ConnectivityReceiver;
 import org.ministryofhealth.newimci.util.FontsOverride;
@@ -11,7 +12,7 @@ import java.util.Locale;
  * Created by chriz on 10/9/2017.
  */
 
-public class AppController extends Application {
+public class AppController extends MultiDexApplication {
     public static final String TAG = AppController.class.getSimpleName();
 
     private static AppController mInstance;
@@ -20,7 +21,7 @@ public class AppController extends Application {
     public void onCreate() {
         super.onCreate();
         mInstance = this;
-        FontsOverride.setDefaultFont(this, "MONOSPACE", String.format(Locale.US, "fonts/%s", "SourceSansPro-Regular.otf"));
+//        FontsOverride.setDefaultFont(this, "MONOSPACE", String.format(Locale.US, "fonts/%s", "SourceSansPro-Regular.otf"));
     }
 
     public static synchronized AppController getInstance() {

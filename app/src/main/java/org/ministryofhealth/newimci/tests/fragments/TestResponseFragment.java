@@ -1,111 +1,84 @@
 package org.ministryofhealth.newimci.tests.fragments;
 
-import android.content.Context;
-import android.net.Uri;
+
+import android.app.Dialog;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.DialogFragment;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.ministryofhealth.newimci.R;
+import org.ministryofhealth.newimci.database.DatabaseHandler;
+import org.ministryofhealth.newimci.model.QuestionResponse;
+import org.ministryofhealth.newimci.model.TestResponse;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link TestResponseFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link TestResponseFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class TestResponseFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+import java.util.List;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    private OnFragmentInteractionListener mListener;
-
-    public TestResponseFragment() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment TestResponseFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static TestResponseFragment newInstance(String param1, String param2) {
-        TestResponseFragment fragment = new TestResponseFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
+public class TestResponseFragment extends DialogFragment {
+    private View rootView;
+    LinearLayout lytQuestionResponses;
+    DatabaseHandler db;
+    @Nullable
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        rootView = inflater.inflate(R.layout.dialog_test_responses, container, false);
+        db = new DatabaseHandler(getContext());
+
+        String question = getArguments().getString("question");
+        int question_id = getArguments().getInt("question_id");
+        int attempt_id = getArguments().getInt("attempt_id");
+
+        List<TestResponse> responses = db.getTestResponses(attempt_id, question_id);
+        lytQuestionResponses = rootView.findViewById(R.id.questionResponsesLayout);
+        for (TestResponse response:
+             responses) {
+            LinearLayout layout = (LinearLayout) getActivity().getLayoutInflater().inflate(R.layout.reponse_layout, null);
+
+            TextView txtResponse = layout.findViewById(R.id.response);
+            ImageView imgIcon = layout.findViewById(R.id.icon);
+
+            txtResponse.setText(response.getResponse());
+
+            if(response.getGot_it()){
+                imgIcon.setImageResource(R.drawable.ic_check_mark);
+            }else{
+                imgIcon.setImageResource(R.drawable.ic_cross_mark);
+            }
+
+            lytQuestionResponses.addView(layout);
         }
+
+        ((TextView) rootView.findViewById(R.id.question)).setText(Html.fromHtml(question));
+
+        ((FloatingActionButton) rootView.findViewById(R.id.fab)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dismiss();
+            }
+        });
+        return rootView;
+    }
+
+    @NonNull
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        Dialog dialog = super.onCreateDialog(savedInstanceState);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setCancelable(true);
+        return dialog;
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        TextView textView = new TextView(getActivity());
-        textView.setText(R.string.hello_blank_fragment);
-        return textView;
-    }
-
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+    public void onDestroyView() {
+        super.onDestroyView();
     }
 }

@@ -3,6 +3,7 @@ package org.ministryofhealth.newimci.database;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
@@ -26,6 +27,7 @@ import org.ministryofhealth.newimci.model.GalleryItem;
 import org.ministryofhealth.newimci.model.Glossary;
 import org.ministryofhealth.newimci.model.HIVCare;
 import org.ministryofhealth.newimci.model.HIVParent;
+import org.ministryofhealth.newimci.model.KeyElements;
 import org.ministryofhealth.newimci.model.Notification;
 import org.ministryofhealth.newimci.model.Question;
 import org.ministryofhealth.newimci.model.QuestionChoice;
@@ -35,7 +37,9 @@ import org.ministryofhealth.newimci.model.TestResponse;
 import org.ministryofhealth.newimci.model.TreatAilment;
 import org.ministryofhealth.newimci.model.TreatAilmentTreatment;
 import org.ministryofhealth.newimci.model.TreatTitle;
+import org.ministryofhealth.newimci.model.UserUsage;
 
+import java.sql.SQLInput;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,8 +49,8 @@ import java.util.List;
 
 public class DatabaseHandler extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 29;
-    private static final String DATABASE_NAME = "imci_mobile_app";
+    public static final int DATABASE_VERSION = 33;
+    public static final String DATABASE_NAME = "imci_mobile_app";
 
     public static final String TABLE_AILMENTS = "ailments";
     public static final String TABLE_AGE_GROUPS = "age_groups";
@@ -76,8 +80,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public static final String TABLE_QUESTION_CHOICES = "question_choices";
     public static final String TABLE_TEST_ATTEMPT = "test_attempt";
     public static final String TABLE_TEST_RESPONSES = "test_responses";
+    public static final String TABLE_USER_USAGE = "user_usage";
+    public static final String TABLE_ELEMENTS = "key_elements";
 
-    private static final String KEY_ID = "id";
+    public static final String KEY_ID = "id";
     private static final String KEY_AILMENT = "ailment";
     private static final String KEY_DESCRIPTION = "description";
     private static final String KEY_AGE_GROUP_ID = "age_group_id";
@@ -164,6 +170,15 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public static final String KEY_RESPONSE = "response";
     public static final String KEY_CORRECT_ANSWER_ID = "correct_answer_id";
     public static final String KEY_GOT_IT = "got_it";
+    public static final String KEY_UPLOADED = "uploaded";
+    public static final String KEY_DELETED = "deleted";
+
+
+    public static final String KEY_DEVICE_ID = "device_id";
+    public static final String KEY_TIMESTAMP = "timestamp";
+
+    public static final String KEY_ELEMENTS = "elements";
+
 
     SQLiteDatabase writableDB;
 
@@ -379,7 +394,24 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 + KEY_RESPONSE_ID + " INTEGER,"
                 + KEY_RESPONSE + " INTEGER,"
                 + KEY_CORRECT_ANSWER + " TEXT,"
-                + KEY_GOT_IT + " INTEGER"
+                + KEY_GOT_IT + " INTEGER,"
+                + KEY_UPLOADED + " INTEGER DEFAULT 0,"
+                + KEY_DELETED + " INTEGER DEFAULT 0"
+                + ");";
+
+        String CREATE_TABLE_USER_USAGE = "CREATE TABLE " + TABLE_USER_USAGE + "("
+                + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                KEY_USER_ID + " INTEGER DEFAULT NULL," +
+                KEY_DEVICE_ID + " TEXT," +
+                KEY_TIMESTAMP + " TEXT," +
+                KEY_TYPE + " TEXT" +
+                ");";
+
+        String CREATE_TABLE_KEY_ELEMENTS = "CREATE TABLE " + TABLE_ELEMENTS + "("
+                + KEY_ID + " INTEGER PRIMARY KEY,"
+                + KEY_ELEMENTS + " TEXT,"
+                + KEY_CREATED_AT + " TEXT,"
+                + KEY_UPDATED_AT + " TEXT"
                 + ");";
 
         db.execSQL(CREATE_AGE_GROUPS_TABLE);
@@ -408,6 +440,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.execSQL(CREATE_QUESTION_CHOICES_TABLE);
         db.execSQL(CREATE_TABLE_TEST_ATTEMPT);
         db.execSQL(CREATE_TABLE_TEST_RESPONSES);
+        db.execSQL(CREATE_TABLE_USER_USAGE);
+        db.execSQL(CREATE_TABLE_KEY_ELEMENTS);
 //        db.execSQL(CREATE_ASSESSMENT_CLASSIFICATION_SIGNS_TABLE);
 //        db.execSQL(CREATE_ASSESSMENT_CLASSIFICATION_TREATMENTS_TABLE);
     }
@@ -440,6 +474,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_QUESTION_CHOICES);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_TEST_ATTEMPT);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_TEST_RESPONSES);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_USER_USAGE);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_ELEMENTS);
 //        db.execSQL("DROP TABLE IF EXISTS " + TABLE_ASSESSMENT_CLASSIFICATION_SIGNS);
 //        db.execSQL("DROP TABLE IF EXISTS " + TABLE_ASSESSMENT_CLASSIFICATION_TREATMENTS);
         onCreate(db);
@@ -472,6 +508,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_QUESTION_CHOICES);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_TEST_ATTEMPT);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_TEST_RESPONSES);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_USER_USAGE);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_ELEMENTS);
 
         onCreate(db);
     }
@@ -1987,6 +2025,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             attempt.setQuestions_attempted(cursor.getString(cursor.getColumnIndex(KEY_TEST_QUESTIONS_ATTEMPTED)));
             attempt.setTotal_score(cursor.getString(cursor.getColumnIndex(KEY_TEST_TOTAL_SCORE)));
             attempt.setWrong_answers(cursor.getString(cursor.getColumnIndex(KEY_WRONG_ANSWERS)));
+            attempt.setUploaded(cursor.getInt(cursor.getColumnIndex(KEY_UPLOADED)));
+            attempt.setDeleted(cursor.getInt(cursor.getColumnIndex(KEY_DELETED)));
         }
 
         return attempt;
@@ -2003,6 +2043,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(KEY_TEST_TOTAL_SCORE, attempt.getTotal_score());
         values.put(KEY_WRONG_ANSWERS, attempt.getWrong_answers());
         values.put(KEY_CORRECT_ANSWERS, attempt.getCorrect_answers());
+        values.put(KEY_UPLOADED, attempt.getUploaded());
+        values.put(KEY_DELETED, attempt.getDeleted());
 
         db.update(TABLE_TEST_ATTEMPT, values, KEY_ID + "=?", new String[]{String.valueOf(attempt.getId())});
     }
@@ -2012,14 +2054,52 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.query(TABLE_TEST_RESPONSES, null, KEY_ATTEMPT_ID + "=? AND " + KEY_QUESTION_ID + "=?", new String[]{String.valueOf(attempt_id), String.valueOf(question_id)}, null, null, null);
         if (cursor.moveToFirst()){
+            int got_it = cursor.getInt(cursor.getColumnIndex(KEY_GOT_IT));
             response.setId(cursor.getInt(cursor.getColumnIndex(KEY_ID)));
             response.setAttempt_id(cursor.getInt(cursor.getColumnIndex(KEY_ATTEMPT_ID)));
             response.setCorrect_answer(cursor.getString(cursor.getColumnIndex(KEY_CORRECT_ANSWER)));
             response.setQuestion_id(cursor.getInt(cursor.getColumnIndex(KEY_QUESTION_ID)));
             response.setResponse(cursor.getString(cursor.getColumnIndex(KEY_RESPONSE)));
             response.setResponse_id(cursor.getInt(cursor.getColumnIndex(KEY_RESPONSE_ID)));
+            response.setGot_it(got_it == 1);
         }
         return response;
+    }
+
+    public int getResponseCount(int attempt_id, int question_id){
+        int count = 0;
+
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        long number = DatabaseUtils.queryNumEntries(db, TABLE_TEST_RESPONSES, KEY_ATTEMPT_ID +"=? AND " + KEY_QUESTION_ID + "=?", new String[]{String.valueOf(attempt_id), String.valueOf(question_id)});
+        count = (int) number;
+        return  count;
+    }
+
+    public TestResponse getTestResponse(int question_id, int attempt_id, int response_id){
+        TestResponse response = new TestResponse();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TABLE_TEST_RESPONSES, null, KEY_ATTEMPT_ID + "=? AND " + KEY_QUESTION_ID + "=? AND " + KEY_RESPONSE_ID + "=?", new String[]{String.valueOf(attempt_id), String.valueOf(question_id), String.valueOf(response_id)}, null, null, null);
+        if (cursor.moveToFirst()){
+            int got_it = cursor.getInt(cursor.getColumnIndex(KEY_GOT_IT));
+            response.setId(cursor.getInt(cursor.getColumnIndex(KEY_ID)));
+            response.setAttempt_id(cursor.getInt(cursor.getColumnIndex(KEY_ATTEMPT_ID)));
+            response.setCorrect_answer(cursor.getString(cursor.getColumnIndex(KEY_CORRECT_ANSWER)));
+            response.setQuestion_id(cursor.getInt(cursor.getColumnIndex(KEY_QUESTION_ID)));
+            response.setResponse(cursor.getString(cursor.getColumnIndex(KEY_RESPONSE)));
+            response.setResponse_id(cursor.getInt(cursor.getColumnIndex(KEY_RESPONSE_ID)));
+            response.setGot_it(got_it == 1);
+        }
+        return response;
+    }
+
+    public void markTestResponse(TestResponse testResponse){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        values.put(KEY_GOT_IT, testResponse.getGot_it());
+
+        db.update(TABLE_TEST_RESPONSES, values, KEY_ID + "=?", new String[]{String.valueOf(testResponse.getId())});
     }
 
     public TestResponse addTestResponse(TestResponse testResponse){
@@ -2064,6 +2144,29 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 response.setQuestion_id(cursor.getInt(cursor.getColumnIndex(KEY_QUESTION_ID)));
                 response.setResponse(cursor.getString(cursor.getColumnIndex(KEY_RESPONSE)));
                 response.setResponse_id(cursor.getInt(cursor.getColumnIndex(KEY_RESPONSE_ID)));
+                response.setGot_it((cursor.getInt(cursor.getColumnIndex(KEY_GOT_IT))) == 1);
+
+                responses.add(response);
+            }while(cursor.moveToNext());
+        }
+        return responses;
+    }
+
+    public List<TestResponse> getTestResponses(int attempt_id, int question_id){
+        List<TestResponse> responses = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TABLE_TEST_RESPONSES, null, KEY_ATTEMPT_ID + "=? AND " + KEY_QUESTION_ID + "=?", new String[]{String.valueOf(attempt_id), String.valueOf(question_id)}, null, null, null);
+        if (cursor.moveToFirst()){
+            do{
+                TestResponse response = new TestResponse();
+
+                response.setId(cursor.getInt(cursor.getColumnIndex(KEY_ID)));
+                response.setAttempt_id(cursor.getInt(cursor.getColumnIndex(KEY_ATTEMPT_ID)));
+                response.setCorrect_answer(cursor.getString(cursor.getColumnIndex(KEY_CORRECT_ANSWER)));
+                response.setQuestion_id(cursor.getInt(cursor.getColumnIndex(KEY_QUESTION_ID)));
+                response.setResponse(cursor.getString(cursor.getColumnIndex(KEY_RESPONSE)));
+                response.setResponse_id(cursor.getInt(cursor.getColumnIndex(KEY_RESPONSE_ID)));
+                response.setGot_it((cursor.getInt(cursor.getColumnIndex(KEY_GOT_IT))) == 1);
 
                 responses.add(response);
             }while(cursor.moveToNext());
@@ -2087,6 +2190,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 attempt.setQuestions_attempted(cursor.getString(cursor.getColumnIndex(KEY_TEST_QUESTIONS_ATTEMPTED)));
                 attempt.setTotal_score(cursor.getString(cursor.getColumnIndex(KEY_TEST_TOTAL_SCORE)));
                 attempt.setWrong_answers(cursor.getString(cursor.getColumnIndex(KEY_WRONG_ANSWERS)));
+                attempt.setUploaded(cursor.getInt(cursor.getColumnIndex(KEY_UPLOADED)));
+                attempt.setDeleted(cursor.getInt(cursor.getColumnIndex(KEY_DELETED)));
 
                 attempts.add(attempt);
             }while (cursor.moveToNext());
@@ -2108,7 +2213,74 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             attempt.setQuestions_attempted(cursor.getString(cursor.getColumnIndex(KEY_TEST_QUESTIONS_ATTEMPTED)));
             attempt.setTotal_score(cursor.getString(cursor.getColumnIndex(KEY_TEST_TOTAL_SCORE)));
             attempt.setWrong_answers(cursor.getString(cursor.getColumnIndex(KEY_WRONG_ANSWERS)));
+            attempt.setUploaded(cursor.getInt(cursor.getColumnIndex(KEY_UPLOADED)));
+            attempt.setDeleted(cursor.getInt(cursor.getColumnIndex(KEY_DELETED)));
         }
         return attempt;
+    }
+
+    public List<TestAttempt> getLatestTestAttempts(){
+        List<TestAttempt> attempts = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TABLE_TEST_ATTEMPT,null, null, null, null, null, KEY_ID + " DESC", "10");
+        if (cursor.moveToFirst()){
+            do{
+                TestAttempt attempt = new TestAttempt();
+
+                attempt.setId(cursor.getInt(cursor.getColumnIndex(KEY_ID)));
+                attempt.setUser_id(cursor.getInt(cursor.getColumnIndex(KEY_USER_ID)));
+                attempt.setTest_started(cursor.getString(cursor.getColumnIndex(KEY_TEST_STARTED)));
+                attempt.setTest_completed(cursor.getString(cursor.getColumnIndex(KEY_TEST_COMPLETED)));
+                attempt.setTest_cancelled(cursor.getString(cursor.getColumnIndex(KEY_TEST_CANCELLED)));
+                attempt.setCorrect_answers(cursor.getString(cursor.getColumnIndex(KEY_CORRECT_ANSWERS)));
+                attempt.setQuestions_attempted(cursor.getString(cursor.getColumnIndex(KEY_TEST_QUESTIONS_ATTEMPTED)));
+                attempt.setTotal_score(cursor.getString(cursor.getColumnIndex(KEY_TEST_TOTAL_SCORE)));
+                attempt.setWrong_answers(cursor.getString(cursor.getColumnIndex(KEY_WRONG_ANSWERS)));
+                attempt.setUploaded(cursor.getInt(cursor.getColumnIndex(KEY_UPLOADED)));
+                attempt.setDeleted(cursor.getInt(cursor.getColumnIndex(KEY_DELETED)));
+
+                attempts.add(attempt);
+            }while (cursor.moveToNext());
+        }
+
+        return attempts;
+    }
+
+    public void addUserUsage(UserUsage usage){
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+
+        values.put(KEY_USER_ID, usage.getUser_id());
+        values.put(KEY_TIMESTAMP, usage.getTimestamp());
+        values.put(KEY_DEVICE_ID, usage.getDevice_id());
+
+        db.insert(TABLE_USER_USAGE, null, values);
+    }
+
+    public void addElements(KeyElements elements){
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+
+        values.put(KEY_ID, elements.getId());
+        values.put(KEY_ELEMENTS, elements.getElements());
+        values.put(KEY_CREATED_AT, elements.getCreated_at());
+        values.put(KEY_UPDATED_AT, elements.getUpdated_at());
+
+        db.insert(TABLE_ELEMENTS, null, values);
+    }
+
+    public KeyElements getElement(){
+        KeyElements elements = new KeyElements();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TABLE_ELEMENTS,null, null, null, null, null, null);
+        if (cursor.moveToFirst()){
+            elements.setId(cursor.getInt(cursor.getColumnIndex(KEY_ID)));
+            elements.setElements(cursor.getString(cursor.getColumnIndex(KEY_ELEMENTS)));
+            elements.setCreated_at(cursor.getString(cursor.getColumnIndex(KEY_CREATED_AT)));
+            elements.setUpdated_at(cursor.getString(cursor.getColumnIndex(KEY_UPDATED_AT)));
+        }
+        return elements;
     }
 }

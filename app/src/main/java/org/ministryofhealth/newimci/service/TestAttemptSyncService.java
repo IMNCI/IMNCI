@@ -5,10 +5,10 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 
-import org.ministryofhealth.newimci.syncadapter.SyncAdapter;
+import org.ministryofhealth.newimci.syncadapter.TestSyncAdapter;
 
-public class SyncService extends Service {
-    private static SyncAdapter sSyncAdapter = null;
+public class TestAttemptSyncService extends Service {
+    private static TestSyncAdapter sSyncAdapter = null;
 
     private static final Object sSyncAdapterLock = new Object();
 
@@ -16,7 +16,7 @@ public class SyncService extends Service {
     public void onCreate() {
         synchronized (sSyncAdapterLock){
             if (sSyncAdapter == null){
-                sSyncAdapter = new SyncAdapter(getApplicationContext(), true);
+                sSyncAdapter = new TestSyncAdapter(getApplicationContext(), true);
             }
         }
     }

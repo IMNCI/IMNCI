@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,6 +22,7 @@ import org.ministryofhealth.newimci.tests.AfterTestActivity;
 import org.ministryofhealth.newimci.tests.ScoreboardActivity;
 import org.ministryofhealth.newimci.tests.TestIntroductionActivity;
 import org.ministryofhealth.newimci.tests.TestListActivity;
+import org.ministryofhealth.newimci.tests.TestReviewActivity;
 import org.ministryofhealth.newimci.util.Tools;
 
 import java.text.ParseException;
@@ -32,6 +34,7 @@ public class TestActivity extends AppCompatActivity implements View.OnClickListe
     ImageView imgTimeOfDay;
     TextView pointsText, testCompletedText;
     LinearLayout testLayout, statisticsLayout, informationLayout, exitLayout;
+    CardView latest_score_layout;
     DatabaseHandler db;
     TestAttempt latestAttempt;
     @Override
@@ -51,6 +54,7 @@ public class TestActivity extends AppCompatActivity implements View.OnClickListe
         exitLayout = findViewById(R.id.exit_test_module);
         pointsText = findViewById(R.id.pointsText);
         testCompletedText = findViewById(R.id.testCompletedText);
+        latest_score_layout = findViewById(R.id.latest_score_layout);
 
         String salutation = getSalutation();
         initToolbar(salutation);
@@ -59,10 +63,10 @@ public class TestActivity extends AppCompatActivity implements View.OnClickListe
         statisticsLayout.setOnClickListener(this);
         informationLayout.setOnClickListener(this);
         exitLayout.setOnClickListener(this);
+        latest_score_layout.setOnClickListener(this);
 
         if (latestAttempt.getId() != 0){
             try {
-//                Jun 12, 2018 - 3pm
                 SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 Date testCompletedDate = format.parse(latestAttempt.getTest_completed());
 
@@ -76,9 +80,24 @@ public class TestActivity extends AppCompatActivity implements View.OnClickListe
             catch (Exception ex){
                 ex.printStackTrace();
             }
-            pointsText.setText(latestAttempt.getTotal_score() + "/" + latestAttempt.getQuestions_attempted() + " Points");
+            if(latestAttempt.getTest_cancelled() != null){
+                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                Date testCancelledDate = null;
+                try {
+                    testCancelledDate = format.parse(latestAttempt.getTest_cancelled());
+                    format = new SimpleDateFormat("MMM dd, yyyy - h a");
+                    String formattedTestCompleted = format.format(testCancelledDate);
+
+                    testCompletedText.setText(formattedTestCompleted);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                pointsText.setText("Not completed");
+            }else {
+                pointsText.setText(latestAttempt.getTotal_score() + "/" + latestAttempt.getQuestions_attempted() + " Points");
+            }
         }else{
-            pointsText.setText("Not Available");
+            pointsText.setText("-/-");
         }
     }
 
@@ -148,11 +167,16 @@ public class TestActivity extends AppCompatActivity implements View.OnClickListe
                 break;
 
             case R.id.statistics_click:
-                startActivity(new Intent(this, AfterTestActivity.class));
+                startActivity(new Intent(this, ScoreboardActivity.class));
                 break;
 
             case R.id.test_information:
                 startActivity(new Intent(this, AboutTestActivity.class));
+                break;
+            case R.id.latest_score_layout:
+                Intent intent = new Intent(this, TestReviewActivity.class);
+                intent.putExtra("attempt_id", latestAttempt.getId());
+                startActivity(intent);
                 break;
             default:
                 Toast.makeText(this, "Feature coming soon! Hang in there... :D", Toast.LENGTH_SHORT).show();

@@ -3,15 +3,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="org.ministryofhealth.newimci">
 
-    <uses-sdk tools:overrideLibrary="nl.dionsegijn.konfetti" />
+    <uses-sdk tools:overrideLibrary="nl.dionsegijn.konfetti,pl.pawelkleczkowski.customgauge" />
 
+    <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
+    <uses-permission android:name="android.permission.MANAGE_ACCOUNTS"/>
+    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <!-- <uses-permission android:name="android.permission.READ_PHONE_STATE" /> -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-
+    <uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
+    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
+    <uses-permission android:name="android.permission.READ_SYNC_STATS" />
     <application
         android:name=".app.AppController"
         android:allowBackup="true"
@@ -165,7 +170,56 @@
         <activity android:name=".tests.TestMarkingActivity" />
         <activity android:name=".tests.ScoreboardActivity" />
         <activity android:name=".tests.AboutTestActivity" />
-        <activity android:name=".tests.AfterTestActivity" android:theme="@style/NoActionBar"></activity>
+        <activity
+            android:name=".tests.AfterTestActivity"
+            android:theme="@style/NoActionBar" />
+        <activity android:name=".tests.TestReviewActivity" />
+        <activity android:name=".tests.TestScoresActivity" />
+
+        <service android:name=".service.SyncService"
+            android:exported="true"
+            android:process=":sync">
+            <intent-filter>
+                <action android:name="android.content.SyncAdapter" />
+            </intent-filter>
+            <meta-data android:name="android.content.SyncAdapter"
+                android:resource="@xml/syncadapter" />
+        </service>
+
+        <service android:name=".service.TestAttemptSyncService"
+            android:exported="true"
+            android:process=":sync">
+            <intent-filter>
+                <action android:name="android.content.SyncAdapter" />
+            </intent-filter>
+            <meta-data android:name="android.content.SyncAdapter"
+                android:resource="@xml/testattempt_syncadapter" />
+        </service>
+
+        <service android:name=".service.AuthenticatorService">
+            <intent-filter>
+                <action android:name="android.accounts.AccountAuthenticator"/>
+            </intent-filter>
+            <meta-data
+                android:name="android.accounts.AccountAuthenticator"
+                android:resource="@xml/authenticator" />
+        </service>
+        
+        <provider
+            android:authorities="org.ministryofhealth.newimci.provider"
+            android:name="org.ministryofhealth.newimci.provider.UsageContentProvider"
+            android:enabled="true"
+            android:multiprocess="true"
+            android:exported="true"
+            android:syncable="true"/>
+
+        <provider
+            android:authorities="org.ministryofhealth.newimci.provider.testattempt"
+            android:name="org.ministryofhealth.newimci.provider.TestAttemptContentProvider"
+            android:enabled="true"
+            android:multiprocess="true"
+            android:exported="true"
+            android:syncable="true"/>
     </application>
 
 </manifest>

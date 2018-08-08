@@ -1,31 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/root"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".tests.AfterTestActivity">
-    <nl.dionsegijn.konfetti.KonfettiView
-        android:id="@+id/viewKonfetti"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+    tools:context=".tests.AfterTestActivity"
+    android:fitsSystemWindows="true"
+    android:background="@color/nice_blue">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:background="@color/nice_blue"
         android:gravity="center">
         <ImageView
-            android:layout_width="120dp"
-            android:layout_height="120dp"
-            app:srcCompat="@drawable/ic_winner"/>
+            android:id="@+id/winnerIcon"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            app:srcCompat="@drawable/ic_badge"/>
         <android.support.v7.widget.AppCompatRatingBar
+            android:id="@+id/performanceRating"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:numStars="5"
             android:isIndicator="true"
-            android:stepSize="0.1"/>
+            android:stepSize="0.1"
+            />
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -38,8 +39,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_marginLeft="@dimen/spacing_large"
-            android:layout_marginRight="@dimen/spacing_large">
+            android:layout_marginLeft="@dimen/spacing_xlarge"
+            android:layout_marginRight="@dimen/spacing_xlarge">
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -56,6 +57,7 @@
                     android:layout_width="@dimen/spacing_large"
                     android:layout_height="match_parent" />
                 <TextView
+                    android:id="@+id/score"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="You scored: 8/10"
@@ -79,6 +81,7 @@
                     android:layout_width="@dimen/spacing_large"
                     android:layout_height="match_parent" />
                 <TextView
+                    android:id="@+id/time_taken"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Time Taken: 8 Mins"
@@ -87,16 +90,43 @@
             </LinearLayout>
         </LinearLayout>
 
-        <Button
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Review Test" />
+            android:orientation="vertical"
+            android:padding="@dimen/spacing_large">
+            <Button
+                android:id="@+id/review_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Review Test"
+                android:background="@drawable/button_background"
+                android:layout_marginBottom="@dimen/spacing_middle"
+                android:textColor="@color/colorWhite"/>
 
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Take another test" />
+            <Button
+                android:id="@+id/take_another"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Take another test"
+                android:background="@drawable/button_background"
+                android:textColor="@color/colorWhite"/>
 
-
+            <Button
+                android:id="@+id/backHome"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_middle"
+                android:text="GO BACK TO TEST HOME"
+                android:textAlignment="center"
+                android:textColor="@color/colorWhite"
+                android:background="@drawable/button_background"
+                />
+        </LinearLayout>
     </LinearLayout>
-</RelativeLayout>
+
+    <nl.dionsegijn.konfetti.KonfettiView
+        android:id="@+id/viewKonfetti"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+</android.support.design.widget.CoordinatorLayout>
