@@ -17,6 +17,7 @@
     <uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
     <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
     <uses-permission android:name="android.permission.READ_SYNC_STATS" />
+    <uses-permission android:name="android.permission.GET_TASKS" />
     <application
         android:name=".app.AppController"
         android:allowBackup="true"
@@ -208,17 +209,19 @@
         <provider
             android:authorities="org.ministryofhealth.newimci.provider"
             android:name="org.ministryofhealth.newimci.provider.UsageContentProvider"
+            android:label="@string/usage"
             android:enabled="true"
             android:multiprocess="true"
-            android:exported="true"
+            android:exported="false"
             android:syncable="true"/>
 
         <provider
             android:authorities="org.ministryofhealth.newimci.provider.testattempt"
             android:name="org.ministryofhealth.newimci.provider.TestAttemptContentProvider"
             android:enabled="true"
+            android:label="@string/test"
             android:multiprocess="true"
-            android:exported="true"
+            android:exported="false"
             android:syncable="true"/>
     </application>
 

@@ -7,10 +7,10 @@ android {
     defaultConfig {
         applicationId "org.ministryofhealth.newimci"
         minSdkVersion 14
-        targetSdkVersion 26
+        targetSdkVersion 27
         multiDexEnabled true
-        versionCode 11
-        versionName "2.1"
+        versionCode 16
+        versionName "2.1.2"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }

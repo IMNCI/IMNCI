@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import org.ministryofhealth.newimci.database.DatabaseHandler;
 
@@ -26,7 +27,7 @@ public class UsageContentProvider extends ContentProvider {
     private SQLiteDatabase db;
     @Override
     public boolean onCreate() {
-        this.db = new DatabaseHandler(getContext()).getWritableDatabase();
+        this.db = DatabaseHandler.getInstance(getContext()).getDb();
         return true;
     }
 
@@ -53,7 +54,6 @@ public class UsageContentProvider extends ContentProvider {
         }
         assert getContext() != null;
         c.setNotificationUri(getContext().getContentResolver(), uri);
-
         return c;
     }
 
@@ -74,7 +74,6 @@ public class UsageContentProvider extends ContentProvider {
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues values) {
         Uri returnUri;
         long _id;
-
         switch (uriMatcher.match(uri)) {
             case USERUSAGE:
                 _id = db.insert(UsageContract.Usages.NAME, null, values);

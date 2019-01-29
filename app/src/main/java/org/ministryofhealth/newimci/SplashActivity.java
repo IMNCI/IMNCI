@@ -102,12 +102,13 @@ public class SplashActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_splash);
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
         mContentResolver = getContentResolver();
 
         FirebaseMessaging.getInstance().subscribeToTopic(Constants.TOPIC_GLOBAL);
-        setContentView(R.layout.activity_splash);
+
         try {
             db = new DatabaseHandler(this);
             SharedPreferences preference = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
@@ -164,7 +165,7 @@ public class SplashActivity extends AppCompatActivity {
 
 //            new ProfileAsyncTask().execute();
 //            if (!setup_page) {
-                if (page) {
+                if (!page) {
                     startActivity(new Intent(SplashActivity.this, MainActivity.class));
                 } else {
                     startActivity(new Intent(SplashActivity.this, MainPageActivity.class));
@@ -501,6 +502,7 @@ public class SplashActivity extends AppCompatActivity {
         }
     }
 
+    @SuppressLint("StaticFieldLeak")
     class ElementsAsyncTask extends AsyncTask<String, String, Boolean>{
 
         @Override
@@ -510,6 +512,7 @@ public class SplashActivity extends AppCompatActivity {
                 ElementsService elementsClient = retrofit.create(ElementsService.class);
                 Call<KeyElements> elementsCall = elementsClient.get();
                 KeyElements elements = elementsCall.execute().body();
+                db.clearTable(DatabaseHandler.TABLE_ELEMENTS);
                 db.addElements(elements);
                 return true;
             }catch(Exception ex){

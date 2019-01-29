@@ -21,7 +21,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="0">
 
-        <Button
+        <android.support.v7.widget.AppCompatButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Back"
@@ -35,7 +35,8 @@
             android:background="@color/nice_blue"
             android:textColor="@color/colorWhite"
             android:visibility="gone"
-            />
+            android:focusable="true"
+            android:drawableStart="@drawable/ic_chevron_left" />
 
         <TextView
             android:id="@+id/question_counter"
@@ -62,7 +63,8 @@
             android:drawableTint="@color/colorWhite"
             android:background="@color/nice_blue"
             android:textColor="@color/colorWhite"
-            />
+            android:focusable="true"
+            android:drawableEnd="@drawable/ic_chevron_right" />
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

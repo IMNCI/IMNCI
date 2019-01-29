@@ -85,6 +85,8 @@ public class MainPageActivity extends AppCompatActivity
         pref = getSharedPreferences("user_details", Context.MODE_PRIVATE);
         int id = pref.getInt("id", 0);
 
+//        Log.d("FIREBASEID", FirebaseInstanceId.getInstance().getToken());
+
         if (id == 0 && appUser.getId() != 0){
             android.support.v7.app.AlertDialog alertDialog = new android.support.v7.app.AlertDialog.Builder(this).create();
             alertDialog.setTitle("User Profile");

@@ -7,6 +7,6 @@ import retrofit2.http.Body;
 import retrofit2.http.POST;
 
 public interface TestAttemptService {
-    @POST("/api/test/uploaduserattempt")
-    Call<TestAttempt> addTestAttempt(@Body TestAttempt attempt);
+    @POST("/api/tests/attempts/upload")
+    Call<Void> addTestAttempt(@Body TestAttempt attempt);
 }

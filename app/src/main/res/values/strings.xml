@@ -83,4 +83,6 @@
     <string name="about_test"><![CDATA[<br/>This module provides quick test questions to assess knowledge on case management.<br/><br/>Each test instance provides a set of 10 randomly selected questions for attempt.<br/><br/>It takes an average time of 5 minutes to complete a test.]]></string>
     <string name="click_to_view">Click to View</string>
     <string name="click_to_view_responses">Click to view your responses</string>
+    <string name="usage">IMNCI Usage</string>
+    <string name="test">IMNCI Tests</string>
 </resources>

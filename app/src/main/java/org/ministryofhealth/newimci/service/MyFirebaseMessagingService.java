@@ -29,11 +29,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         Log.d(TAG, "Remote message: we have something");
         if(remoteMessage == null)
             return;
-        Log.d(TAG, "Remote message: " + remoteMessage.getNotification().toString());
 
         Log.d(TAG, "From: " + remoteMessage.getFrom());
 
         if(remoteMessage.getNotification() != null){
+            Log.d(TAG, "Payload number: " + remoteMessage.getData().size());
             Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
             handleNotification(remoteMessage.getNotification().getBody());
         }
@@ -44,14 +44,17 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             try {
                 Map<String, String> params = remoteMessage.getData();
                 JSONObject data = new JSONObject(params);
-                handleDataMessage(remoteMessage.getNotification().getTitle(), remoteMessage.getNotification().getBody(), data);
+                handleDataMessage(data.getString("title"), data.getString("body"), data);
             } catch (Exception e) {
                 Log.e(TAG, "Exception: " + e.getMessage());
             }
+        }else{
+            Log.d(TAG, "The payload was: " + remoteMessage.getData().size());
         }
     }
 
     private void handleNotification(String message){
+        Log.d(TAG, "Handle Notification called");
         if (!NotificationUtils.isAppIsInBackground(getApplicationContext())) {
             Intent pushNotification = new Intent(Constants.PUSH_NOTIFICATION);
             pushNotification.putExtra("message", message);
@@ -59,12 +62,12 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             NotificationUtils notificationUtils = new NotificationUtils(getApplicationContext());
             notificationUtils.playNotificationSound();
         }else{
-            // firebase handles itself
+
         }
     }
 
     private void handleDataMessage(String title, String message, JSONObject json){
-        Log.e(TAG, "push json: " + json.toString());
+        Log.d(TAG, "Handle Daa Notification called");
 
         try {
 //            JSONObject payload = new JSONObject(payloadParams);
@@ -85,7 +88,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 //            Log.e(TAG, "payload: " + payload.toString());
 
 
-            if (!NotificationUtils.isAppIsInBackground(getApplicationContext())) {
+//            if (!NotificationUtils.isAppIsInBackground(getApplicationContext())) {
                 // app is in foreground, broadcast the push message
                 Intent pushNotification = new Intent(Constants.PUSH_NOTIFICATION);
                 pushNotification.putExtra("message", message);
@@ -94,13 +97,24 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 // play notification sound
                 NotificationUtils notificationUtils = new NotificationUtils(getApplicationContext());
                 notificationUtils.playNotificationSound();
-            } else {
+                if (json.has("image")) {
+                    showNotificationMessageWithBigImage(getApplicationContext(), title, message, json.getString("created_at"), pushNotification, json.getString("image"));
+                }else{
+                    showNotificationMessage(getApplicationContext(), title, message,json.getString("created_at"), pushNotification);
+                }
+//            } else {
                 // app is in background, show the notification in notification tray
-                Intent resultIntent = new Intent(getApplicationContext(), NotificationActivity.class);
-                resultIntent.putExtra("message", message);
-            }
+//                Intent resultIntent = new Intent(getApplicationContext(), NotificationActivity.class);
+//                resultIntent.putExtra("message", message);
+//                if (json.getString("image") != null) {
+//                    showNotificationMessageWithBigImage(getApplicationContext(), title, message, json.getString("created_at"), resultIntent, json.getString("image"));
+//                }else{
+//                    showNotificationMessage(getApplicationContext(), title, message,json.getString("created_at"), resultIntent);
+//                }
+//            }
         } catch (JSONException e) {
             Log.e(TAG, "Json Exception: " + e.getMessage());
+            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
             Log.e(TAG, "Exception: " + e.getMessage());

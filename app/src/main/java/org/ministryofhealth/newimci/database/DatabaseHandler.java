@@ -49,7 +49,9 @@ import java.util.List;
 
 public class DatabaseHandler extends SQLiteOpenHelper {
 
-    public static final int DATABASE_VERSION = 33;
+    private static volatile DatabaseHandler instance;
+
+    public static final int DATABASE_VERSION = 34;
     public static final String DATABASE_NAME = "imci_mobile_app";
 
     public static final String TABLE_AILMENTS = "ailments";
@@ -180,11 +182,26 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public static final String KEY_ELEMENTS = "elements";
 
 
-    SQLiteDatabase writableDB;
+    private final SQLiteDatabase writableDB;
 
     public DatabaseHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         this.writableDB = this.getWritableDatabase();
+    }
+
+    public static DatabaseHandler getInstance(Context c){
+        if (instance == null) {
+            synchronized (DatabaseHandler.class) {
+                if (instance == null) {
+                    instance = new DatabaseHandler(c);
+                }
+            }
+        }
+        return instance;
+    }
+
+    public SQLiteDatabase getDb() {
+        return writableDB;
     }
     @Override
     public void onCreate(SQLiteDatabase db) {
@@ -384,7 +401,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 + KEY_TEST_QUESTIONS_ATTEMPTED + " TEXT,"
                 + KEY_TEST_TOTAL_SCORE + " TEXT,"
                 + KEY_CORRECT_ANSWERS + " TEXT,"
-                + KEY_WRONG_ANSWERS + " TEXT"
+                + KEY_WRONG_ANSWERS + " TEXT,"
+                + KEY_UPLOADED + " INTEGER DEFAULT 0,"
+                + KEY_DELETED + " INTEGER DEFAULT 0"
                 + ");";
 
         String CREATE_TABLE_TEST_RESPONSES = "CREATE TABLE " + TABLE_TEST_RESPONSES + "("
@@ -394,9 +413,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 + KEY_RESPONSE_ID + " INTEGER,"
                 + KEY_RESPONSE + " INTEGER,"
                 + KEY_CORRECT_ANSWER + " TEXT,"
-                + KEY_GOT_IT + " INTEGER,"
-                + KEY_UPLOADED + " INTEGER DEFAULT 0,"
-                + KEY_DELETED + " INTEGER DEFAULT 0"
+                + KEY_GOT_IT + " INTEGER"
                 + ");";
 
         String CREATE_TABLE_USER_USAGE = "CREATE TABLE " + TABLE_USER_USAGE + "("
@@ -521,10 +538,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 
     public List<Ailment> getAilments(){
+        SQLiteDatabase db = this.getReadableDatabase();
         List<Ailment> ailmentList = new ArrayList<Ailment>();
 
         String selectAilmentQuery = "SELECT * FROM " + TABLE_AILMENTS;
-        Cursor cursor = writableDB.rawQuery(selectAilmentQuery, null);
+        Cursor cursor = db.rawQuery(selectAilmentQuery, null);
 
         if (cursor.moveToFirst()){
             do {
@@ -540,7 +558,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 ailmentList.add(ailment);
             }while (cursor.moveToNext());
         }
-
         return ailmentList;
     }
 
@@ -568,9 +585,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     public ArrayList<Ailment> getAilments(int age_group_id){
         ArrayList<Ailment> ailmentList = new ArrayList<Ailment>();
-
+        SQLiteDatabase db = this.getReadableDatabase();
         String selectAilmentQuery = "SELECT * FROM " + TABLE_AILMENTS + " WHERE " + KEY_AGE_GROUP_ID + " = " + age_group_id;
-        Cursor cursor = writableDB.rawQuery(selectAilmentQuery, null);
+        Cursor cursor = db.rawQuery(selectAilmentQuery, null);
 
         if (cursor.moveToFirst()){
             do {
@@ -586,7 +603,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 ailmentList.add(ailment);
             }while (cursor.moveToNext());
         }
-
         return ailmentList;
     }
 
@@ -599,7 +615,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     public void addAilment(Ailment ailment){
         ContentValues value = new ContentValues();
-
+        SQLiteDatabase db = this.getWritableDatabase();
         value.put(KEY_ID, ailment.getId());
         value.put(KEY_AILMENT, ailment.getAilment());
         value.put(KEY_DESCRIPTION, ailment.getDescription());
@@ -607,18 +623,18 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         value.put(KEY_CREATED_AT, ailment.getCreated_at());
         value.put(KEY_UPDATED_AT, ailment.getUpdated_at());
 
-        writableDB.insert(TABLE_AILMENTS, null, value);
+        db.insert(TABLE_AILMENTS, null, value);
     }
 
     public void addAgeGroup(AgeGroup ageGroup){
         ContentValues value = new ContentValues();
-
+        SQLiteDatabase db = this.getWritableDatabase();
         value.put(KEY_ID, ageGroup.getId());
         value.put(KEY_AGE_GROUP, ageGroup.getAge_group());
         value.put(KEY_CREATED_AT, ageGroup.getCreated_at());
         value.put(KEY_UPDATED_AT, ageGroup.getUpdated_at());
 
-        writableDB.insert(TABLE_AGE_GROUPS, null, value);
+        db.insert(TABLE_AGE_GROUPS, null, value);
     }
 
     public void addAgeGroups(List<AgeGroup> ageGroups){
@@ -630,9 +646,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     public List<AgeGroup> getAgeGroups(){
         List<AgeGroup> ageGroupList = new ArrayList<AgeGroup>();
-
+        SQLiteDatabase db = this.getReadableDatabase();
         String selectAgeGroupQuery = "SELECT * FROM " + TABLE_AGE_GROUPS;
-        Cursor cursor = writableDB.rawQuery(selectAgeGroupQuery, null);
+        Cursor cursor = db.rawQuery(selectAgeGroupQuery, null);
 
         if (cursor.moveToFirst()){
             do {
@@ -652,13 +668,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     public void addAilmentFollowUp(AilmentFollowUp ailmentFollowUp){
         ContentValues value = new ContentValues();
-
+        SQLiteDatabase db = this.getWritableDatabase();
         value.put(KEY_ID, ailmentFollowUp.getId());
         value.put(KEY_AILMENT_ID, ailmentFollowUp.getAilment_id());
         value.put(KEY_ADVICE, ailmentFollowUp.getAdvice());
         value.put(KEY_TREATMENT, ailmentFollowUp.getTreatment());
 
-        writableDB.insert(TABLE_AILMENT_FOLLOWUP, null, value);
+        db.insert(TABLE_AILMENT_FOLLOWUP, null, value);
     }
 
     public void addAilmentFollowUps(List<AilmentFollowUp> ailmentFollowUpList){
@@ -682,12 +698,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     public void addCategory(Category category){
+        SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
 
         values.put(KEY_ID, category.getId());
         values.put(KEY_CATEGORY, category.getCategory());
 
-        writableDB.insert(TABLE_CATEGORIES, null ,values);
+        db.insert(TABLE_CATEGORIES, null ,values);
     }
 
     public Category getCategory(int id){
@@ -713,7 +730,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public List<Category> getCategories(){
         List<Category> categories = new ArrayList<Category>();
         String query = "SELECT * FROM " + TABLE_CATEGORIES;
-        Cursor cursor = writableDB.rawQuery(query, null);
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(query, null);
 
         if (cursor.moveToFirst()){
             do {
@@ -730,14 +748,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     public void addAssessment(Assessment assessment){
         ContentValues values = new ContentValues();
-
+        SQLiteDatabase db = this.getWritableDatabase();
         values.put(KEY_ID, assessment.getId());
         values.put(KEY_AGE_GROUP_ID, assessment.getAge_group_id());
         values.put(KEY_CATEGORY_ID, assessment.getCategory_id());
         values.put(KEY_TITLE, assessment.getTitle());
         values.put(KEY_ASSESSMENT, assessment.getAssessment());
 
-        this.writableDB.insert(TABLE_ASSESSMENT, null, values);
+        db.insert(TABLE_ASSESSMENT, null, values);
     }
 
     public void addAssessments(List<Assessment> assessments){
@@ -764,9 +782,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     public List<Assessment> getAssessments(){
         List<Assessment> assessments = new ArrayList<Assessment>();
-
+        SQLiteDatabase db = this.getReadableDatabase();
         String query = "SELECT * FROM " + TABLE_ASSESSMENT;
-        Cursor cursor = writableDB.rawQuery(query, null);
+        Cursor cursor = db.rawQuery(query, null);
 
         if (cursor.moveToFirst()){
             do {
@@ -786,9 +804,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     public List<Assessment> getAssessments(int age_group_id, int category_id){
         List<Assessment> assessments = new ArrayList<Assessment>();
-
+        SQLiteDatabase db = this.getReadableDatabase();
         String query = "SELECT * FROM " + TABLE_ASSESSMENT + " WHERE " + KEY_AGE_GROUP_ID + " = " + age_group_id + " AND " + KEY_CATEGORY_ID + " = " + category_id;
-        Cursor cursor = writableDB.rawQuery(query, null);
+        Cursor cursor = db.rawQuery(query, null);
 
         if (cursor.moveToFirst()){
             do {
@@ -808,13 +826,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     public void addDiseaseClassification(DiseaseClassification classification){
         ContentValues values = new ContentValues();
-
+        SQLiteDatabase db = this.getWritableDatabase();
         values.put(KEY_ID, classification.getId());
         values.put(KEY_CLASSIFICATION, classification.getClassification());
         values.put(KEY_DESCRIPTION, classification.getDescription());
         values.put(KEY_COLOR, classification.getColor());
 
-        writableDB.insert(TABLE_DISEASE_CLASSIFICATIONS, null, values);
+        db.insert(TABLE_DISEASE_CLASSIFICATIONS, null, values);
     }
 
     public void addDiseaseClassifications(List<DiseaseClassification> classifications){
@@ -840,7 +858,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     public void addAssessmentClassification(AssessmentClassification assessmentClassification){
         ContentValues values = new ContentValues();
-
+        SQLiteDatabase db = this.getReadableDatabase();
         values.put(KEY_ID, assessmentClassification.getId());
         values.put(KEY_DISEASE_CLASSIFICATION_ID, assessmentClassification.getDisease_classification_id());
         values.put(KEY_ASSESSMENT_ID, assessmentClassification.getAssessment_id());
@@ -850,7 +868,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(KEY_TREATMENT, assessmentClassification.getTreatments());
 
 
-        writableDB.insert(TABLE_ASSESSMENT_CLASSIFICATIONS, null, values);
+        db.insert(TABLE_ASSESSMENT_CLASSIFICATIONS, null, values);
     }
 
     public void addAssessmentClassifications(List<AssessmentClassification> assessmentClassificationList){
@@ -860,9 +878,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     public List<AssessmentClassification> getAssessmentClassifications(){
+        SQLiteDatabase db = this.getReadableDatabase();
         List<AssessmentClassification> assessmentClassifications = new ArrayList<AssessmentClassification>();
         String query = "SELECT * FROM " + TABLE_ASSESSMENT_CLASSIFICATIONS;
-        Cursor cursor = writableDB.rawQuery(query, null);
+        Cursor cursor = db.rawQuery(query, null);
 
         if (cursor.moveToFirst()) {
             do {
@@ -883,9 +902,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     public List<AssessmentClassification> getAssessmentClassifications(int assessment_id){
+        SQLiteDatabase db = this.getReadableDatabase();
         List<AssessmentClassification> assessmentClassifications = new ArrayList<AssessmentClassification>();
         String query = "SELECT * FROM " + TABLE_ASSESSMENT_CLASSIFICATIONS + " WHERE " + KEY_ASSESSMENT_ID + " = " + assessment_id;
-        Cursor cursor = writableDB.rawQuery(query, null);
+        Cursor cursor = db.rawQuery(query, null);
 
         if (cursor.moveToFirst()) {
             do {
@@ -906,9 +926,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     public List<String> getParents(int assessment_id){
+        SQLiteDatabase db = this.getReadableDatabase();
         List<String> parents = new ArrayList<String>();
         String query = "SELECT DISTINCT "+ KEY_PARENT +" FROM " + TABLE_ASSESSMENT_CLASSIFICATIONS + " WHERE " + KEY_ASSESSMENT_ID + " = " + assessment_id;
-        Cursor cursor = writableDB.rawQuery(query, null);
+        Cursor cursor = db.rawQuery(query, null);
 
         if (cursor.moveToFirst()) {
             do {
@@ -919,9 +940,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     public List<AssessmentClassification> getAssessmentByParent(String parent, int assessment_id){
+        SQLiteDatabase db = this.getReadableDatabase();
         List<AssessmentClassification> assessmentClassifications = new ArrayList<AssessmentClassification>();
         String query = "SELECT * FROM " + TABLE_ASSESSMENT_CLASSIFICATIONS + " WHERE " + KEY_PARENT + " = '" + parent + "' AND " + KEY_ASSESSMENT_ID + " = '" + String.valueOf(assessment_id) + "'";
-        Cursor cursor = writableDB.rawQuery(query, null);
+        Cursor cursor = db.rawQuery(query, null);
 
         if (cursor.moveToFirst()) {
             do {
@@ -942,13 +964,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     public void addClassificationSign(AssessmentClassificationSign sign){
+        SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
 
         values.put(KEY_ID, sign.getId());
         values.put(KEY_CLASSIFICATION_ID, sign.getClassification_id());
         values.put(KEY_SIGN, sign.getSign());
 
-        writableDB.insert(TABLE_ASSESSMENT_CLASSIFICATION_SIGNS, null, values);
+        db.insert(TABLE_ASSESSMENT_CLASSIFICATION_SIGNS, null, values);
     }
 
     public void addClassificationSigns(List<AssessmentClassificationSign> signs){
@@ -977,12 +1000,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     public void addClassificationTreatment(AssessmentClassificationTreatment treatment){
         ContentValues values = new ContentValues();
-
+        SQLiteDatabase db = this.getWritableDatabase();
         values.put(KEY_ID, treatment.getId());
         values.put(KEY_CLASSIFICATION_ID, treatment.getClassification_id());
         values.put(KEY_TREATMENT, treatment.getTreatment());
 
-        writableDB.insert(TABLE_ASSESSMENT_CLASSIFICATION_TREATMENTS, null, values);
+        db.insert(TABLE_ASSESSMENT_CLASSIFICATION_TREATMENTS, null, values);
     }
 
     public void addClassificationTreatments(List<AssessmentClassificationTreatment> treatments){
@@ -1011,12 +1034,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     public void addGlossary(Glossary glossary){
         ContentValues values = new ContentValues();
-
+        SQLiteDatabase db = this.getWritableDatabase();
         values.put(KEY_ID, glossary.getId());
         values.put(KEY_ACRONYM, glossary.getAcronym());
         values.put(KEY_DESCRIPTION, glossary.getDescription());
 
-        writableDB.insert(TABLE_GLOSSARY, null, values);
+        db.insert(TABLE_GLOSSARY, null, values);
     }
     public void addGlossaryItems(List<Glossary> glossaryList){
         for (Glossary glossary : glossaryList){
@@ -1767,7 +1790,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public List<Notification> getNotifications(){
         List<Notification> notifications = new ArrayList<Notification>();
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(TABLE_NOTIFICATIONS, null, null, null, null, null, KEY_ID+ " DESC");
+        Cursor cursor = db.query(TABLE_NOTIFICATIONS, null, null, null, null, null, KEY_CREATED_AT + " DESC");
 
         if (cursor.moveToFirst()){
             do {
@@ -1905,7 +1928,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
 //        Cursor cursor = db.query(TABLE_QUESTIONS, null, null, null, null, null, RANDOM(), null);
         String selectAilmentQuery = "SELECT * FROM " + TABLE_QUESTIONS + " ORDER BY RANDOM() LIMIT 10";
-        Cursor cursor = writableDB.rawQuery(selectAilmentQuery, null);
+        Cursor cursor = db.rawQuery(selectAilmentQuery, null);
         if (cursor.moveToFirst()){
             do {
                 questions.add(getQuestion(cursor));

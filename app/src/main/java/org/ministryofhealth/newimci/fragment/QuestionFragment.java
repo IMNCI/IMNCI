@@ -140,7 +140,6 @@ public class QuestionFragment extends Fragment {
             RadioButton button = new RadioButton(getContext());
             button.setId(choice.getId());
             button.setText(choice.getChoice());
-            button.setTypeface(ResourcesCompat.getFont(getContext(), R.font.muli));
             radioGroup.addView(button);
         }
     }
@@ -154,7 +153,6 @@ public class QuestionFragment extends Fragment {
             CheckBox button = new  CheckBox(getContext());
             button.setId(choice.getId());
             button.setText(choice.getChoice());
-            button.setTypeface(ResourcesCompat.getFont(getContext(), R.font.muli));
 
             button.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override

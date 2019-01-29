@@ -1,5 +1,7 @@
 package org.ministryofhealth.newimci;
 
+import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.design.widget.FloatingActionButton;
@@ -24,11 +26,14 @@ public class MainActivity extends AppCompatActivity {
     DatabaseHandler db;
     KeyElements elements;
 
+    ProgressDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d("KeyElements", "Key Elements Loaded...");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         String key_elements = getResources().getString(R.string.key_elements).toUpperCase();
         getSupportActionBar().setTitle(key_elements);
 
@@ -37,8 +42,13 @@ public class MainActivity extends AppCompatActivity {
 
         fab = (FloatingActionButton) findViewById(R.id.proceed);
         elementsContent = findViewById(R.id.elementsContent);
-
-        setupElementsContent();
+        if (elements.getElements() != null) {
+            Log.d("KeyElements", elements.getElements());
+            setupElementsContent();
+        }
+        else {
+            Log.d("KeyElements", "There are no key elements detected");
+        }
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -49,14 +59,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupElementsContent(){
-        Toast.makeText(this, "Please wait... Content Loading...", Toast.LENGTH_SHORT).show();
-        WebSettings s = elementsContent.getSettings();
-        s.setUseWideViewPort(false);
-        s.setSupportZoom(true);
-        s.setBuiltInZoomControls(true);
-        s.setDisplayZoomControls(true);
-        s.setJavaScriptEnabled(false);
-        elementsContent.loadData(elements.getElements(), "text/html", "utf-8");
+        new LoadPageTask().execute();
     }
 
     @Override
@@ -78,5 +81,48 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
         return true;
+    }
+
+    @SuppressLint("StaticFieldLeak")
+    class LoadPageTask extends AsyncTask<Void, Void, Boolean>{
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            dialog = new ProgressDialog(MainActivity.this);
+            dialog.setMessage("Getting Key Elements of IMNCI");
+            dialog.setCancelable(false);
+            dialog.setIndeterminate(true);
+            dialog.show();
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+            Log.d("KeyElements", "Trying to set up elements");
+//            Toast.makeText(MainActivity.this, "Please wait... Content Loading...", Toast.LENGTH_SHORT).show();
+
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean aBoolean) {
+            super.onPostExecute(aBoolean);
+
+            dialog.dismiss();
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    WebSettings s = elementsContent.getSettings();
+                    s.setUseWideViewPort(false);
+                    s.setSupportZoom(true);
+                    s.setBuiltInZoomControls(true);
+                    s.setDisplayZoomControls(true);
+                    s.setJavaScriptEnabled(false);
+                    elementsContent.loadData(elements.getElements(), "text/html", "utf-8");
+                    Log.d("KeyElements", "Successfully set up the data");
+                }
+            });
+
+        }
     }
 }

@@ -48,7 +48,8 @@ public class TestSyncAdapter extends AbstractThreadedSyncAdapter {
     @Override
     public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
         Log.w(TAG, "Starting synchronization...");
-        Cursor c = mContentResolver.query(TestAttemptContract.TestAttempt.CONTENT_URI, null, TestAttemptContract.TestAttempt.COL_UPLOADED + "=? OR " + TestAttemptContract.TestAttempt.COL_DELETED + "=?", new String[]{String.valueOf(0), String.valueOf(1)}, null);
+//        Cursor c = mContentResolver.query(TestAttemptContract.TestAttempt.CONTENT_URI, null, TestAttemptContract.TestAttempt.COL_UPLOADED + "=0 OR " + TestAttemptContract.TestAttempt.COL_DELETED + "=1", null, null);
+        Cursor c = db.getReadableDatabase().query(TestAttemptContract.TestAttempt.NAME, null, TestAttemptContract.TestAttempt.COL_UPLOADED + "=? OR " + TestAttemptContract.TestAttempt.COL_DELETED + "=?",new String[]{String.valueOf(0), String.valueOf(1)}, null, null, null);
         assert c != null;
         Log.d(TAG, "Cursor Length: " + c.getCount());
         if(c.moveToFirst()) {
@@ -58,24 +59,36 @@ public class TestSyncAdapter extends AbstractThreadedSyncAdapter {
                 List<TestResponse> testResponses = db.getTestResponses(testAttempt.getId());
                 testAttempt.setResponses(testResponses);
 
+                testAttempt.setTest_started((testAttempt.getTest_started() == null) ? "1995-01-01 00:00:00" : testAttempt.getTest_started());
+                testAttempt.setTest_completed((testAttempt.getTest_completed() == null) ? "1995-01-01 00:00:00" : testAttempt.getTest_completed());
+                testAttempt.setTest_cancelled((testAttempt.getTest_cancelled() == null) ? "1995-01-01 00:00:00" : testAttempt.getTest_cancelled());
+                testAttempt.setQuestions_attempted((testAttempt.getQuestions_attempted() == null) ? String.valueOf(0) : testAttempt.getQuestions_attempted());
+                testAttempt.setWrong_answers((testAttempt.getWrong_answers() == null) ? String.valueOf(0) : testAttempt.getWrong_answers());
+                testAttempt.setTotal_score((testAttempt.getTotal_score() == null) ? String.valueOf(0) : testAttempt.getTotal_score());
+
                 Retrofit retrofit = RetrofitHelper.getInstance().createHelper();
 
                 TestAttemptService client = retrofit.create(TestAttemptService.class);
-                Call<TestAttempt> testAttemptCall = client.addTestAttempt(testAttempt);
+                Call<Void> testAttemptCall = client.addTestAttempt(testAttempt);
 
-                testAttemptCall.enqueue(new Callback<TestAttempt>() {
+                testAttemptCall.enqueue(new Callback<Void>() {
                     @Override
-                    public void onResponse(Call<TestAttempt> call, Response<TestAttempt> response) {
-                        testAttempt.setUploaded(1);
+                    public void onResponse(Call<Void> call, Response<Void> response) {
+                        if (response.code() == 200) {
+                            testAttempt.setUploaded(1);
 
-                        db.updateTestAttempt(testAttempt);
-                        if (testAttempt.getDeleted() == 1){
-                            mContentResolver.delete(TestAttemptContract.TestAttempt.CONTENT_URI, TestAttemptContract.TestAttempt.COL_ID + "=?", new String[]{String.valueOf(testAttempt.getId())});
+                            db.updateTestAttempt(testAttempt);
+                            if (testAttempt.getDeleted() == 1) {
+                                mContentResolver.delete(TestAttemptContract.TestAttempt.CONTENT_URI, TestAttemptContract.TestAttempt.COL_ID + "=?", new String[]{String.valueOf(testAttempt.getId())});
+                            }
+                        }else{
+                            String MyResult = response.raw().message();
+                            Log.e(TAG, "There was an error"  + MyResult);
                         }
                     }
 
                     @Override
-                    public void onFailure(Call<TestAttempt> call, Throwable t) {
+                    public void onFailure(Call<Void> call, Throwable t) {
                         Log.e(TAG, "There was an error uploading the test");
                     }
                 });

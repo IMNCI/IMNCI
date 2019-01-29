@@ -17,7 +17,9 @@ import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.text.Html;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.Patterns;
+import android.widget.Toast;
 
 import org.ministryofhealth.newimci.R;
 import org.ministryofhealth.newimci.config.Constants;
@@ -56,15 +58,19 @@ public class NotificationUtils {
         final Uri alarmSound = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + mContext.getPackageName() + "/raw/notification");
 
         if(!TextUtils.isEmpty(imageUrl)){
+            Log.d(TAG, "BIG ONE");
             if (imageUrl != null && imageUrl.length() > 4 && Patterns.WEB_URL.matcher(imageUrl).matches()){
                 Bitmap bitmap = getBitmapFromURL(imageUrl);
                 if (bitmap != null){
+//                    Toast.makeText(mContext, "Big One", Toast.LENGTH_SHORT).show();
                     showBigNotification(bitmap, mBuilder, icon, title, message, timestamp, resultPendingIntent, alarmSound);
                 }else{
+//                    Toast.makeText(mContext, "Small One", Toast.LENGTH_SHORT).show();
                     showSmallNotification(mBuilder, icon, title, message, timestamp, resultPendingIntent, alarmSound);
                 }
             }
         }else{
+            Log.d(TAG, "small ONE");
             showSmallNotification(mBuilder, icon, title, message, timestamp, resultPendingIntent, alarmSound);
             playNotificationSound();
         }
@@ -97,6 +103,8 @@ public class NotificationUtils {
         NotificationCompat.BigPictureStyle bigPictureStyle = new NotificationCompat.BigPictureStyle();
         bigPictureStyle.setBigContentTitle(title);
 
+        Log.d(TAG, "Showing Big");
+
         bigPictureStyle.setSummaryText(Html.fromHtml(message).toString());
         bigPictureStyle.bigPicture(bitmap);
         Notification notification;
@@ -110,7 +118,7 @@ public class NotificationUtils {
                 .setStyle(bigPictureStyle)
                 .setWhen(getTimeMilliSec(timeStamp))
                 .setSmallIcon(icon)
-                .setLargeIcon(BitmapFactory.decodeResource(mContext.getResources(), icon))
+                .setLargeIcon(bitmap)
                 .setContentText(message)
                 .build();
 
@@ -128,6 +136,7 @@ public class NotificationUtils {
             Bitmap myBitmap = BitmapFactory.decodeStream(input);
             return myBitmap;
         } catch (IOException e) {
+            Log.d(TAG, e.getMessage());
             e.printStackTrace();
             return null;
         }

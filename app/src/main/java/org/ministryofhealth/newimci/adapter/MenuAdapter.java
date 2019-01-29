@@ -3,11 +3,15 @@ package org.ministryofhealth.newimci.adapter;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -32,8 +36,13 @@ import org.ministryofhealth.newimci.fragment.ChildCheckDialogFragment;
 import org.ministryofhealth.newimci.fragment.GlossaryFragment;
 import org.ministryofhealth.newimci.fragment.OtherAppsFragment;
 import org.ministryofhealth.newimci.fragment.ReviewFragment;
+import org.ministryofhealth.newimci.helper.AppHelper;
 import org.ministryofhealth.newimci.model.Menu;
+import org.ministryofhealth.newimci.provider.UsageContract;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -95,6 +104,8 @@ public class MenuAdapter extends RecyclerView.Adapter<MenuAdapter.MenuViewHolder
             Fragment newFragment = null;
             FragmentTransaction transaction = activity.getSupportFragmentManager().beginTransaction();
             transaction.addToBackStack(null);
+
+            AppHelper.addAppUsage(context, menu.get_menu_slug());
 
             if (menu.get_menu_slug().equals("hiv_care")){
                 context.startActivity(new Intent(context, HIVForChildrenActivity.class));

@@ -5,6 +5,7 @@ import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -17,6 +18,7 @@ import org.ministryofhealth.newimci.FollowUpCareAilmentsActivity;
 import org.ministryofhealth.newimci.R;
 import org.ministryofhealth.newimci.TreatActivity;
 import org.ministryofhealth.newimci.database.DatabaseHandler;
+import org.ministryofhealth.newimci.helper.AppHelper;
 import org.ministryofhealth.newimci.model.AgeGroup;
 
 import java.util.List;
@@ -97,6 +99,8 @@ public class ChildCheckDialogFragment extends DialogFragment {
             slug = "follow_up_care";
         }
         Intent intent= null;
+        Log.w("ChildCheckDialog", slug + " Inserted");
+        AppHelper.addAppUsage(getActivity(), slug);
         switch (slug){
             case "assess_classify_identify":
                 intent = new Intent(getActivity(), AssessClassifyIdentifyTreatmentActivity.class);

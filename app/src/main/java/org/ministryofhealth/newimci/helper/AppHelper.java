@@ -1,20 +1,26 @@
 package org.ministryofhealth.newimci.helper;
 
 import android.app.Activity;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.support.v7.app.AlertDialog;
 
 import org.ministryofhealth.newimci.MainPageActivity;
 import org.ministryofhealth.newimci.R;
 import org.ministryofhealth.newimci.TestActivity;
+import org.ministryofhealth.newimci.provider.UsageContract;
 
 import java.lang.reflect.Field;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -84,5 +90,27 @@ public class AppHelper {
         formattedDate = newDateFormat.format(currentDate);
 
         return formattedDate;
+    }
+
+    public static void addAppUsage(Context context, String utilization){
+        if (context == null){
+        }
+        SharedPreferences userPref = context.getSharedPreferences("user_details", Context.MODE_PRIVATE);
+        int id = userPref.getInt("id", 0);
+
+        Date currTime = Calendar.getInstance().getTime();
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String timestamp = simpleDateFormat.format(currTime);
+
+        ContentResolver mContentResolver = context.getContentResolver();
+
+        ContentValues value = new ContentValues();
+        value.put(UsageContract.Usages.COL_USER_ID, id);
+        value.put(UsageContract.Usages.COL_DEVICE_ID, Build.DISPLAY);
+        value.put(UsageContract.Usages.COL_TIMESTAMP, timestamp);
+        value.put(UsageContract.Usages.COL_TYPE, utilization);
+
+        Uri uri = mContentResolver.insert(UsageContract.Usages.CONTENT_URI, value);
     }
 }

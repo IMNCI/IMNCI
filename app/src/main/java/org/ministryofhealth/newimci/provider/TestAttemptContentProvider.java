@@ -26,7 +26,7 @@ public class TestAttemptContentProvider extends ContentProvider {
     private SQLiteDatabase db;
     @Override
     public boolean onCreate() {
-        this.db = new DatabaseHandler(getContext()).getWritableDatabase();
+        this.db = DatabaseHandler.getInstance(getContext()).getDb();
         return true;
     }
 
